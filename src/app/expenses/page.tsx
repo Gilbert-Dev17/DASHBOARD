@@ -1,6 +1,8 @@
 'use client'
 
 import React, { useState } from 'react'
+import Link from 'next/link'
+
 import { ArrowDownLeft, ArrowUpRight, Plus } from 'lucide-react'
 import { DrumstickIcon, ShoppingBag, Tv, Heart, ShoppingBasket, BusFront, School } from 'lucide-react'
 
@@ -9,7 +11,10 @@ import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
+import PageComponent from '@/components/shared/PageComponent';
 import { ChartPieDonutText } from '@/components/shared/CategoryCharts'
+import { AddCategoryModal } from '@/components/shared/AddCategoryModal'
+
 
 const Page = () => {
   const [expenseFilter, setExpenseFilter] = useState('week')
@@ -43,7 +48,7 @@ const Page = () => {
   const filterLabel = expenseFilters.find((f) => f.value === expenseFilter)?.name ?? ''
 
   return (
-    <div className="max-w-8xl mx-auto animation-fade-in pb-20">
+    <PageComponent>
       {/* Header & Filter Row */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
         <HeaderTitle
@@ -113,10 +118,7 @@ const Page = () => {
           {/* Fix: items-center on header row */}
           <div className="flex flex-row justify-between items-center border-b border-border pb-4 mb-2">
             <Label className="text-sm font-semibold">Categories</Label>
-            <Button variant="ghost" size="sm">
-              <Plus className="mr-1 h-4 w-4" />
-              Add Category
-            </Button>
+            <AddCategoryModal/>
           </div>
 
           <div>
@@ -146,9 +148,11 @@ const Page = () => {
           {/* Fix: items-center on header row */}
           <div className="flex flex-row justify-between items-center border-b border-border pb-4 mb-2">
             <Label className="text-sm font-semibold">Recent Logs</Label>
-            <Button variant="ghost" size="sm">
-              View All
-            </Button>
+            <Link href='/expenses/viewAll'>
+              <Button variant="ghost" size="sm">
+                View All
+              </Button>
+            </Link>
           </div>
 
           {/* Empty state placeholder */}
@@ -177,7 +181,7 @@ const Page = () => {
           </div>
         </div>
       </section>
-    </div>
+    </PageComponent>
   )
 }
 

@@ -1,7 +1,13 @@
 import React from 'react'
+import PageComponent from '@/components/shared/PageComponent'
 
 export const page = () => {
   return (
-    <div>page</div>
+    <PageComponent>
+      <div>
+
+      </div>
+
+    </PageComponent>
   )
 }

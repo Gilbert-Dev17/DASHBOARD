@@ -2,6 +2,7 @@
 
 import React, {useState} from 'react'
 import { CloudSun, CheckCircle2, Circle, Calendar, CheckSquare, Activity } from 'lucide-react'
+import PageComponent from '@/components/shared/PageComponent'
 
 const DashboardPage = () => {
 
@@ -15,7 +16,7 @@ const DashboardPage = () => {
   ]);
 
   return (
-    <div className="max-w-6xl mx-auto animation-fade-in pb-20">
+    <PageComponent>
        <div className="mb-16 lg:mb-20">
           <div className="flex justify-between items-start mb-8 lg:mb-12">
             <h1 className="text-6xl md:text-8xl lg:text-[9rem] font-bold tracking-tighter leading-none flex items-end">
@@ -78,7 +79,7 @@ const DashboardPage = () => {
             </div>
           </div>
         </div>
-    </div>
+    </PageComponent>
   )
 }
 
