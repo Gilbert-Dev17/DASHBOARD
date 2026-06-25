@@ -10,7 +10,7 @@ const DashboardPage = () => {
     { id: 1, text: "Wake up - 7:30 am", done: true, category: "Routine" },
     { id: 2, text: "Do Duolingo", done: true, category: "Routine" },
     { id: 3, text: "Workout: Chest + Back", done: true, category: "Health" },
-    { id: 4, text: "Design Crit with Team", done: false, category: "Work", time: "10:00" },
+    { id: 4, text: "Design Crit with Team", done: false, category: "Work", time: "10:00" , subtasks: [{id: 41, text: "Prepare slides", done: true}, {id: 42, text: "Review Figma components", done: false}]},
     { id: 5, text: "Haircut with Vincent", done: false, category: "Personal", time: "13:00" },
     { id: 6, text: "Cleanup code & finish Auth", done: false, category: "Code: Re.Focus" }
   ]);

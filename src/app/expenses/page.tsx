@@ -17,7 +17,7 @@ import { AddCategoryModal } from '@/components/shared/AddCategoryModal'
 
 
 const Page = () => {
-  const [expenseFilter, setExpenseFilter] = useState('week')
+  const [expenseFilter, setExpenseFilter] = useState<string | undefined >('week')
 
   const expenseFilters = [
     { name: 'This Week', value: 'week' },
