@@ -25,13 +25,13 @@ const page = () => {
 
   return (
     <PageComponent>
-       <div className="grid grid-cols-12 gap-10 h-[calc(100vh-7rem)] mt-10">
+       <div className="grid grid-cols-12 gap-10 h-[calc(100vh-7rem)]">
 
         <CustomCalendar/>
 
         <div className="lg:col-span-4 flex flex-col h-full overflow-hidden">
 
-             <div className="flex justify-between items-center mb-10">
+             <div className="flex justify-between items-center mt-2 mb-2">
                <Label className="text-3xl font-light tracking-tight" >
                   Today's Schedule
                </Label>

@@ -50,7 +50,7 @@ const Page = () => {
   return (
     <PageComponent>
       {/* Header & Filter Row */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
+      <div className="flex flex-col md:flex-row md:items-end justify-between items-center gap-6 mb-12">
         <HeaderTitle
           title="Expense Tracker"
           desc="Manage your categories and spendings."
@@ -67,7 +67,7 @@ const Page = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
         <Card>
           <CardHeader>
             <CardTitle className="text-sm font-semibold">Total Balance</CardTitle>
