@@ -64,13 +64,13 @@ const page = () => {
                       return (
                         <div
                           key={hour}
-                          className="relative mb-12 min-h-[3rem]"
+                          className="relative mb-12 min-h-12"
                         >
                           <span className="absolute -left-14 top-0 text-xs font-semibold tabular-nums text-muted-foreground">
                             {hour}
                           </span>
 
-                          <div className="absolute left-4.5 top-1.5 h-2 w-2 rounded-full bg-primary" />
+                          <div className="absolute left-5 top-1.5 h-2 w-2 rounded-full bg-primary" />
 
                           <div className="pl-8 space-y-3">
                             {tasksInBlock.length === 0 ? (
@@ -88,7 +88,7 @@ const page = () => {
                                       {task.text}
                                     </h4>
 
-                                    <p className="mt-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+                                    <p className=" text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
                                       {task.category}
                                     </p>
 

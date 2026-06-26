@@ -8,7 +8,7 @@ export default function MainLayout({
     children: ReactNode
 }>){
     return (
-        <body className="min-h-full flex flex-col">
+        <body className="min-h-full flex flex-col no-scrollbar">
             <Navbar />
             {children}
         </body>

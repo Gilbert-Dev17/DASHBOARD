@@ -125,17 +125,18 @@ export default function TransactionsPage() {
 
   return (
     <PageComponent >
-      <div className="flex items-center justify-between">
-        <div className="flex items-center">
-          <Link href="/expenses">
-            <Button variant="ghost" size="icon">
-              <ArrowLeft size={16} className="opacity-50" />
-            </Button>
-          </Link>
+      <section className='mt-5'>
+        <div className="flex items-center justify-between">
+          <div className="flex items-center">
+            <Link href="/expenses">
+              <Button variant="ghost" size="icon">
+                <ArrowLeft size={16} className="opacity-50" />
+              </Button>
+            </Link>
 
-          <h1 className="text-3xl font-semibold tracking-tight">
-            All Transactions
-          </h1>
+            <h1 className="text-3xl font-semibold tracking-tight">
+              All Transactions
+            </h1>
         </div>
 
         <Tabs
@@ -144,7 +145,7 @@ export default function TransactionsPage() {
           className="w-fit"
         >
           <TabsList>
-            <Filter size={16} />
+            <Filter size={16} className="ml-2 mr-1 text-muted-foreground"/>
 
             {LOG_FILTERS.map((filter) => (
               <TabsTrigger
@@ -215,6 +216,8 @@ export default function TransactionsPage() {
           ))}
         </Accordion>
       </section>
+      </section>
+
     </PageComponent>
   );
 }

@@ -8,16 +8,12 @@ import {
   ChartTooltipContent,
   type ChartConfig,
 } from "@/components/ui/chart"
-import { type LucideIcon } from "lucide-react"
 
-type CategoryChartItem = {
-  name: string
-  total: string | number
-  icon?: LucideIcon
-}
+import { HelpCircle } from "lucide-react"
+import { ICON_MAP, CategorySummary } from "@/app/(main)/expenses/page"
 
 interface ChartPieDonutTextProps {
-  categories: CategoryChartItem[]
+  categories: CategorySummary[];
 }
 
 const CHART_COLORS = [
@@ -51,16 +47,16 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
 
   const chartConfig = React.useMemo(
     () =>
-      categories.reduce<Record<string, { label: string; color: string; icon?: LucideIcon }>>(
+      categories.reduce<Record<string, { label: string; color: string; iconKey: string }>>(
         (acc, category, index) => {
           acc[category.name] = {
             label: category.name,
             color: CHART_COLORS[index % CHART_COLORS.length],
-            icon: category.icon,
+            iconKey: category.iconKey,
           }
           return acc
         },
-        {} as Record<string, { label: string; color: string; icon?: LucideIcon }>
+        {} as Record<string, { label: string; color: string; iconKey: string }>
       ) satisfies ChartConfig,
     [categories]
   )
@@ -86,11 +82,14 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
                     formatter={(value, name) => {
                         if (typeof name !== "string") return null
 
+
+
                         const config = chartConfig[name]
-                        const Icon = config?.icon
+                        const IconComponent = ICON_MAP[config.iconKey] || HelpCircle;
+                        // const Icon = config.iconKey
                         return (
                         <div className="flex items-center gap-2">
-                            {Icon && <Icon size={14} />} :
+                            <IconComponent size={14} /> :
                             <span className="tabular-nums">${Number(value).toLocaleString()}</span>
                         </div>
                         )
