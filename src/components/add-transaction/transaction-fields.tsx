@@ -12,9 +12,6 @@ import {
 
 import { CURRENCIES, CURRENCY_ICON_MAP } from './constants'
 
-// ── AmountField ────────────────────────────────────────────────────────────────
-// FieldSet + FieldLegend groups the two related controls (currency + amount)
-// under one accessible label — screen readers announce "AMOUNT group".
 interface AmountFieldProps<T extends FieldValues> {
   control      : Control<T>
   nameCurrency : FieldPath<T>
@@ -39,7 +36,7 @@ export function AmountField<T extends FieldValues>({
           render={({ field, fieldState }) => {
             const Icon = CURRENCY_ICON_MAP[field.value as string] ?? CURRENCY_ICON_MAP.dollar
             return (
-              <Field data-invalid={!!fieldState.error} className="w-32 shrink-0">
+              <Field data-invalid={!!fieldState.error} className="w-14 shrink-0 border-none">
                 <Select value={field.value} onValueChange={field.onChange}>
                   <SelectTrigger
                     aria-label="Select currency"
@@ -48,16 +45,16 @@ export function AmountField<T extends FieldValues>({
                     <SelectValue>
                       <span className="flex items-center gap-1.5">
                         <Icon size={14} aria-hidden />
-                        {CURRENCIES.find(c => c.name === field.value)?.label ?? 'Currency'}
+                        {/* {CURRENCIES.find(c => c.name === field.value)?.label ?? 'Currency'} */}
                       </span>
                     </SelectValue>
                   </SelectTrigger>
-                  <SelectContent>
-                    <SelectGroup>
+                  <SelectContent >
+                    <SelectGroup >
                       {CURRENCIES.map((c) => {
                         const CIcon = CURRENCY_ICON_MAP[c.iconKey]
                         return (
-                          <SelectItem key={c.name} value={c.name}>
+                          <SelectItem key={c.name} value={c.name} >
                             <span className="flex items-center gap-2">
                               <CIcon size={14} aria-hidden />
                               {c.label}
@@ -68,14 +65,13 @@ export function AmountField<T extends FieldValues>({
                     </SelectGroup>
                   </SelectContent>
                 </Select>
-                {/* errors prop takes Array<{message?:string}|undefined> — RHF FieldError satisfies this */}
+
                 <FieldError errors={[fieldState.error]} />
               </Field>
             )
           }}
         />
 
-        {/* Amount — number input */}
         <Controller
           control={control}
           name={nameAmount}
@@ -90,6 +86,7 @@ export function AmountField<T extends FieldValues>({
                 aria-invalid={!!fieldState.error}
                 min={0}
                 step="0.01"
+                className='border-none'
               />
               <FieldError errors={[fieldState.error]} />
             </Field>
@@ -101,7 +98,6 @@ export function AmountField<T extends FieldValues>({
   )
 }
 
-// ── NoteField ──────────────────────────────────────────────────────────────────
 interface NoteFieldProps<T extends FieldValues> {
   control : Control<T>
   name    : FieldPath<T>

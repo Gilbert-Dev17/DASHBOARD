@@ -1,9 +1,9 @@
-import type { CurrencyKey } from './schemas'
+import type { CurrencyKey, CategoryKey } from './schemas'
 
 export interface Category {
-  id: string
+  // id: string
   name: string
-  iconKey: string
+  iconKey: CategoryKey
 }
 
 export interface CurrencyOption {

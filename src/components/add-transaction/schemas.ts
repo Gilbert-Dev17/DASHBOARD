@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { CURRENCY_KEYS, CATEGORY_IDS } from './constants'
+import { CURRENCY_KEYS, CATEGORY_KEYS } from './constants'
 
 const amountSchema = z
   .string()
@@ -21,13 +21,13 @@ const baseSchema = z.object({
 
 // ── Expense ────────────────────────────────────────────────────────────────────
 export const expenseSchema = baseSchema.extend({
-  category : z.enum(CATEGORY_IDS, { message: 'Select a category' })
+  category : z.enum(CATEGORY_KEYS, { message: 'Select a category' })
 })
 
 // ── Income ─────────────────────────────────────────────────────────────────────
 export const incomeSchema = baseSchema.extend({})
 
 export type CurrencyKey       = (typeof CURRENCY_KEYS)[number]
-export type CategoryId        = (typeof CATEGORY_IDS)[number]
+export type CategoryId        = (typeof CATEGORY_KEYS)[number]
 export type ExpenseFormValues = z.infer<typeof expenseSchema>
 export type IncomeFormValues  = z.infer<typeof incomeSchema>

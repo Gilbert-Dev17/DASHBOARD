@@ -1,12 +1,8 @@
 'use client'
 
 import { useForm, Controller } from 'react-hook-form'
-// import { zodResolver } from '@hookform/resolvers/zod'
-// expense-form.tsx and income-form.tsx
 import { zodResolver } from '@hookform/resolvers/zod'
 import { HelpCircle } from 'lucide-react'
-
-// ✂ removed: import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage }
 import {
   Field, FieldError, FieldGroup, FieldLabel,
 } from '@/components/ui/field'
@@ -52,7 +48,6 @@ export function ExpenseForm({ onSuccess }: ExpenseFormProps) {
 
         <NoteField control={form.control} name="note" />
 
-        {/* Category — expense-only field */}
         <Controller
           control={form.control}
           name="category"
@@ -72,7 +67,7 @@ export function ExpenseForm({ onSuccess }: ExpenseFormProps) {
                     {CATEGORIES.map((cat) => {
                       const Icon = ICON_MAP[cat.iconKey] ?? HelpCircle
                       return (
-                        <SelectItem key={cat.id} value={cat.id}>
+                        <SelectItem key={cat.iconKey} value={cat.iconKey}>
                           <span className="flex items-center gap-2">
                             <Icon size={14} aria-hidden />
                             {cat.name}
