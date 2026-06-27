@@ -3,8 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { Home, CheckSquare, Wallet, Plus } from 'lucide-react'
-
-// Adjust these import paths based on your shadcn installation
+import { AddIncomeExpenseModal } from './add-transaction'
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -52,13 +51,7 @@ const Navbar = () => {
         <Separator orientation="vertical" className="bg-muted-foreground/30" />
 
         {/* Quick Add Button */}
-        <Button
-          // onClick={onQuickAdd}
-          size="icon"
-          className="w-10 h-10 rounded-full transition-all duration-300 hover:scale-105"
-        >
-          <Plus size={18} strokeWidth={2.5} />
-        </Button>
+        <AddIncomeExpenseModal />
 
         {/* Profile Avatar */}
         <button

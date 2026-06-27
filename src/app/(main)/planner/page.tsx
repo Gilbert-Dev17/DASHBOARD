@@ -37,7 +37,7 @@ const page = () => {
                </Label>
              </div>
 
-             <ScrollArea className="flex-1 min-h-0 no-scrollbar">
+             <ScrollArea className="flex-1 min-h-0">
                 <div className="relative pl-14 pb-8 pt-4">
                   {/* Timeline Axis */}
                   <div className="absolute top-0 bottom-0 left-20 w-px bg-border" />

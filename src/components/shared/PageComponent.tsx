@@ -2,7 +2,7 @@ import React, { PropsWithChildren } from 'react'
 
 const PageComponent = ({children}: PropsWithChildren) => {
   return (
-    <section className="w-full max-w-6xl mx-auto px-6 animation-fade-in pb-10 no-scrollbar">
+    <section className="w-full max-w-6xl mx-auto px-6 animation-fade-in pb-10">
         {children}
     </section>
   )
