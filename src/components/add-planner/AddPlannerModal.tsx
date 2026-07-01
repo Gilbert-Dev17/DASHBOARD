@@ -61,7 +61,7 @@ export function AddPlannerModal({ onSuccess }: AddPlannerModalProps) {
         </Button>
       </DialogTrigger>
 
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="sm:max-w-xl">
         <DialogHeader>
           <DialogTitle>Plan your day</DialogTitle>
           <DialogDescription>

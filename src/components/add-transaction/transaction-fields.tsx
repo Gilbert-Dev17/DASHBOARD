@@ -25,74 +25,77 @@ export function AmountField<T extends FieldValues>({
 }: AmountFieldProps<T>) {
   return (
     <FieldSet>
-      <FieldLegend variant="label">AMOUNT</FieldLegend>
+      <div className="flex flex-col gap-1">
+        <FieldLabel
+            className="text-[0.75em] font-bold tracking-widest text-muted-foreground"
+          >
+            AMOUNT
+          </FieldLabel>
+        <div className="flex items-center border-b-2 " >
+          <Controller
+            control={control}
+            name={nameCurrency}
+            render={({ field, fieldState }) => {
+              const Icon = CURRENCY_ICON_MAP[field.value as string] ?? CURRENCY_ICON_MAP.dollar
+              return (
+                <Field data-invalid={!!fieldState.error} className="w-14 shrink-0 border-none">
+                  <Select value={field.value} onValueChange={field.onChange}>
+                    <SelectTrigger
+                      className="h-14! text-xl! border-none focus-visible:ring-0"
+                      hideChevron
+                      aria-label="Select currency"
+                      aria-invalid={!!fieldState.error}
+                    >
+                      <SelectValue>
+                        <span className="flex items-center gap-1.5">
+                          <Icon size={18} aria-hidden />
+                        </span>
+                      </SelectValue>
+                    </SelectTrigger>
+                    <SelectContent >
+                      <SelectGroup >
+                        {CURRENCIES.map((c) => {
+                          const CIcon = CURRENCY_ICON_MAP[c.iconKey]
+                          return (
+                            <SelectItem key={c.name} value={c.name} >
+                              <span className="flex items-center gap-2">
+                                <CIcon size={18} aria-hidden />
+                                {c.label}
+                              </span>
+                            </SelectItem>
+                          )
+                        })}
+                      </SelectGroup>
+                    </SelectContent>
+                  </Select>
 
-      <div className="flex items-start gap-3">
+                  <FieldError errors={[fieldState.error]} />
+                </Field>
+              )
+            }}
+          />
 
-        {/* Currency — controlled Select */}
-        <Controller
-          control={control}
-          name={nameCurrency}
-          render={({ field, fieldState }) => {
-            const Icon = CURRENCY_ICON_MAP[field.value as string] ?? CURRENCY_ICON_MAP.dollar
-            return (
-              <Field data-invalid={!!fieldState.error} className="w-14 shrink-0 border-none">
-                <Select value={field.value} onValueChange={field.onChange}>
-                  <SelectTrigger
-                    aria-label="Select currency"
-                    aria-invalid={!!fieldState.error}
-                  >
-                    <SelectValue>
-                      <span className="flex items-center gap-1.5">
-                        <Icon size={14} aria-hidden />
-                        {/* {CURRENCIES.find(c => c.name === field.value)?.label ?? 'Currency'} */}
-                      </span>
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent >
-                    <SelectGroup >
-                      {CURRENCIES.map((c) => {
-                        const CIcon = CURRENCY_ICON_MAP[c.iconKey]
-                        return (
-                          <SelectItem key={c.name} value={c.name} >
-                            <span className="flex items-center gap-2">
-                              <CIcon size={14} aria-hidden />
-                              {c.label}
-                            </span>
-                          </SelectItem>
-                        )
-                      })}
-                    </SelectGroup>
-                  </SelectContent>
-                </Select>
-
+          <Controller
+            control={control}
+            name={nameAmount}
+            render={({ field, fieldState }) => (
+              <Field data-invalid={!!fieldState.error} className="flex-1">
+                <Input
+                  {...field}
+                  type="number"
+                  inputMode="decimal"
+                  placeholder="0.00"
+                  aria-label="Amount"
+                  aria-invalid={!!fieldState.error}
+                  min={0}
+                  step="0.01"
+                  className="w-full border-none h-14 text-2xl! md:text-2xl! focus-visible:ring-0"
+                />
                 <FieldError errors={[fieldState.error]} />
               </Field>
-            )
-          }}
-        />
-
-        <Controller
-          control={control}
-          name={nameAmount}
-          render={({ field, fieldState }) => (
-            <Field data-invalid={!!fieldState.error} className="flex-1">
-              <Input
-                {...field}
-                type="number"
-                inputMode="decimal"
-                placeholder="0.00"
-                aria-label="Amount"
-                aria-invalid={!!fieldState.error}
-                min={0}
-                step="0.01"
-                className='border-none'
-              />
-              <FieldError errors={[fieldState.error]} />
-            </Field>
-          )}
-        />
-
+            )}
+          />
+        </div>
       </div>
     </FieldSet>
   )
@@ -110,7 +113,12 @@ export function NoteField<T extends FieldValues>({ control, name }: NoteFieldPro
       name={name}
       render={({ field, fieldState }) => (
         <Field data-invalid={!!fieldState.error}>
-          <FieldLabel htmlFor={`field-${name}`}>NOTE</FieldLabel>
+          <FieldLabel
+            htmlFor={`field-${name}`}
+            className="text-[0.75em] font-bold tracking-widest text-muted-foreground"
+          >
+            NOTE
+          </FieldLabel>
           <Input
             {...field}
             id={`field-${name}`}

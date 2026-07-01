@@ -18,7 +18,7 @@ interface TaskRowProps {
   control   : Control<PlannerValues>
   index     : number
   onRemove  : () => void
-  canRemove : boolean   // disables trash when only one row remains
+  canRemove : boolean
 }
 
 export function TaskRow({ control, index, onRemove, canRemove }: TaskRowProps) {

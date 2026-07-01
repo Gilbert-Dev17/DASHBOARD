@@ -24,21 +24,23 @@ export function AddIncomeExpenseModal() {
         </Button>
       </DialogTrigger>
 
-      <DialogContent aria-describedby={undefined} className="w-xl">
-        <DialogHeader>
-          <DialogTitle>New Transaction</DialogTitle>
+      <DialogContent aria-describedby={undefined} className="sm:max-w-sm p-6 overflow-hidden">
+        <DialogHeader className="space-y-1">
+          <DialogTitle className="text-2xl font-semibold tracking-tight">
+            New Transaction
+          </DialogTitle>
         </DialogHeader>
 
         <Tabs defaultValue="expense">
-          <TabsList className="w-full">
-            <TabsTrigger value="expense">Expense</TabsTrigger>
-            <TabsTrigger value="income">Income</TabsTrigger>
+          <TabsList className="w-full rounded-full h-20 bg-muted py-5 px-1">
+            <TabsTrigger className='rounded-full p-4 h-3 w-5' value="expense">Expense</TabsTrigger>
+            <TabsTrigger className='rounded-full p-4 h-3 w-5' value="income">Income</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="expense" className="mt-4">
+          <TabsContent value="expense" className="mt-2">
             <ExpenseForm />
           </TabsContent>
-          <TabsContent value="income" className="mt-4">
+          <TabsContent value="income" className="mt-2">
             <IncomeForm />
           </TabsContent>
         </Tabs>

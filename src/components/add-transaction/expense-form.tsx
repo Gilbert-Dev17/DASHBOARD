@@ -53,7 +53,11 @@ export function ExpenseForm({ onSuccess }: ExpenseFormProps) {
           name="category"
           render={({ field, fieldState }) => (
             <Field data-invalid={!!fieldState.error}>
-              <FieldLabel>CATEGORY</FieldLabel>
+              <FieldLabel
+                className="text-[0.75em] font-bold tracking-widest text-muted-foreground"
+              >
+                CATEGORY
+              </FieldLabel>
               <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger
                   className="w-full"
@@ -85,7 +89,7 @@ export function ExpenseForm({ onSuccess }: ExpenseFormProps) {
 
       </FieldGroup>
 
-      <Button type="submit" className="w-full">
+      <Button type="submit" className="w-full p-4 rounded-full">
         Add Expense
       </Button>
     </form>

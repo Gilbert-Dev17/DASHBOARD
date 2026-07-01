@@ -34,10 +34,12 @@ function SelectValue({
 function SelectTrigger({
   className,
   size = "default",
+  hideChevron,
   children,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
   size?: "sm" | "default"
+  hideChevron?: boolean
 }) {
   return (
     <SelectPrimitive.Trigger
@@ -51,7 +53,12 @@ function SelectTrigger({
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <ChevronDownIcon className="pointer-events-none size-4 text-muted-foreground" />
+        <ChevronDownIcon
+          className={cn(
+            "pointer-events-none size-4 text-muted-foreground",
+            hideChevron && "hidden"
+          )}
+        />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   )
