@@ -24,7 +24,7 @@ export function AddIncomeExpenseModal() {
         </Button>
       </DialogTrigger>
 
-      <DialogContent aria-describedby={undefined}>
+      <DialogContent aria-describedby={undefined} className="w-xl">
         <DialogHeader>
           <DialogTitle>New Transaction</DialogTitle>
         </DialogHeader>

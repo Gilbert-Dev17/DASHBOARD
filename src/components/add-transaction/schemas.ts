@@ -28,6 +28,6 @@ export const expenseSchema = baseSchema.extend({
 export const incomeSchema = baseSchema.extend({})
 
 export type CurrencyKey       = (typeof CURRENCY_KEYS)[number]
-export type CategoryId        = (typeof CATEGORY_KEYS)[number]
+export type CategoryKey        = (typeof CATEGORY_KEYS)[number]
 export type ExpenseFormValues = z.infer<typeof expenseSchema>
 export type IncomeFormValues  = z.infer<typeof incomeSchema>

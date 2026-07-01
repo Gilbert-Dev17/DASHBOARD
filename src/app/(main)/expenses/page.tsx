@@ -11,14 +11,14 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import PageComponent from '@/components/shared/PageComponent'
 import { ChartPieDonutText } from '@/components/shared/CategoryCharts'
-import { AddCategoryModal } from '@/components/shared/AddCategoryModal'
+import { AddCategoryModal } from '@/components/add-category/AddCategoryModal'
 
 // ============================================================================
 // 1. DATA MODELS (Backend Contracts)
 // ============================================================================
 
 export interface Transaction {
-  id: string | number;
+  // id: string | number;
   date: string; // Backend usually sends ISO 8601 date strings
   note: string;
   amount: number;
@@ -28,7 +28,7 @@ export interface Transaction {
 }
 
 export interface CategorySummary {
-  id: string;
+  // id: string;
   name: string;
   total: number;
   iconKey: string; // Database stores strings (e.g., 'transport'), frontend maps to icons
@@ -88,13 +88,13 @@ export default function ExpenseTrackerPage({
     currency: 'USD'
   },
   categories = [
-    { id: '1', name: 'Foods & Drinks', total: 1000, iconKey: 'foods-drinks' },
-    { id: '2', name: 'Shopping', total: 1000, iconKey: 'shopping' },
-    { id: '3', name: 'Transport', total: 900, iconKey: 'transport' },
+    { name: 'Foods & Drinks', total: 1000, iconKey: 'foods-drinks' },
+    { name: 'Shopping', total: 1000, iconKey: 'shopping' },
+    { name: 'Transport', total: 900, iconKey: 'transport' },
   ],
   transactions = [
-    { id: 1, date: '2026-06-11T14:00:00Z', note: 'Transport #1', amount: 65.00, type: 'expense', category: 'Transport', currency: 'PHP' },
-    { id: 2, date: '2026-06-10T09:30:00Z', note: 'Common Ground ; choco drink + ramen', amount: 250.00, type: 'expense', category: 'Food & Drinks', currency: 'PHP' },
+    { date: '2026-06-11T14:00:00Z', note: 'Transport #1', amount: 65.00, type: 'expense', category: 'Transport', currency: 'PHP' },
+    { date: '2026-06-10T09:30:00Z', note: 'Common Ground ; choco drink + ramen', amount: 250.00, type: 'expense', category: 'Food & Drinks', currency: 'PHP' },
   ]
 }: ExpenseTrackerProps) {
 
@@ -207,7 +207,7 @@ export default function ExpenseTrackerPage({
 
               return (
                 <article
-                  key={category.id}
+                  key={category.name}
                   role="listitem"
                   className="flex flex-row justify-between items-center px-2 py-3 rounded-lg hover:bg-secondary/50 transition-colors"
                 >
@@ -245,8 +245,8 @@ export default function ExpenseTrackerPage({
                 const dateObj = new Date(txn.date);
 
                 return (
-                  <article key={txn.id} role="listitem" className="border-l-2 pl-4 relative border-border">
-                    <div className="absolute w-2 h-2 rounded-full -left-[5px] top-1 transition-colors duration-500 bg-accent" aria-hidden="true"></div>
+                  <article key={txn.date} role="listitem" className="border-l-2 pl-4 relative border-border">
+                    <div className="absolute w-2 h-2 rounded-full -left-1.25 top-1 transition-colors duration-500 bg-accent" aria-hidden="true"></div>
 
                     <time dateTime={txn.date} className="text-xs mb-1 text-muted-foreground block transition-colors duration-500">
                       {dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}

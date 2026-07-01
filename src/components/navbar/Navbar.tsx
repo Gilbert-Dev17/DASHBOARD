@@ -2,14 +2,18 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, CheckSquare, Wallet, Plus } from 'lucide-react'
-import { AddIncomeExpenseModal } from './add-transaction'
+import { Home, CheckSquare, Wallet } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
+
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { getActiveQuickAdds } from './quick-add-registry'
+
+
 
 const Navbar = () => {
   const pathname = usePathname();
+  const activeQuickAdds = getActiveQuickAdds(pathname);
 
   const navItems = [
     { icon: Home, label: 'Home', point: '/home' },
@@ -18,10 +22,8 @@ const Navbar = () => {
   ];
 
   return (
-    // <div className="hidden lg:flex fixed top-6 right-8 z-40 pointer-events-none">
     <header className="hidden lg:flex sticky top-0 z-40 w-full justify-end pt-4 pr-8 ">
       <nav className="flex items-center gap-2 px-3 py-1 rounded-full bg-background/70 backdrop-blur-xl shadow-md border border-border pointer-events-auto transition-all duration-500">
-        {/* Navigation Items */}
         {navItems.map((item) => {
           const active = pathname === item.point;
           const Icon = item.icon;
@@ -47,11 +49,12 @@ const Navbar = () => {
           );
         })}
 
-        {/* Divider */}
         <Separator orientation="vertical" className="bg-muted-foreground/30" />
 
         {/* Quick Add Button */}
-        <AddIncomeExpenseModal />
+        {activeQuickAdds.map(({ id, Component }) => (
+          <Component key={id} />
+        ))}
 
         {/* Profile Avatar */}
         <button
