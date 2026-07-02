@@ -1,7 +1,6 @@
 'use client'
 
 import { useEffect, useMemo, useState } from 'react'
-
 import { Progress } from '@/components/ui/progress'
 
 export const LifeProgress = () => {
@@ -16,6 +15,7 @@ useEffect(() => {
   return () => clearInterval(interval)
 }, [])
 
+// * Year Progress
 const yearProgress = useMemo(() => {
   const start = new Date(now.getFullYear(), 0, 1)
   const end = new Date(now.getFullYear() + 1, 0, 1)
@@ -26,7 +26,7 @@ const yearProgress = useMemo(() => {
     100
   )
 }, [now])
-
+// * Month Progress
 const monthProgress = useMemo(() => {
   const start = new Date(now.getFullYear(), now.getMonth(), 1)
   const end = new Date(now.getFullYear(), now.getMonth() + 1, 1)
@@ -37,7 +37,7 @@ const monthProgress = useMemo(() => {
     100
   )
 }, [now])
-
+// * Day Progress
 const dayProgress = useMemo(() => {
   const start = new Date(
     now.getFullYear(),

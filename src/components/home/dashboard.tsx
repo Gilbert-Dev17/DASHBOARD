@@ -1,17 +1,22 @@
 'use client'
 
-import React, { useState, useMemo } from 'react'
+import dynamic from 'next/dynamic'
+import{ useState, useMemo } from 'react'
 import { format } from 'date-fns'
 import {
-  CloudSun, Calendar, CheckSquare, Activity,
-  Droplets, Wind, Sun
+  Calendar, CheckSquare, Activity,
 } from 'lucide-react'
 
 import PageComponent from '@/components/shared/PageComponent'
 import { Checkbox } from '@/components/ui/checkbox'
-import {LifeProgress} from '@/components/home/LifeProgress'
 import { Task, WeatherData, UserSummary} from '@/types/dashboard'
+import { WeatherCard } from '@/components/home/weatherCard'
 
+const LifeProgress = dynamic(
+  () => import('@/components/home/LifeProgress')
+  .then(mod => mod.LifeProgress),
+  { ssr: false }
+);
 
 interface DashboardPageProps {
   initialTasks?: Task[];
@@ -99,49 +104,8 @@ export default function DashboardPage({
         </p>
 
         {/* WEATHER SECTION */}
-        <section
-          aria-label="Current Weather"
-          className="mt-16 p-6 lg:p-8 rounded-[2rem] border relative overflow-hidden flex flex-col md:flex-row gap-8 justify-between items-start md:items-center shadow-sm"
-        >
-          <div className="flex items-center gap-6 relative z-10">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center shrink-0 transition-colors duration-500">
-              <CloudSun size={32} aria-hidden="true" />
-            </div>
-            <div>
-              {/* Changed from h4 to a span/div as it's data, not a structural heading */}
-              <div className="text-5xl font-light tracking-tighter mb-1">{weather.temperature}&deg;C</div>
-              <p className="text-sm font-medium">
-                {weather.location} <span className="mx-2" aria-hidden="true">•</span> {weather.condition} <span className="mx-2" aria-hidden="true">•</span> Feels Like {weather.feelsLike}&deg;C
-              </p>
-            </div>
-          </div>
+       <WeatherCard />
 
-          <div className="flex flex-wrap gap-6 relative z-10">
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2 mb-1">
-                <Droplets size={14} aria-hidden="true" />
-                <span className="text-[10px] uppercase tracking-wider font-semibold">Humidity</span>
-              </div>
-              <span className="font-medium tabular-nums">{weather.humidity}%</span>
-            </div>
-            <div className="hidden md:block w-px h-10 bg-border" aria-hidden="true" />
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2 mb-1">
-                <Wind size={14} aria-hidden="true" />
-                <span className="text-[10px] uppercase tracking-wider font-semibold">Wind</span>
-              </div>
-              <span className="font-medium tabular-nums">{weather.windSpeed} mph {weather.windDirection}</span>
-            </div>
-            <div className="hidden md:block w-px h-10 bg-border" aria-hidden="true" />
-            <div className="flex flex-col gap-1">
-              <div className="flex items-center gap-2 mb-1">
-                <Sun size={14} aria-hidden="true" />
-                <span className="text-[10px] uppercase tracking-wider font-semibold">UV Index</span>
-              </div>
-              <span className="font-medium tabular-nums">{weather.uvIndex} ({weather.uvRisk})</span>
-            </div>
-          </div>
-        </section>
       </header>
 
       {/* MAIN GRID */}
