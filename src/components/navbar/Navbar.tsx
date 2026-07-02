@@ -1,8 +1,10 @@
 'use client'
 
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, CheckSquare, Wallet } from 'lucide-react'
+import { useTheme } from 'next-themes'
+import { Home, CheckSquare, Wallet, Sun, Moon } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
 
@@ -14,6 +16,10 @@ import { getActiveQuickAdds } from './quick-add-registry'
 const Navbar = () => {
   const pathname = usePathname();
   const activeQuickAdds = getActiveQuickAdds(pathname);
+  const { resolvedTheme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => setMounted(true), []);
 
   const navItems = [
     { icon: Home, label: 'Home', point: '/home' },
@@ -55,6 +61,25 @@ const Navbar = () => {
         {activeQuickAdds.map(({ id, Component }) => (
           <Component key={id} />
         ))}
+
+        {/* Theme Toggle */}
+        <Button
+          variant="ghost"
+          size="icon"
+          className="rounded-full w-9 h-9 transition-all duration-300"
+          onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+          aria-label={mounted ? `Switch to ${resolvedTheme === 'dark' ? 'light' : 'dark'} mode` : 'Toggle theme'}
+        >
+          {mounted ? (
+            resolvedTheme === 'dark' ? (
+              <Sun size={18} className="transition-transform duration-300" />
+            ) : (
+              <Moon size={18} className="transition-transform duration-300" />
+            )
+          ) : (
+            <Sun size={18} className="opacity-0" />
+          )}
+        </Button>
 
         {/* Profile Avatar */}
         <button

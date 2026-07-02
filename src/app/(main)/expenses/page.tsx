@@ -11,7 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import PageComponent from '@/components/shared/PageComponent'
 import { ChartPieDonutText } from '@/components/shared/CategoryCharts'
-import { AddCategoryModal } from '@/components/add-category/AddCategoryModal'
+import { AddCategoryModal } from '@/components/modals/add-category/AddCategoryModal'
 
 // ============================================================================
 // 1. DATA MODELS (Backend Contracts)

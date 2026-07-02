@@ -17,7 +17,7 @@ export function AddIncomeExpenseModal() {
         <Button
           variant="default"
           size="icon"
-          className="h-10 w-10 rounded-full transition-all duration-300 hover:scale-105"
+          className=" rounded-full transition-all duration-300 hover:scale-105"
           aria-label="Add transaction"
         >
           <Plus size={18} strokeWidth={2.5} aria-hidden />

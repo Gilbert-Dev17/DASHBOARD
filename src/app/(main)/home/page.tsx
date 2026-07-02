@@ -1,6 +1,7 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useMemo } from 'react'
+import { format } from 'date-fns'
 import {
   CloudSun, Calendar, CheckSquare, Activity,
   Droplets, Wind, Sun
@@ -57,7 +58,6 @@ interface DashboardPageProps {
   initialTasks?: Task[];
   weather?: WeatherData;
   user?: UserSummary;
-  dayOfWeek?: string;
 }
 
 // ============================================================================
@@ -83,12 +83,27 @@ export default function DashboardPage({
     tasksCount: 6,
     habitsCount: 1,
     balance: 150250.75
-  },
-  dayOfWeek = 'Fri'
+  }
 }: DashboardPageProps) {
+
+  // State for selected date (defaults to today)
+  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
   // Initialize state with backend data
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
+
+  // Calculate the day of week from the selected date
+  const dayOfWeek = useMemo(() => {
+    if (!selectedDate) return 'Today';
+    return format(selectedDate, 'E'); // Returns 'Mon', 'Tue', etc.
+  }, [selectedDate]);
+
+  // Filter tasks for the selected date (you'll need to add a date field to tasks)
+  const tasksForSelectedDate = useMemo(() => {
+    if (!selectedDate) return tasks;
+    // TODO: Filter tasks based on selectedDate once tasks have date properties
+    return tasks;
+  }, [tasks, selectedDate]);
 
   // Backend-ready mutation handler
   const handleToggleTask = async (taskId: number) => {
@@ -124,7 +139,7 @@ export default function DashboardPage({
         <div className="flex justify-between items-start mb-8 lg:mb-12">
           <h1 className="text-6xl md:text-8xl lg:text-[9rem] font-bold tracking-tighter leading-none flex items-end">
             {dayOfWeek}
-            <span className="w-3 h-3 md:w-4 md:h-4 lg:w-6 lg:h-6 rounded-full ml-3 md:ml-5 mb-2 md:mb-4 lg:mb-6 transition-colors duration-500 bg-black" aria-hidden="true" />
+            <span className="w-3 h-3 md:w-4 md:h-4 lg:w-6 lg:h-6 rounded-full ml-3 md:ml-5 mb-2 md:mb-4 lg:mb-6 transition-colors duration-500 bg-accent" aria-hidden="true" />
           </h1>
         </div>
 
@@ -193,10 +208,10 @@ export default function DashboardPage({
           </div>
 
           <div className="flex flex-col" role="list">
-            {tasks.length === 0 ? (
+            {tasksForSelectedDate.length === 0 ? (
               <p className="text-muted-foreground py-4">No tasks for today.</p>
             ) : (
-              tasks.map((task) => (
+              tasksForSelectedDate.map((task) => (
                 <article
                   key={task.id}
                   role="listitem"
