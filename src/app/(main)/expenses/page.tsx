@@ -12,38 +12,7 @@ import { Button } from '@/components/ui/button'
 import PageComponent from '@/components/shared/PageComponent'
 import { ChartPieDonutText } from '@/components/shared/CategoryCharts'
 import { AddCategoryModal } from '@/components/modals/add-category/AddCategoryModal'
-
-// ============================================================================
-// 1. DATA MODELS (Backend Contracts)
-// ============================================================================
-
-export interface Transaction {
-  // id: string | number;
-  date: string; // Backend usually sends ISO 8601 date strings
-  note: string;
-  amount: number;
-  type: 'income' | 'expense';
-  category: string;
-  currency: string;
-}
-
-export interface CategorySummary {
-  // id: string;
-  name: string;
-  total: number;
-  iconKey: string; // Database stores strings (e.g., 'transport'), frontend maps to icons
-}
-
-export interface FinancialSummary {
-  balance: number;
-  income: number;
-  expense: number;
-  currency: string;
-}
-
-// ============================================================================
-// 2. FRONTEND UTILITIES & MAPPINGS
-// ============================================================================
+import { FinancialSummary, CategorySummary, Transaction } from '@/types/expenses'
 
 // Map string keys from the database to Lucide React components
 export const ICON_MAP: Record<string, React.ElementType> = {

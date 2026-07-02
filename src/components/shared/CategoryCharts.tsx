@@ -10,7 +10,8 @@ import {
 } from "@/components/ui/chart"
 
 import { HelpCircle } from "lucide-react"
-import { ICON_MAP, CategorySummary } from "@/app/(main)/expenses/page"
+import { ICON_MAP} from "@/app/(main)/expenses/page"
+import type { CategorySummary } from "@/types/expenses"
 
 interface ChartPieDonutTextProps {
   categories: CategorySummary[];
@@ -82,8 +83,6 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
                     formatter={(value, name) => {
                         if (typeof name !== "string") return null
 
-
-
                         const config = chartConfig[name]
                         const IconComponent = ICON_MAP[config.iconKey] || HelpCircle;
                         // const Icon = config.iconKey
@@ -126,7 +125,7 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
                             <tspan
                             x={viewBox.cx}
                             y={(viewBox.cy || 0) + 16}
-                            className="fill-foreground text-3xl font-bold"
+                            className="fill-foreground text-2xl font-bold"
                             >
                             ${totalAmount.toLocaleString()}
                             </tspan>
