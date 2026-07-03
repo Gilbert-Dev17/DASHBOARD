@@ -10,8 +10,10 @@ import {
 import PageComponent from '@/components/shared/PageComponent'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Task, WeatherData, UserSummary} from '@/types/dashboard'
+import { GreetingHeader } from './greetingHeader'
 import { WeatherCard } from '@/components/home/weatherCard'
 
+// Life Progress bar
 const LifeProgress = dynamic(
   () => import('@/components/home/LifeProgress')
   .then(mod => mod.LifeProgress),
@@ -78,22 +80,10 @@ export default function DashboardPage({
     <PageComponent>
       {/* HEADER SECTION */}
       <header className="mb-16 lg:mb-20">
-        <div className="flex justify-between items-start mb-8 lg:mb-12">
-          <h1 className="text-6xl md:text-8xl lg:text-[9rem] font-bold tracking-tighter leading-none flex items-end">
-            {dayOfWeek}
-            <span className="w-3 h-3 md:w-4 md:h-4 lg:w-6 lg:h-6 rounded-full ml-3 md:ml-5 mb-2 md:mb-4 lg:mb-6 transition-colors duration-500 bg-accent" aria-hidden="true" />
-          </h1>
-        </div>
 
-        <p className="text-2xl md:text-3xl lg:text-4xl leading-snug font-light max-w-4xl tracking-tight">
-          Good Morning, <span className="font-bold">{user.firstName}</span>.
-          You have <span className="inline-flex items-center gap-1 mx-1"><Calendar size={24} aria-hidden="true" /> {user.meetingsCount} meetings</span>,
-          <span className="inline-flex items-center gap-1 mx-1"><CheckSquare size={24} aria-hidden="true" /> {user.tasksCount} tasks</span> and
-          <span className="inline-flex items-center gap-1 mx-1"><Activity size={24} aria-hidden="true" /> {user.habitsCount} habit</span> today.
-        </p>
+        <GreetingHeader firstName='Gilbert'/>
 
-        {/* WEATHER SECTION */}
-       <WeatherCard />
+        <WeatherCard />
 
       </header>
 
