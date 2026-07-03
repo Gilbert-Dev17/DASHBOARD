@@ -3,8 +3,9 @@
 import { CloudSun, Droplets, Wind, Sun, Moon, MapPin, RefreshCw } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { useGeolocation } from '@/hooks/geoLocation'
-import type { WeatherData } from '@/types/weather'
+import type { WeatherData, Coordinates } from '@/types/weather'
 import { Separator } from '../ui/separator'
+import { Stat, WeatherCardSkeleton } from './weatherCardSkeleton'
 
 async function fetchWeather(lat: number, lon: number, signal: AbortSignal): Promise<WeatherData> {
   const res = await fetch(`/api/weather?lat=${lat}&lon=${lon}`, { signal })
@@ -12,21 +13,16 @@ async function fetchWeather(lat: number, lon: number, signal: AbortSignal): Prom
   return res.json() as Promise<WeatherData>
 }
 
-export function WeatherCard() {
-  const { coords, status: permissionStatus, errorMessage, requestLocation } = useGeolocation()
-  if (!coords) return
+function hasCoords(c: Coordinates | 0): c is Coordinates {
+  return c !== 0
+}
 
-  // Called unconditionally every render — `enabled` gates the network call,
-  // not the hook itself. Never put a hook after an early `return`.
-  const {
-    data: weather,
-    isPending,
-    isFetching,
-    error,
-    refetch,
-  } = useQuery<WeatherData, Error>({
-    // lat/lon in the key: different coordinates get their own cache entry
-    // instead of silently reusing weather from a previous location.
+export function WeatherCard() {
+  const { coords: rawCoords, status: permissionStatus, errorMessage, requestLocation } = useGeolocation()
+
+  const coords = hasCoords( rawCoords )? rawCoords : null;
+
+  const { data: weather, isPending, isFetching, error, refetch, } = useQuery<WeatherData, Error>({
     queryKey: ['weather', coords?.lat, coords?.lon],
     queryFn: ({ signal }) => fetchWeather(coords!.lat, coords!.lon, signal),
     enabled: !!coords,
@@ -39,8 +35,9 @@ export function WeatherCard() {
     <section
       aria-label="Current weather at your location"
       aria-live="polite"
-      className="mt-16 p-6 lg:p-8 rounded-[2rem] border relative overflow-hidden flex flex-col md:flex-row gap-8 justify-between items-start md:items-center shadow-sm bg-secondary/50 transition-colors duration-500"
+      className="mt-16 p-6 lg:p-8 rounded-[2rem] border relative overflow-hidden flex flex-col md:flex-row gap-8 justify-between md:items-center shadow-sm bg-secondary/50 transition-colors duration-500"
     >
+
       {permissionStatus === 'denied' && (
         <div className="flex items-center gap-3 text-sm">
           <MapPin size={16} aria-hidden="true" className="text-accent" />
@@ -70,10 +67,10 @@ export function WeatherCard() {
       )}
 
       {!coords && permissionStatus !== 'denied' && permissionStatus !== 'unsupported' && permissionStatus !== 'error' && (
-        <p className="text-sm" role="status">Detecting your location…</p>
+        <WeatherCardSkeleton/>
       )}
 
-      {isLoadingWeather && <p className="text-sm" role="status">Loading weather…</p>}
+      {isLoadingWeather && <WeatherCardSkeleton/>}
 
       {error && (
         <div className="flex items-center gap-3 text-sm">
@@ -83,6 +80,8 @@ export function WeatherCard() {
           </button>
         </div>
       )}
+
+      {/* {weather && <WeatherCardSkeleton/>} */}
 
       {weather && (
         <>
@@ -120,17 +119,5 @@ export function WeatherCard() {
         </>
       )}
     </section>
-  )
-}
-
-function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  return (
-    <div className="flex flex-col gap-1">
-      <div className="flex items-center gap-2 mb-1">
-        {icon}
-        <span className="text-[10px] uppercase tracking-wider font-semibold">{label}</span>
-      </div>
-      <span className="font-medium tabular-nums">{value}</span>
-    </div>
   )
 }
