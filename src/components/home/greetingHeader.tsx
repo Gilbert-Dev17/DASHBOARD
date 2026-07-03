@@ -2,18 +2,28 @@
 
 import React, {useMemo} from 'react'
 import {format} from 'date-fns'
-import {
-  Calendar, CheckSquare, Activity,
-} from 'lucide-react'
-
 import { Task } from './schemas'
+import { generateDailyBrief } from '@/utils/daily-brief'
 
 interface userGreeting {
     firstName: string;
-
+    tasks?: Task[];
 }
 
-export const GreetingHeader = ({firstName}: userGreeting) => {
+// TODO: connect everything in the dashboard page, the schemas should only have one source of truth at all time so then we call only creates copies if needed
+// * and have the proper setup for the dashboard page where we prop drill. goodluckk we can do this and get a freaking job rorrrrrrr
+
+const parseBoldText = (text: string) => {
+  const parts = text.split(/(\*\*.*?\*\*)/g);
+  return parts.map((part, i) => {
+    if (part.startsWith('**') && part.endsWith('**')) {
+      return <span key={i} className="font-bold">{part.slice(2, -2)}</span>;
+    }
+    return <React.Fragment key={i}>{part}</React.Fragment>;
+  });
+};
+
+export const GreetingHeader = ({firstName, tasks = []}: userGreeting) => {
     const today = new Date();
 
     const dayOfWeek = useMemo(() => {
@@ -22,13 +32,9 @@ export const GreetingHeader = ({firstName}: userGreeting) => {
 
     const greeting = useMemo(() => {
         const hour = new Date().getHours()
-
         const morning = [ 'Good Morning', 'Morning', 'Rise and Shine', 'Top of the Morning', 'Ready for today?', ]
-
         const afternoon = [ 'Good Afternoon', 'Afternoon', 'Hope your day is going well', 'Hello there',]
-
         const evening = [ 'Good Evening', 'Evening', 'Welcome Back', 'Hope you had a productive day',]
-
         const night = [ 'Good Night', 'Burning the midnight oil?', 'Working late?', 'Night Owl',]
 
         const pick = (messages: string[]) =>
@@ -40,6 +46,8 @@ export const GreetingHeader = ({firstName}: userGreeting) => {
         return pick(night)
         }, [])
 
+    const brief = useMemo(() => generateDailyBrief(tasks), [tasks]);
+
   return (
     <>
         <div className="flex justify-between items-start mb-8 lg:mb-12">
@@ -50,10 +58,7 @@ export const GreetingHeader = ({firstName}: userGreeting) => {
         </div>
 
         <p className="text-2xl md:text-3xl lg:text-4xl leading-snug font-light max-w-4xl tracking-tight">
-          {greeting}, <span className="font-bold">{firstName}</span>.
-          {/* You have <span className="inline-flex items-center gap-1 mx-1"><Calendar size={24} aria-hidden="true" /> {user.meetingsCount} meetings</span>,
-          <span className="inline-flex items-center gap-1 mx-1"><CheckSquare size={24} aria-hidden="true" /> {user.tasksCount} tasks</span> and
-          <span className="inline-flex items-center gap-1 mx-1"><Activity size={24} aria-hidden="true" /> {user.habitsCount} habit</span> today. */}
+          {greeting}, <span className="font-bold">{firstName}</span>. {parseBoldText(brief.message)}
         </p>
     </>
   )

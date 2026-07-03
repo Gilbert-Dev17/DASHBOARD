@@ -9,7 +9,7 @@ import {
 
 import PageComponent from '@/components/shared/PageComponent'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Task, WeatherData, UserSummary} from '@/types/dashboard'
+import { Task, UserSummary} from '@/types/dashboard'
 import { GreetingHeader } from './greetingHeader'
 import { WeatherCard } from '@/components/home/weatherCard'
 
@@ -22,12 +22,42 @@ const LifeProgress = dynamic(
 
 interface DashboardPageProps {
   initialTasks?: Task[];
-  weather?: WeatherData;
   user?: UserSummary;
 }
 
 export default function DashboardPage({
-  initialTasks = [],
+  initialTasks = [
+    {
+      id: "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      user_id: "user-123",
+      task_name: "Buy groceries",
+      task_category_id: "groceries",
+      time: "10:00",
+      is_done: false,
+      created_for_date: "2026-07-04",
+      created_at: "2026-07-04T08:00:00Z"
+    },
+    {
+      id: "a92bd12c-49aa-4183-b921-1f93c3d4e580",
+      user_id: "user-123",
+      task_name: "Meeting with John",
+      task_category_id: "meeting",
+      time: "14:30",
+      is_done: true,
+      created_for_date: "2026-07-04",
+      created_at: "2026-07-04T09:00:00Z"
+    },
+    {
+      id: "c83ef23d-12bb-5294-c832-2a84d4e5f691",
+      user_id: "user-123",
+      task_name: "Finish design mockups",
+      task_category_id: "work",
+      time: "16:00",
+      is_done: false,
+      created_for_date: "2026-07-04",
+      created_at: "2026-07-04T10:00:00Z"
+    }
+  ],
   user = {
     firstName: 'Gilbert',
     meetingsCount: 3,
@@ -37,26 +67,21 @@ export default function DashboardPage({
   }
 }: DashboardPageProps) {
 
-  const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
+  const today = new Date ();
+  // const [selectedDate, setSelectedDate] = useState<Date | undefined>(new Date());
 
-  // Initialize state with backend data
   const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
-  const dayOfWeek = useMemo(() => {
-    if (!selectedDate) return 'Today';
-    return format(selectedDate, 'E');
-  }, [selectedDate]);
-
   const tasksForSelectedDate = useMemo(() => {
-    if (!selectedDate) return tasks;
+
     // TODO: Filter tasks based on selectedDate once tasks have date properties
     return tasks;
-  }, [tasks, selectedDate]);
+  }, [tasks, today]);
 
-  const handleToggleTask = async (taskId: number) => {
+  const handleToggleTask = async (taskId: string) => {
     setTasks(currentTasks =>
       currentTasks.map(task =>
-        task.id === taskId ? { ...task, done: !task.done } : task
+        task.id === taskId ? { ...task, is_done: !task.is_done } : task
       )
     );
 
@@ -81,7 +106,7 @@ export default function DashboardPage({
       {/* HEADER SECTION */}
       <header className="mb-16 lg:mb-20">
 
-        <GreetingHeader firstName='Gilbert'/>
+        <GreetingHeader firstName='Gilbert' tasks={tasksForSelectedDate}/>
 
         <WeatherCard />
 
@@ -106,21 +131,21 @@ export default function DashboardPage({
                 <article
                   key={task.id}
                   role="listitem"
-                  className={`flex items-center justify-between py-5 lg:py-6 border-b border-dashed cursor-pointer group transition-all duration-300 ${task.done ? 'opacity-40' : 'hover:opacity-80'}`}
+                  className={`flex items-center justify-between py-5 lg:py-6 border-b border-dashed cursor-pointer group transition-all duration-300 ${task.is_done ? 'opacity-40' : 'hover:opacity-80'}`}
                 >
                   <div className="flex items-center gap-4 lg:gap-6">
                     <Checkbox
                       className="rounded-full border-2"
-                      checked={task.done}
+                      checked={task.is_done}
                       onCheckedChange={() => handleToggleTask(task.id)}
-                      aria-label={`Mark "${task.text}" as ${task.done ? 'incomplete' : 'complete'}`}
+                      aria-label={`Mark "${task.task_name}" as ${task.is_done ? 'incomplete' : 'complete'}`}
                     />
                     <div className="flex flex-col gap-1">
-                      <span className={`text-base lg:text-lg tracking-wide ${task.done ? 'line-through' : ''}`}>
-                        {task.text}
+                      <span className={`text-base lg:text-lg tracking-wide ${task.is_done ? 'line-through' : ''}`}>
+                        {task.task_name}
                       </span>
                       <span className="text-[10px] lg:text-xs font-medium tracking-wider uppercase transition-colors duration-500">
-                        {task.category}
+                        {task.task_category_id}
                       </span>
                     </div>
                   </div>
@@ -139,7 +164,7 @@ export default function DashboardPage({
         <aside className="lg:col-span-5 space-y-16 mt-8 lg:mt-0">
 
           {/* FINANCES SECTION */}
-          {/* // TODO: */}
+          {/* // TODO: make it functional */}
           <section aria-labelledby="finances-heading">
             <h2 id="finances-heading" className="text-xs font-semibold uppercase tracking-[0.2em] mb-6 lg:mb-8 transition-colors duration-500">
               Finances

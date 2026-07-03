@@ -5,24 +5,14 @@ export interface Subtask {
 }
 
 export interface Task {
-  id: number;
-  text: string;
-  done: boolean;
-  category: string;
+  id: string;
+  user_id: string;
+  task_category_id: string | null;
+  task_name: string;
   time?: string;
-  subtasks?: Subtask[];
-}
-
-export interface WeatherData {
-  temperature: number;
-  feelsLike: number;
-  condition: string;
-  location: string;
-  humidity: number;
-  windSpeed: number;
-  windDirection: string;
-  uvIndex: number;
-  uvRisk: string;
+  is_done: boolean;
+  created_for_date: string;
+  created_at: string;
 }
 
 export interface UserSummary {
@@ -35,6 +25,5 @@ export interface UserSummary {
 
 export interface DashboardPageProps {
   initialTasks?: Task[];
-  weather?: WeatherData;
   user?: UserSummary;
 }
