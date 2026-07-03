@@ -16,7 +16,7 @@ export const CustomCalendar = () => {
         selected={date}
         onSelect={setDate}
         captionLayout='dropdown'
-        className="w-full bg-secondary font-semibold uppercase tracking-wider"
+        className="w-full bg-transparent font-semibold uppercase tracking-wider"
         // 1. Format the weekdays to 3 letters (Sun, Mon, Tue)
         formatters={{
           formatWeekdayName: (date) => format(date, "E"),
@@ -25,9 +25,8 @@ export const CustomCalendar = () => {
         classNames={{
           // Left-align the caption container
           month_caption: "flex h-8 w-full items-center justify-start",
-          // Put the navigation arrows grouped on the right
           nav: "absolute right-0 top-0 flex items-center gap-1",
-          // Target the v10 button class names directly
+
           button_previous: "static h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
           button_next: "static h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
           // Style the weekdays (v10 uses 'weekday' instead of 'head_cell')

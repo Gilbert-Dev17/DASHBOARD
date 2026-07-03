@@ -3,8 +3,6 @@ export interface Coordinates {
     lon: number;
 }
 
-export const UvRisk = [ 'Low', 'Moderate',  'High', 'Very High', 'Extreme' ] as const;
-
 export interface WeatherData {
   temperature: number;
   feelsLike: number;
@@ -13,6 +11,6 @@ export interface WeatherData {
   humidity: number;
   windSpeed: number;
   windDirection: string;
-  uvIndex: number;
-  uvRisk: typeof UvRisk[number];
+  sunRise:string;
+  sunSet:string;
 }

@@ -1,9 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { degreesToCompass, uvIndexToRisk } from '@/utils/weather-utils'
+import { degreesToCompass} from '@/utils/weather-utils'
 import type { WeatherData } from '@/types/weather'
+import {format} from 'date-fns'
 
-// TODO: Consider updating to Google's new One Call API 3.0, which is more accurate and includes UV index data, but requires a paid plan. For now, we use the free 2.5 API and supplement with Open-Meteo for UV index.
-// export const runtime = 'edge' // optional; drop if you need Node APIs
+// TODO: Consider updating to Google's Weather api call, which is more accurate and has better coverage than OpenWeatherMap. For now, we use OpenWeatherMap because it's free and easy to use. (Google's API requires billing and is more complex to set up.)
+
+// TODO: TOMORROW - use tanstack query for caching and revalidation, and add a cache layer to avoid hitting the API too often. For now, we use Next.js's built-in caching with revalidate: 600 (10 min) for weather and 3600 (1 hr) for geocoding.
+// * also add a skeleton for weather card while loading, and a fallback for when geolocation is denied or fails. For now, we just return a 400 error if lat/lon are missing or invalid, and a 502 error if the fetch fails.
+// * make the dashboard backend ready, connect all of the components to the same interface, and add a supabase backend for user data and tasks. For now, we just return a static user summary. (must be all the same interface.)
+// !! Keep DRY (Don't Repeat Yourself) in mind.
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
@@ -26,7 +31,7 @@ export async function GET(req: NextRequest) {
   }
 
   try {
-    const [weatherRes, geoRes, meteoRes] = await Promise.all([
+    const [weatherRes, geoRes] = await Promise.all([
       fetch(
         `https://api.openweathermap.org/data/2.5/weather?lat=${latNum}&lon=${lonNum}&units=metric&lang=en&appid=${apiKey}`,
         { next: { revalidate: 600 } } // cache 10 min server-side
@@ -34,13 +39,8 @@ export async function GET(req: NextRequest) {
       fetch(
         `https://api.openweathermap.org/geo/1.0/reverse?lat=${latNum}&lon=${lonNum}&limit=1&appid=${apiKey}`,
         { next: { revalidate: 3600 } }
-      ),
-       fetch(
-        `https://api.open-meteo.com/v1/forecast?latitude=${latNum}&longitude=${lonNum}&current=uv_index&timezone=auto`,
-        { next: { revalidate: 600 } }
-      ),
+      )
     ])
-
 
     if (!weatherRes.ok) {
       const body = await weatherRes.text()
@@ -49,9 +49,6 @@ export async function GET(req: NextRequest) {
 
     const raw = await weatherRes.json()
     const geo = geoRes.ok ? await geoRes.json() : []
-    const meteo = meteoRes.ok ? await meteoRes.json() : null
-
-    const uvIndex = Math.round(meteo?.current?.uv_index ?? 0)
 
     const data: WeatherData = {
       temperature: Math.round(raw.main.temp),
@@ -61,16 +58,21 @@ export async function GET(req: NextRequest) {
       humidity: raw.main.humidity,
       windSpeed: Math.round(raw.wind.speed * 3.6), // m/s -> km/h
       windDirection: degreesToCompass(raw.wind?.deg ?? 0),
-      uvIndex,       // Not available in 2.5 free tier
-      uvRisk: uvIndexToRisk(uvIndex), // Not available in 2.5 free tier
+      sunRise: format(new Date(raw.sys.sunrise * 1000), 'p'),
+      sunSet: format(new Date(raw.sys.sunset * 1000), 'p'),
     }
 
     console.log('[weather-route] data', data)
-
+    try{
     return NextResponse.json(data, {
       headers: { 'Cache-Control': 'private, max-age=600' },
     })
   } catch (err) {
+    console.error('[weather-route]', err)
+    return NextResponse.json({ error: 'Failed to fetch weather' }, { status: 502 })
+  }
+
+} catch (err) {
     console.error('[weather-route]', err)
     return NextResponse.json({ error: 'Failed to fetch weather' }, { status: 502 })
   }

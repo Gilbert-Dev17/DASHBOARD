@@ -1,7 +1,8 @@
 'use client'
 
-import { CloudSun, Droplets, Wind, Sun, MapPin, RefreshCw } from 'lucide-react'
+import { CloudSun, Droplets, Wind, Sun, MapPin, RefreshCw, Moon } from 'lucide-react'
 import { useCurrentWeather } from '@/hooks/useCurrentWeather'
+import { Separator } from '../ui/separator'
 
 export function WeatherCard() {
   const { weather, isLoading, error, permissionStatus, retry } = useCurrentWeather()
@@ -10,11 +11,11 @@ export function WeatherCard() {
     <section
       aria-label="Current weather at your location"
       aria-live="polite"
-      className="mt-16 p-6 lg:p-8 rounded-[2rem] border relative overflow-hidden flex flex-col md:flex-row gap-8 justify-between items-start md:items-center shadow-sm"
+      className="mt-16 p-6 lg:p-8 rounded-[2rem] border relative overflow-hidden flex flex-col md:flex-row gap-8 justify-between items-start md:items-center shadow-sm bg-secondary/50 transition-colors duration-500"
     >
       {permissionStatus === 'denied' && (
         <div className="flex items-center gap-3 text-sm">
-          <MapPin size={16} aria-hidden="true" />
+          <MapPin size={16} aria-hidden="true" className="text-accent" />
           <span>Location access was denied, so we can't show local weather.</span>
           <button
             type="button"
@@ -47,8 +48,9 @@ export function WeatherCard() {
       {weather && (
         <>
           <div className="flex items-center gap-6 relative z-10">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center shrink-0 transition-colors duration-500">
-              <CloudSun size={32} aria-hidden="true" />
+            <div className="absolute -right-195 -top-10 w-40 h-40 rounded-full mix-blend-overlay opacity-15 blur-3xl transition-colors duration-500 bg-accent" />
+            <div className="w-16 h-16 rounded-full flex items-center justify-center shrink-0 transition-colors duration-500 bg-secondary">
+              <CloudSun size={32} aria-hidden="true" className="text-accent"  />
             </div>
             <div>
               <div className="text-5xl font-light tracking-tighter mb-1">
@@ -66,17 +68,22 @@ export function WeatherCard() {
 
           <div className="flex flex-wrap gap-6 relative z-10">
             <Stat icon={<Droplets size={14} aria-hidden="true" />} label="Humidity" value={`${weather.humidity}%`} />
-            <div className="hidden md:block w-px h-10 bg-border" aria-hidden="true" />
+            <Separator orientation="vertical" />
             <Stat
               icon={<Wind size={14} aria-hidden="true" />}
               label="Wind"
               value={`${weather.windSpeed} km/h ${weather.windDirection}`}
             />
-            <div className="hidden md:block w-px h-10 bg-border" aria-hidden="true" />
+            <Separator orientation="vertical" />
             <Stat
               icon={<Sun size={14} aria-hidden="true" />}
-              label="UV Index"
-              value={`${weather.uvIndex} (${weather.uvRisk})`}
+              label="Sunrise"
+              value={weather.sunRise}
+            />
+            <Stat
+              icon={<Moon size={14} aria-hidden="true" />}
+              label="Sunset"
+              value={weather.sunSet}
             />
           </div>
         </>

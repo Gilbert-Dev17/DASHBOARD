@@ -26,17 +26,6 @@ interface DashboardPageProps {
 
 export default function DashboardPage({
   initialTasks = [],
-  weather = {
-    temperature: 33,
-    feelsLike: 41,
-    condition: 'Partly sunny',
-    location: 'Capas, Central Luzon',
-    humidity: 64,
-    windSpeed: 5,
-    windDirection: 'SE',
-    uvIndex: 9,
-    uvRisk: 'High'
-  },
   user = {
     firstName: 'Gilbert',
     meetingsCount: 3,

@@ -32,9 +32,9 @@ export function AddIncomeExpenseModal() {
         </DialogHeader>
 
         <Tabs defaultValue="expense">
-          <TabsList className="w-full rounded-full h-20 bg-muted py-5 px-1">
-            <TabsTrigger className='rounded-full p-4 h-3 w-5' value="expense">Expense</TabsTrigger>
-            <TabsTrigger className='rounded-full p-4 h-3 w-5' value="income">Income</TabsTrigger>
+          <TabsList className="w-full rounded-full h-20 py-5 px-1">
+            <TabsTrigger className='rounded-full p-4 h-3 w-5 border-none' value="expense">Expense</TabsTrigger>
+            <TabsTrigger className='rounded-full p-4 h-3 w-5 border-none' value="income">Income</TabsTrigger>
           </TabsList>
 
           <TabsContent value="expense" className="mt-2">

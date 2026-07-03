@@ -31,7 +31,7 @@ export function AmountField<T extends FieldValues>({
           >
             AMOUNT
           </FieldLabel>
-        <div className="flex items-center border-b-2 " >
+        <div className="flex items-center border-b-2" >
           <Controller
             control={control}
             name={nameCurrency}
@@ -41,7 +41,7 @@ export function AmountField<T extends FieldValues>({
                 <Field data-invalid={!!fieldState.error} className="w-14 shrink-0 border-none">
                   <Select value={field.value} onValueChange={field.onChange}>
                     <SelectTrigger
-                      className="h-14! text-xl! border-none focus-visible:ring-0"
+                      className="h-14! text-xl! border-none focus-visible:ring-0 rounded-none bg-transparent"
                       hideChevron
                       aria-label="Select currency"
                       aria-invalid={!!fieldState.error}
@@ -89,7 +89,7 @@ export function AmountField<T extends FieldValues>({
                   aria-invalid={!!fieldState.error}
                   min={0}
                   step="0.01"
-                  className="w-full border-none h-14 text-2xl! md:text-2xl! focus-visible:ring-0"
+                  className="w-full border-none h-14 text-2xl! md:text-2xl! focus-visible:ring-0 rounded-none bg-transparent "
                 />
                 <FieldError errors={[fieldState.error]} />
               </Field>
