@@ -18,6 +18,7 @@ export function useCurrentWeather(): UseCurrentWeatherResult {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+
   useEffect(() => {
     if (!coords) return
     const controller = new AbortController()

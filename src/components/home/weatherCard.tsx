@@ -1,11 +1,39 @@
 'use client'
 
-import { CloudSun, Droplets, Wind, Sun, MapPin, RefreshCw, Moon } from 'lucide-react'
-import { useCurrentWeather } from '@/hooks/useCurrentWeather'
+import { CloudSun, Droplets, Wind, Sun, Moon, MapPin, RefreshCw } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import { useGeolocation } from '@/hooks/geoLocation'
+import type { WeatherData } from '@/types/weather'
 import { Separator } from '../ui/separator'
 
+async function fetchWeather(lat: number, lon: number, signal: AbortSignal): Promise<WeatherData> {
+  const res = await fetch(`/api/weather?lat=${lat}&lon=${lon}`, { signal })
+  if (!res.ok) throw new Error('Could not load weather')
+  return res.json() as Promise<WeatherData>
+}
+
 export function WeatherCard() {
-  const { weather, isLoading, error, permissionStatus, retry } = useCurrentWeather()
+  const { coords, status: permissionStatus, errorMessage, requestLocation } = useGeolocation()
+  if (!coords) return
+
+  // Called unconditionally every render — `enabled` gates the network call,
+  // not the hook itself. Never put a hook after an early `return`.
+  const {
+    data: weather,
+    isPending,
+    isFetching,
+    error,
+    refetch,
+  } = useQuery<WeatherData, Error>({
+    // lat/lon in the key: different coordinates get their own cache entry
+    // instead of silently reusing weather from a previous location.
+    queryKey: ['weather', coords?.lat, coords?.lon],
+    queryFn: ({ signal }) => fetchWeather(coords!.lat, coords!.lon, signal),
+    enabled: !!coords,
+    staleTime: 5 * 60_000,
+  })
+
+  const isLoadingWeather = !!coords && isPending && isFetching
 
   return (
     <section
@@ -16,10 +44,10 @@ export function WeatherCard() {
       {permissionStatus === 'denied' && (
         <div className="flex items-center gap-3 text-sm">
           <MapPin size={16} aria-hidden="true" className="text-accent" />
-          <span>Location access was denied, so we can't show local weather.</span>
+          <span>Location access was denied, so we can&apos;t show local weather.</span>
           <button
             type="button"
-            onClick={retry}
+            onClick={requestLocation}
             className="inline-flex items-center gap-1 underline underline-offset-2 font-medium"
           >
             <RefreshCw size={14} aria-hidden="true" />
@@ -29,17 +57,28 @@ export function WeatherCard() {
       )}
 
       {permissionStatus === 'unsupported' && (
-        <p className="text-sm">Your browser doesn't support location detection.</p>
+        <p className="text-sm">Your browser doesn&apos;t support location detection.</p>
       )}
 
-      {(isLoading || permissionStatus === 'loading') && !weather && (
+      {permissionStatus === 'error' && (
+        <div className="flex items-center gap-3 text-sm">
+          <span role="alert">{errorMessage ?? 'Could not detect your location.'}</span>
+          <button type="button" onClick={requestLocation} className="underline underline-offset-2 font-medium">
+            Retry
+          </button>
+        </div>
+      )}
+
+      {!coords && permissionStatus !== 'denied' && permissionStatus !== 'unsupported' && permissionStatus !== 'error' && (
         <p className="text-sm" role="status">Detecting your location…</p>
       )}
 
-      {error && permissionStatus !== 'denied' && (
+      {isLoadingWeather && <p className="text-sm" role="status">Loading weather…</p>}
+
+      {error && (
         <div className="flex items-center gap-3 text-sm">
-          <span role="alert">{error}</span>
-          <button type="button" onClick={retry} className="underline underline-offset-2 font-medium">
+          <span role="alert">{error.message}</span>
+          <button type="button" onClick={() => refetch()} className="underline underline-offset-2 font-medium">
             Retry
           </button>
         </div>
@@ -50,7 +89,7 @@ export function WeatherCard() {
           <div className="flex items-center gap-6 relative z-10">
             <div className="absolute -right-195 -top-10 w-40 h-40 rounded-full mix-blend-overlay opacity-15 blur-3xl transition-colors duration-500 bg-accent" />
             <div className="w-16 h-16 rounded-full flex items-center justify-center shrink-0 transition-colors duration-500 bg-secondary">
-              <CloudSun size={32} aria-hidden="true" className="text-accent"  />
+              <CloudSun size={32} aria-hidden="true" className="text-accent" />
             </div>
             <div>
               <div className="text-5xl font-light tracking-tighter mb-1">
@@ -75,16 +114,8 @@ export function WeatherCard() {
               value={`${weather.windSpeed} km/h ${weather.windDirection}`}
             />
             <Separator orientation="vertical" />
-            <Stat
-              icon={<Sun size={14} aria-hidden="true" />}
-              label="Sunrise"
-              value={weather.sunRise}
-            />
-            <Stat
-              icon={<Moon size={14} aria-hidden="true" />}
-              label="Sunset"
-              value={weather.sunSet}
-            />
+            <Stat icon={<Sun size={14} aria-hidden="true" />} label="Sunrise" value={weather.sunRise} />
+            <Stat icon={<Moon size={14} aria-hidden="true" />} label="Sunset" value={weather.sunSet} />
           </div>
         </>
       )}
