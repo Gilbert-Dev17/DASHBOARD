@@ -1,25 +1,50 @@
 'use client'
 
-import { CloudSun, Droplets, Wind, Sun, MapPin, RefreshCw, Moon } from 'lucide-react'
-import { useCurrentWeather } from '@/hooks/useCurrentWeather'
+import { CloudSun, Droplets, Wind, Sun, Moon, MapPin, RefreshCw } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
+import { useGeolocation } from '@/hooks/geoLocation'
+import type { WeatherData, Coordinates } from '@/types/weather'
 import { Separator } from '../ui/separator'
+import { Stat, WeatherCardSkeleton } from './weatherCardSkeleton'
+
+async function fetchWeather(lat: number, lon: number, signal: AbortSignal): Promise<WeatherData> {
+  const res = await fetch(`/api/weather?lat=${lat}&lon=${lon}`, { signal })
+  if (!res.ok) throw new Error('Could not load weather')
+  return res.json() as Promise<WeatherData>
+}
+
+function hasCoords(c: Coordinates | 0): c is Coordinates {
+  return c !== 0
+}
 
 export function WeatherCard() {
-  const { weather, isLoading, error, permissionStatus, retry } = useCurrentWeather()
+  const { coords: rawCoords, status: permissionStatus, errorMessage, requestLocation } = useGeolocation()
+
+  const coords = hasCoords( rawCoords )? rawCoords : null;
+
+  const { data: weather, isPending, isFetching, error, refetch, } = useQuery<WeatherData, Error>({
+    queryKey: ['weather', coords?.lat, coords?.lon],
+    queryFn: ({ signal }) => fetchWeather(coords!.lat, coords!.lon, signal),
+    enabled: !!coords,
+    staleTime: 5 * 60_000,
+  })
+
+  const isLoadingWeather = !!coords && isPending && isFetching
 
   return (
     <section
       aria-label="Current weather at your location"
       aria-live="polite"
-      className="mt-16 p-6 lg:p-8 rounded-[2rem] border relative overflow-hidden flex flex-col md:flex-row gap-8 justify-between items-start md:items-center shadow-sm bg-secondary/50 transition-colors duration-500"
+      className="mt-16 p-6 lg:p-8 rounded-[2rem] border relative overflow-hidden flex flex-col md:flex-row gap-8 justify-between md:items-center shadow-sm bg-secondary/50 transition-colors duration-500"
     >
+
       {permissionStatus === 'denied' && (
         <div className="flex items-center gap-3 text-sm">
           <MapPin size={16} aria-hidden="true" className="text-accent" />
-          <span>Location access was denied, so we can't show local weather.</span>
+          <span>Location access was denied, so we can&apos;t show local weather.</span>
           <button
             type="button"
-            onClick={retry}
+            onClick={requestLocation}
             className="inline-flex items-center gap-1 underline underline-offset-2 font-medium"
           >
             <RefreshCw size={14} aria-hidden="true" />
@@ -29,28 +54,41 @@ export function WeatherCard() {
       )}
 
       {permissionStatus === 'unsupported' && (
-        <p className="text-sm">Your browser doesn't support location detection.</p>
+        <p className="text-sm">Your browser doesn&apos;t support location detection.</p>
       )}
 
-      {(isLoading || permissionStatus === 'loading') && !weather && (
-        <p className="text-sm" role="status">Detecting your location…</p>
-      )}
-
-      {error && permissionStatus !== 'denied' && (
+      {permissionStatus === 'error' && (
         <div className="flex items-center gap-3 text-sm">
-          <span role="alert">{error}</span>
-          <button type="button" onClick={retry} className="underline underline-offset-2 font-medium">
+          <span role="alert">{errorMessage ?? 'Could not detect your location.'}</span>
+          <button type="button" onClick={requestLocation} className="underline underline-offset-2 font-medium">
             Retry
           </button>
         </div>
       )}
+
+      {!coords && permissionStatus !== 'denied' && permissionStatus !== 'unsupported' && permissionStatus !== 'error' && (
+        <WeatherCardSkeleton/>
+      )}
+
+      {isLoadingWeather && <WeatherCardSkeleton/>}
+
+      {error && (
+        <div className="flex items-center gap-3 text-sm">
+          <span role="alert">{error.message}</span>
+          <button type="button" onClick={() => refetch()} className="underline underline-offset-2 font-medium">
+            Retry
+          </button>
+        </div>
+      )}
+
+      {/* {weather && <WeatherCardSkeleton/>} */}
 
       {weather && (
         <>
           <div className="flex items-center gap-6 relative z-10">
             <div className="absolute -right-195 -top-10 w-40 h-40 rounded-full mix-blend-overlay opacity-15 blur-3xl transition-colors duration-500 bg-accent" />
             <div className="w-16 h-16 rounded-full flex items-center justify-center shrink-0 transition-colors duration-500 bg-secondary">
-              <CloudSun size={32} aria-hidden="true" className="text-accent"  />
+              <CloudSun size={32} aria-hidden="true" className="text-accent" />
             </div>
             <div>
               <div className="text-5xl font-light tracking-tighter mb-1">
@@ -75,31 +113,11 @@ export function WeatherCard() {
               value={`${weather.windSpeed} km/h ${weather.windDirection}`}
             />
             <Separator orientation="vertical" />
-            <Stat
-              icon={<Sun size={14} aria-hidden="true" />}
-              label="Sunrise"
-              value={weather.sunRise}
-            />
-            <Stat
-              icon={<Moon size={14} aria-hidden="true" />}
-              label="Sunset"
-              value={weather.sunSet}
-            />
+            <Stat icon={<Sun size={14} aria-hidden="true" />} label="Sunrise" value={weather.sunRise} />
+            <Stat icon={<Moon size={14} aria-hidden="true" />} label="Sunset" value={weather.sunSet} />
           </div>
         </>
       )}
     </section>
-  )
-}
-
-function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
-  return (
-    <div className="flex flex-col gap-1">
-      <div className="flex items-center gap-2 mb-1">
-        {icon}
-        <span className="text-[10px] uppercase tracking-wider font-semibold">{label}</span>
-      </div>
-      <span className="font-medium tabular-nums">{value}</span>
-    </div>
   )
 }
