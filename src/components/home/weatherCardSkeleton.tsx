@@ -17,7 +17,7 @@ export const WeatherCardSkeleton = () => {
         </div>
         <div>
           <div className="text-5xl font-light tracking-tighter mb-1">
-            <Skeleton className="h-15 w-30" />
+            <Skeleton className="h-11 w-30" />
           </div>
           <div className='flex' >
             <Skeleton className="h-4 w-20" />
