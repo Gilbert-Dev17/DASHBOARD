@@ -29,7 +29,7 @@ const Navbar = () => {
 
   return (
     <header className="hidden lg:flex sticky top-0 z-40 w-full justify-end pt-4 pr-8 ">
-      <nav className="flex items-center gap-2 px-3 py-1 rounded-full bg-background/70 backdrop-blur-xl shadow-md border border-border pointer-events-auto transition-all duration-500">
+      <nav className="flex items-center gap-2 px-3 py-1 rounded-full bg-background/50 backdrop-blur-xl shadow-md border border-border pointer-events-auto transition-all duration-500">
         {navItems.map((item) => {
           const active = pathname === item.point;
           const Icon = item.icon;

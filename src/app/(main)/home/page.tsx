@@ -62,6 +62,7 @@ const page = () => {
       ]
     }]
 
+// * conversion of meeting,task, and habit counts would be done when fetching from the backend.
   const user = {
     firstName: 'Gilbert',
     meetingsCount: 3,
