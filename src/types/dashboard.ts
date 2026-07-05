@@ -1,7 +1,9 @@
 export interface Subtask {
-  id: number;
-  text: string;
-  done: boolean;
+  id: string;
+  task_id: string;
+  subtask_name: string;
+  is_done: boolean;
+  created_at: string;
 }
 
 export interface Task {
@@ -13,6 +15,7 @@ export interface Task {
   is_done: boolean;
   created_for_date: string;
   created_at: string;
+  subtasks?: Subtask[];
 }
 
 export interface UserSummary {

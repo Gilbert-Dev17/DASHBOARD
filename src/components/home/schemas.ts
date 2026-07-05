@@ -1,6 +1,4 @@
-// -----------------------------------------------------------------------------
-// Database Table Schemas (Matches Supabase / Postgres Schema)
-// -----------------------------------------------------------------------------
+// !!! must use only one source of truth then omit or something to only get a copy of what's needed
 
 export interface User {
     id: string; // UUID from auth.users
@@ -31,7 +29,7 @@ export interface Task {
 }
 
 export interface Subtask {
-    id: string; // UUID
+    id: string; //UUID
     task_id: string; // UUID
     subtask_name: string;
     is_done: boolean;
