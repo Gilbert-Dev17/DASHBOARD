@@ -10,6 +10,8 @@ export interface User {
     created_at: string;
 }
 
+
+
 export interface TaskCategory {
     id: string; // UUID
     user_id: string; // UUID
