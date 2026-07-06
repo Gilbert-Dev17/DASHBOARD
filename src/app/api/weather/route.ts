@@ -5,8 +5,7 @@ import {format} from 'date-fns'
 
 // TODO: Consider updating to Google's Weather api call, which is more accurate and has better coverage than OpenWeatherMap. For now, we use OpenWeatherMap because it's free and easy to use. (Google's API requires billing and is more complex to set up.)
 
-// TODO: TOMORROW - use tanstack query for caching and revalidation, and add a cache layer to avoid hitting the API too often. For now, we use Next.js's built-in caching with revalidate: 600 (10 min) for weather and 3600 (1 hr) for geocoding.
-// * also add a skeleton for weather card while loading, and a fallback for when geolocation is denied or fails. For now, we just return a 400 error if lat/lon are missing or invalid, and a 502 error if the fetch fails.
+
 // * make the dashboard backend ready, connect all of the components to the same interface, and add a supabase backend for user data and tasks. For now, we just return a static user summary. (must be all the same interface.)
 // !! Keep DRY (Don't Repeat Yourself) in mind.
 
