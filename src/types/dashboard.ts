@@ -1,32 +1,13 @@
-export interface Subtask {
-  id: string;
-  task_id: string;
-  subtask_name: string;
-  is_done: boolean;
-  created_at: string;
+import { Task, Subtask, User } from '@/types/database';
+
+export interface TaskWithSubtasks extends Omit<Task, 'task_category_id'> {
+  subtasks: Subtask[];
+  task_category: { id: string | null; name: string } | null; // nullable — see issue #4
 }
 
-export interface Task {
-  id: string;
-  user_id: string;
-  task_category_id: string | null;
-  task_name: string;
-  time?: string;
-  is_done: boolean;
-  created_for_date: string;
-  created_at: string;
-  subtasks?: Subtask[];
-}
-
-export interface UserSummary {
-  firstName: string;
-  meetingsCount: number;
-  tasksCount: number;
-  habitsCount: number;
-  balance: number;
-}
+export type UserSummary = Pick<User, 'id'> & Partial<Pick<User, 'email' | 'first_name'>>;
 
 export interface DashboardPageProps {
-  initialTasks?: Task[];
+  initialTasks?: TaskWithSubtasks[];
   user?: UserSummary;
 }

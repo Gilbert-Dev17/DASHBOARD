@@ -2,16 +2,13 @@
 
 import React, {useMemo} from 'react'
 import {format} from 'date-fns'
-import { Task } from './schemas'
+import { TaskWithSubtasks } from '@/types/dashboard'
 import { generateDailyBrief } from '@/utils/daily-brief'
 
 interface userGreeting {
-    firstName: string;
-    tasks?: Task[];
+    firstName?: string;
+    tasks?: TaskWithSubtasks[];
 }
-
-// TODO: connect everything in the dashboard page, the schemas should only have one source of truth at all time so then we call only creates copies if needed
-// * and have the proper setup for the dashboard page where we prop drill. goodluckk we can do this and get a freaking job rorrrrrrr
 
 const parseBoldText = (text: string) => {
   const parts = text.split(/(\*\*.*?\*\*)/g);

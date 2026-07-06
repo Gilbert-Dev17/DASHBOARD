@@ -4,7 +4,7 @@ import dynamic from 'next/dynamic'
 import{ useState, useMemo } from 'react'
 import PageComponent from '@/components/shared/PageComponent'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Task, UserSummary} from '@/types/dashboard'
+import { TaskWithSubtasks, UserSummary} from '@/types/dashboard'
 import { GreetingHeader } from './greetingHeader'
 import { WeatherCard } from '@/components/home/weatherCard'
 
@@ -16,18 +16,15 @@ const LifeProgress = dynamic(
 );
 
 interface DashboardPageProps {
-  initialTasks?: Task[];
-  user?: UserSummary;
+  initialTasks: TaskWithSubtasks[];
+  user: UserSummary;
 }
 
 export default function DashboardPage({ initialTasks, user, }: DashboardPageProps) {
 
   const today = new Date ();
-
-  const [tasks, setTasks] = useState<Task[]>(initialTasks || []);
-
+  const [tasks, setTasks] = useState<TaskWithSubtasks[]>(initialTasks || []);
   const tasksForSelectedDate = useMemo(() => {
-
     // TODO: Filter tasks based on selectedDate once tasks have date properties
     return tasks
   }, [tasks, today]);
@@ -38,13 +35,7 @@ export default function DashboardPage({ initialTasks, user, }: DashboardPageProp
         task.id === taskId ? { ...task, is_done: !task.is_done } : task
       )
     );
-    // TODO: Await your backend API call or Server Action here
-    // try {
-    //   await updateTaskStatus(taskId);
-    // } catch (error) {
-    //   // Revert optimistic update on failure
-    //   console.error("Failed to update task", error);
-    // }
+
   };
 
    const handleToggleSubtask = async (taskId: string, subtaskId: string) => {
@@ -63,23 +54,29 @@ export default function DashboardPage({ initialTasks, user, }: DashboardPageProp
     );
   };
 
-  const formattedBalance = new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: 'PHP',
-  }).format(user?.balance ?? 0);
+  // const formattedBalance = new Intl.NumberFormat('en-US', {
+  //   style: 'currency',
+  //   currency: 'PHP',
+  // }).format(user?.balance ?? 0);
 
-  const [dollars, cents] = formattedBalance.split('.');
+  // const [dollars, cents] = formattedBalance.split('.');
 
   return (
     <PageComponent>
       {/* HEADER SECTION */}
       <header className="mb-16 lg:mb-20">
 
-        <GreetingHeader firstName='Gilbert' tasks={tasksForSelectedDate}/>
+        <GreetingHeader firstName={user.first_name|| 'User'} tasks={tasksForSelectedDate}/>
 
         <WeatherCard />
 
       </header>
+      <pre className="bg-muted p-4 rounded text-xs overflow-auto max-h-96">
+        {JSON.stringify(user, null, 2)}
+      </pre>
+      <pre className="bg-muted p-4 rounded text-xs overflow-auto max-h-96">
+        {JSON.stringify(initialTasks, null, 2)}
+      </pre>
 
       {/* MAIN GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
@@ -115,7 +112,7 @@ export default function DashboardPage({ initialTasks, user, }: DashboardPageProp
                           {task.task_name}
                         </span>
                         <span className="text-[10px] lg:text-xs font-medium tracking-wider uppercase transition-colors duration-500">
-                          {task.task_category_id}
+                          {task.task_category?.name}
                         </span>
                       </div>
                     </div>
@@ -160,7 +157,7 @@ export default function DashboardPage({ initialTasks, user, }: DashboardPageProp
               Finances
             </h2>
             <div className="text-4xl md:text-5xl lg:text-6xl font-light tracking-tighter tabular-nums mb-8">
-              {dollars}<span className="text-3xl lg:text-4xl">.{cents}</span>
+              {/* {dollars}<span className="text-3xl lg:text-4xl">.{cents}</span> */}
             </div>
           </section>
 

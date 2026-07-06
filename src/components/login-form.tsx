@@ -24,9 +24,10 @@ import { toast } from "sonner";
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
-  const [loading, setLoading] = useState(false)
 
-  const form = useForm<LoginInput>({
+  const {
+    reset, handleSubmit, control, formState: { isSubmitting },
+  }= useForm<LoginInput>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
       email: "",
@@ -35,33 +36,29 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
   });
 
   async function onSubmit(values: LoginInput) {
-  setLoading(true);
+    try {
+      const result = await LogIn(values);
 
-  try {
-    const result = await LogIn(values);
+      if (!result.ok) {
+        toast.error(result.error ?? "Login Failed");
+        return;
+      }
+      reset({
+        email: "",
+        password: "",
+      });
+      toast.success("Logged in successfully");
+      router.replace("/home");
 
-    if (!result.ok) {
-      toast.error(result.error ?? "Login Failed");
-      return;
+    } catch {
+      toast.error("Something went wrong");
     }
-    form.reset({
-      email: "",
-      password: "",
-    });
-    toast.success("Logged in successfully");
-    router.replace("/home");
-
-  } catch {
-    toast.error("Something went wrong");
-  } finally {
-    setLoading(false);
-  }
 }
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <form
           id="logIn-submit"
-          onSubmit={form.handleSubmit(onSubmit)}
+          onSubmit={handleSubmit(onSubmit)}
           aria-label="Login form" noValidate >
         <FieldGroup>
           <div className="flex flex-col items-center gap-2 text-center">
@@ -79,7 +76,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
           </div>
           <Controller
             name='email'
-            control={form.control}
+            control={control}
             render={({ field, fieldState }) =>(
             <Field data-invalid={fieldState.invalid}>
               <FieldLabel htmlFor="email">Email</FieldLabel>
@@ -89,6 +86,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                   type="email"
                   aria-invalid={fieldState.invalid}
                   placeholder="m@example.com"
+                  disabled={isSubmitting}
                   required
                 />
                 {fieldState.invalid && (
@@ -100,7 +98,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
 
           <Controller
             name='password'
-            control={form.control}
+            control={control}
             render={({ field, fieldState}) => (
               <Field data-invalid={fieldState.invalid} >
                 <FieldLabel htmlFor="password">Password</FieldLabel>
@@ -108,9 +106,10 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                   <Input
                     {...field}
                     id="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     aria-invalid={fieldState.invalid}
                     placeholder="password"
+                    disabled={isSubmitting}
                     required
                   />
                   <button
@@ -119,6 +118,7 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                     className="absolute inset-y-0 right-2 flex items-center text-muted-foreground"
                     aria-label={showPassword ? "Hide password" : "Show password"}
                     aria-pressed={showPassword}
+                    disabled={isSubmitting}
                   >
                     {showPassword ? (
                       <EyeOff className="size-4" aria-hidden="true" />
@@ -127,15 +127,17 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                     )}
                   </button>
                 </div>
+
                  {fieldState.invalid && (
                     <FieldError errors={[fieldState.error]} />
                   )}
+
               </Field>
             )}>
           </Controller>
           <Field>
-            <Button type="submit" form='logIn-submit' disabled={loading}>
-              {loading ? (
+            <Button type="submit" form='logIn-submit' disabled={isSubmitting}>
+              {isSubmitting ? (
                   <>
                     <Spinner className="mr-2 size-4" />
                     Logging in...
