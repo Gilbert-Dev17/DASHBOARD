@@ -15,6 +15,7 @@ export async function getHomeData(userId: string): Promise<TaskWithSubtasks[]> {
     .from('tasks')
     .select(`
       id,
+      user_id,
       task_name,
       time,
       is_done,
@@ -27,8 +28,7 @@ export async function getHomeData(userId: string): Promise<TaskWithSubtasks[]> {
       task_category:task_categories!tasks_task_category_id_fkey (
         id,
         name
-      )
-    `)
+      )`)
     .eq('user_id', userId)
     .eq('created_for_date', today)
     .order('time', { ascending: true, nullsFirst: false });
