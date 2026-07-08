@@ -14,6 +14,7 @@ import {
   CarouselPrevious,
   CarouselNext,
 } from "@/components/ui/carousel"
+import { useDashboard } from '@/hooks/useDashboard'
 
 // * Life Progress bar
 const LifeProgress = dynamic(
@@ -28,12 +29,13 @@ interface DashboardPageProps {
 }
 
 export default function DashboardPage({ initialTasks, user, }: DashboardPageProps) {
+  useDashboard();
 
   const today = new Date ();
-  const [tasks, setTasks] = useState<TaskWithSubtasks[]>(initialTasks || []);
+
   const tasksForSelectedDate = useMemo(() => {
-    return tasks
-  }, [tasks, today]);
+    return initialTasks || []
+  }, [initialTasks, today]);
 
     const balance = 100
 
@@ -53,12 +55,12 @@ export default function DashboardPage({ initialTasks, user, }: DashboardPageProp
         <WeatherCard />
       </header>
 
-      <pre className="bg-muted p-4 rounded text-xs overflow-auto max-h-96">
+      {/* <pre className="bg-muted p-4 rounded text-xs overflow-auto max-h-96">
         {JSON.stringify(user, null, 2)}
       </pre>
       <pre className="bg-muted p-4 rounded text-xs overflow-auto max-h-96">
         {JSON.stringify(initialTasks, null, 2)}
-      </pre>
+      </pre> */}
 
       {/* MAIN GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">

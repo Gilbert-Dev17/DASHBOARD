@@ -1,4 +1,5 @@
 import { TaskWithSubtasks } from '@/types/dashboard'
+import { CATEGORY_LABELS, TaskCategory } from '@/components/modals/add-planner/constants'
 
 const ENDINGS = [
   "Let's make today count.",
@@ -8,25 +9,31 @@ const ENDINGS = [
   "Small progress is still progress.",
   "Stay focused.",
   "Time to build momentum.",
+  "Ready when you are.",
+  "Let's cross some items off.",
+  "Keep up the great work.",
+  "Focus on the step in front of you.",
+  "A productive day awaits.",
+  "Let's make things happen.",
+  "Take it easy, but take it.",
+  "Pace yourself.",
+  "Let's clear the board.",
+  "Time to execute.",
+  "Step by step.",
+  "Let's dive in.",
+  "Good luck today.",
+  "Make it a good one.",
+  "Here is to a productive day.",
+  "Let's get things done.",
+  "Focus on what matters.",
+  "Keep the momentum going.",
+  "Consistency is key.",
+  "Let's tackle this list.",
+  "Trust the process.",
+  "Forward motion, always.",
+  "Let's conquer the day.",
+  "Have a fantastic day ahead."
 ]
-
-const CATEGORY_TEXT: Record<string, string> = {
-  work: "work tasks",
-  routine: "routine tasks",
-  health: "health & fitness tasks",
-  meeting: "meetings",
-  habit: "habits",
-  finance: "finance reminders",
-  shopping: "shopping trips",
-  groceries: "grocery runs",
-  errands: "errands",
-  learning: "study",
-  appointments: "appointments",
-  family: "family activities",
-  social: "social events",
-  date: "dates",
-  selfcare: "self-care activities"
-}
 
 interface DailyBrief {
   message: string
@@ -49,24 +56,18 @@ export function generateDailyBrief(tasks: TaskWithSubtasks[]): DailyBrief {
     return acc;
   }, {} as Record<string, number>);
 
-  // Format into text like "3 work tasks", "1 grocery run"
+  // Format into text dynamically using the global constants
   const parts = Object.entries(categoryCounts).map(([cat, count]) => {
-    const text = CATEGORY_TEXT[cat] || (count === 1 ? 'task' : 'tasks');
-    // If it's a known mapping, we can use it. If count is 1 we should ideally singularize,
-    // but the dictionary provided by user makes it a bit tricky. We'll do a simple fallback.
-    const cleanText = count === 1 && text.endsWith('s') && !text.endsWith('ss')
-      ? text.slice(0, -1)
-      : text;
-
-    // Instead of raw numbers, maybe "a" or "one" for 1?
-    // Let's use bolded numbers for visual emphasis as requested: **3 work tasks**
-    const numberStr = count === 1 ? (cat === 'meeting' ? 'a meeting' : `one`) : count.toString();
-
-    // For 1 meeting: "a meeting". For 1 work task: "one work task".
-    if (count === 1 && cat === 'meeting') {
-        return `**a meeting**`;
-    }
-    return `**${numberStr} ${cleanText}**`;
+    // Special grammatical cases for events
+    if (cat === 'meeting') return count === 1 ? '**a meeting**' : `**${count} meetings**`;
+    if (cat === 'appointments' || cat === 'appointment') return count === 1 ? '**an appointment**' : `**${count} appointments**`;
+    
+    // Default fallback: "3 health tasks", "one work task"
+    const label = CATEGORY_LABELS[cat as TaskCategory] || cat;
+    const taskWord = count === 1 ? 'task' : 'tasks';
+    const numberStr = count === 1 ? 'one' : count.toString();
+    
+    return `**${numberStr} ${label.toLowerCase()} ${taskWord}**`;
   });
 
   const listFormatter = new Intl.ListFormat('en', { style: 'long', type: 'conjunction' });
@@ -114,16 +115,61 @@ export function generateDailyBrief(tasks: TaskWithSubtasks[]): DailyBrief {
   // 3. Pick random ending
   const randomEnding = ENDINGS[new Date().getDate() % ENDINGS.length];
 
-  // 4. Determine Theme (Optional but cool)
-  // If >50% of tasks are in a certain category
+  // 4. Determine Theme (Aggregate categories into broader themes)
   let themeMessage = "";
-  const maxCategory = Object.entries(categoryCounts).sort((a, b) => b[1] - a[1])[0];
-  if (maxCategory && (maxCategory[1] / tasks.length) >= 0.5) {
-      const cat = maxCategory[0];
-      if (['work', 'meeting'].includes(cat)) themeMessage = " Looks like a work-focused day.";
-      if (['shopping', 'groceries', 'errands'].includes(cat)) themeMessage = " Today's all about getting things done around town.";
-      if (['social', 'family', 'date'].includes(cat)) themeMessage = " You've got a social day ahead.";
-      if (['health', 'selfcare'].includes(cat)) themeMessage = " Today's a good day to focus on yourself.";
+  
+  const THEMES: Record<string, { categories: string[], message: string }> = {
+    deep_work: {
+      categories: ['work', 'education'],
+      message: " Looks like a day for deep focus. Protect your time and get it done."
+    },
+    errands: {
+      categories: ['shopping', 'groceries', 'errands', 'home', 'maintenance'],
+      message: " Today is all about checking things off the list and running errands."
+    },
+    wellness: {
+      categories: ['health', 'selfcare', 'personal', 'hobbies'],
+      message: " It looks like you're prioritizing yourself today. Enjoy the reset."
+    },
+    structured: {
+      categories: ['routine', 'appointments'],
+      message: " Your day is highly structured today. Stick to the routine and you'll crush it."
+    },
+    social: {
+      categories: ['social', 'family', 'date'],
+      message: " You've got a very social day ahead! Enjoy the connections."
+    },
+    admin: {
+      categories: ['finance', 'bills'],
+      message: " Looks like an admin day. Perfect time to get your finances organized."
+    },
+    travel: {
+      categories: ['travel'],
+      message: " Looks like you're on the move today! Safe travels."
+    },
+    pets: {
+      categories: ['pets'],
+      message: " Today is all about taking care of the furry friends!"
+    }
+  };
+
+  const themeCounts: Record<string, number> = {};
+  
+  // Map tasks to their umbrella theme
+  tasks.forEach(task => {
+    const cat = task.task_category?.name?.toLowerCase() || 'task';
+    for (const [themeKey, themeData] of Object.entries(THEMES)) {
+      if (themeData.categories.includes(cat)) {
+        themeCounts[themeKey] = (themeCounts[themeKey] || 0) + 1;
+        break; // A category only belongs to one theme
+      }
+    }
+  });
+
+  // If a single umbrella theme makes up >= 50% of the day, append its message
+  const maxTheme = Object.entries(themeCounts).sort((a, b) => b[1] - a[1])[0];
+  if (maxTheme && (maxTheme[1] / tasks.length) >= 0.5) {
+      themeMessage = THEMES[maxTheme[0]].message;
   }
 
   // Combine all parts

@@ -1,6 +1,6 @@
 'use client'
 
-import{ useState, useMemo } from 'react'
+import{ useState, useMemo, useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { Checkbox } from '@/components/ui/checkbox'
 import { TaskWithSubtasks } from '@/types/dashboard'
@@ -15,6 +15,12 @@ export const AgendaSection = ({ initialTasks }:Tasks) => {
 
     const today = new Date ();
     const [tasks, setTasks] = useState<TaskWithSubtasks[]>(initialTasks || []);
+    
+    // Keep local optimistic state in sync with server realtime updates
+    useEffect(() => {
+      setTasks(initialTasks || []);
+    }, [initialTasks]);
+
     const tasksForSelectedDate = useMemo(() => {
       return tasks
     }, [tasks, today]);
@@ -46,13 +52,19 @@ export const AgendaSection = ({ initialTasks }:Tasks) => {
         }
     };
 
-    const handleToggleSubtask = async (subtaskId: string, isDone: boolean, subtask_name: string) => {
+    const handleToggleSubtask = async (taskId: string, subtaskId: string, isDone: boolean, subtask_name: string) => {
         setTasks(currentTasks =>
-            currentTasks.map(task =>
-                task.id === subtaskId
-                    ? { ...task, is_done: !task.is_done }
-                    : task
-            )
+            currentTasks.map(task => {
+                if (task.id !== taskId) return task;
+                if (!task.subtasks) return task;
+
+                return {
+                    ...task,
+                    subtasks: task.subtasks.map(st =>
+                        st.id === subtaskId ? { ...st, is_done: isDone } : st
+                    )
+                };
+            })
         );
         try {
             await toggleSubTask(subtaskId, isDone);
@@ -63,13 +75,19 @@ export const AgendaSection = ({ initialTasks }:Tasks) => {
                 );
         } catch {
             setTasks(currentTasks =>
-                currentTasks.map(subtask =>
-                    subtask.id === subtaskId
-                        ? { ...subtask, is_done: !isDone }
-                        : subtask
-                )
+                currentTasks.map(task => {
+                    if (task.id !== taskId) return task;
+                    if (!task.subtasks) return task;
+
+                    return {
+                        ...task,
+                        subtasks: task.subtasks.map(st =>
+                            st.id === subtaskId ? { ...st, is_done: !isDone } : st
+                        )
+                    };
+                })
             );
-            toast.error("Failed to update task.");
+            toast.error("Failed to update subtask.");
         }
     };
 
@@ -121,7 +139,7 @@ export const AgendaSection = ({ initialTasks }:Tasks) => {
                        <Checkbox
                           className="rounded-sm border-2 w-4 h-4"
                           checked={subtask.is_done}
-                          onCheckedChange={() => handleToggleSubtask(subtask.id, !subtask.is_done, subtask.subtask_name)}
+                          onCheckedChange={() => handleToggleSubtask(task.id, subtask.id, !subtask.is_done, subtask.subtask_name)}
                           aria-label={`Mark "${subtask.subtask_name}" as ${subtask.is_done ? 'incomplete' : 'complete'}`}
                         />
                         <span className={`text-sm ${subtask.is_done ? 'line-through' : ''}`}>

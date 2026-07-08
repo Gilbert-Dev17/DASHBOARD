@@ -47,7 +47,7 @@ export const GreetingHeader = ({firstName, tasks = []}: userGreeting) => {
         if (hour >= 17 && hour < 19) return pick(lateAfternoon)
         if (hour >= 19 && hour < 21) return pick(evening)
         return pick(night)
-        }, [])
+      }, [])
 
     const brief = useMemo(() => generateDailyBrief(tasks), [tasks]);
 
