@@ -28,6 +28,8 @@ export function WeatherCard() {
     queryFn: ({ signal }) => fetchWeather(coords!.lat, coords!.lon, signal),
     enabled: !!coords,
     staleTime: 5 * 60_000,
+    refetchInterval: 10 * 60_000,
+    refetchOnWindowFocus: false
   })
 
   const isLoadingWeather = !!coords && isPending && isFetching

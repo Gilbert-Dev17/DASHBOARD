@@ -14,7 +14,7 @@ const parseBoldText = (text: string) => {
   const parts = text.split(/(\*\*.*?\*\*)/g);
   return parts.map((part, i) => {
     if (part.startsWith('**') && part.endsWith('**')) {
-      return <span key={i} className="font-bold">{part.slice(2, -2)}</span>;
+      return <span key={i} className="font-semibold text-accent">{part.slice(2, -2)}</span>;
     }
     return <React.Fragment key={i}>{part}</React.Fragment>;
   });
@@ -60,7 +60,7 @@ export const GreetingHeader = ({firstName, tasks = []}: userGreeting) => {
           </h1>
         </div>
 
-        <p className="text-2xl md:text-3xl lg:text-4xl leading-snug font-light max-w-4xl tracking-tight">
+        <p className="text-2xl md:text-3xl lg:text-4xl leading-snug font-light max-w-5xl tracking-tight">
           {greeting}, <span className="font-bold">{firstName}</span>. {parseBoldText(brief.message)}
         </p>
     </>

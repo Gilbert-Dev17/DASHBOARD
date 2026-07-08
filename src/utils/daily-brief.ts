@@ -48,8 +48,11 @@ export function generateDailyBrief(tasks: TaskWithSubtasks[]): DailyBrief {
     return { message: "Nothing is scheduled today. It might be the perfect opportunity to tackle that side project you've been putting off." }
   }
 
-  // 1. Group tasks by category
-  const categoryCounts = tasks.reduce((acc, task) => {
+  const completedCount = tasks.filter(t => t.is_done).length;
+  const incompleteTasks = tasks.filter(t => !t.is_done);
+
+  // 1. Group ONLY incomplete tasks by category
+  const categoryCounts = incompleteTasks.reduce((acc, task) => {
     // If task_category isn't provided yet or doesn't match our dict, default to 'task'
     const cat = task.task_category?.name?.toLowerCase() || 'task';
     acc[cat] = (acc[cat] || 0) + 1;
@@ -61,24 +64,28 @@ export function generateDailyBrief(tasks: TaskWithSubtasks[]): DailyBrief {
     // Special grammatical cases for events
     if (cat === 'meeting') return count === 1 ? '**a meeting**' : `**${count} meetings**`;
     if (cat === 'appointments' || cat === 'appointment') return count === 1 ? '**an appointment**' : `**${count} appointments**`;
-    
+
     // Default fallback: "3 health tasks", "one work task"
     const label = CATEGORY_LABELS[cat as TaskCategory] || cat;
     const taskWord = count === 1 ? 'task' : 'tasks';
     const numberStr = count === 1 ? 'one' : count.toString();
-    
+
     return `**${numberStr} ${label.toLowerCase()} ${taskWord}**`;
   });
 
   const listFormatter = new Intl.ListFormat('en', { style: 'long', type: 'conjunction' });
-  let tasksSummary = `You have ${listFormatter.format(parts)} today.`;
+  const remainingListStr = listFormatter.format(parts);
 
-  // Check if they are all completed
-  const completedCount = tasks.filter(t => t.is_done).length;
+  let tasksSummary = "";
+
   if (completedCount === tasks.length) {
     tasksSummary = `You've already completed **all ${tasks.length} tasks today**.`;
-  } else if (completedCount > 0 && tasks.length - completedCount === 1) {
-    tasksSummary = `You've already completed **${completedCount} tasks today**. Only **one thing** remains.`;
+  } else if (completedCount > 0 && incompleteTasks.length === 1) {
+    tasksSummary = `You've already completed **${completedCount} ${completedCount === 1 ? 'task' : 'tasks'} today**. Only **one thing** remains.`;
+  } else if (completedCount > 0) {
+    tasksSummary = `You've completed **${completedCount} ${completedCount === 1 ? 'task' : 'tasks'}** so far, leaving ${remainingListStr} remaining today.`;
+  } else {
+    tasksSummary = `You have ${remainingListStr} today.`;
   }
 
   // 2. Find free time (latest task)
@@ -104,12 +111,12 @@ export function generateDailyBrief(tasks: TaskWithSubtasks[]): DailyBrief {
     const timeStr = date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' });
 
     if (date.getHours() >= 20) {
-      freeTimeMessage = " Looks like today's going to be a busy one.";
+      freeTimeMessage = " It's going to be a busy one.";
     } else {
       freeTimeMessage = ` **You're free after ${timeStr}.**`;
     }
   } else {
-    freeTimeMessage = " Looks like your schedule is relatively open today.";
+    freeTimeMessage = " Your schedule is relatively open.";
   }
 
   // 3. Pick random ending
@@ -117,44 +124,44 @@ export function generateDailyBrief(tasks: TaskWithSubtasks[]): DailyBrief {
 
   // 4. Determine Theme (Aggregate categories into broader themes)
   let themeMessage = "";
-  
+
   const THEMES: Record<string, { categories: string[], message: string }> = {
     deep_work: {
       categories: ['work', 'education'],
-      message: " Looks like a day for deep focus. Protect your time and get it done."
+      message: " Looks like a day for deep focus."
     },
     errands: {
       categories: ['shopping', 'groceries', 'errands', 'home', 'maintenance'],
-      message: " Today is all about checking things off the list and running errands."
+      message: " Today is all about running errands."
     },
     wellness: {
       categories: ['health', 'selfcare', 'personal', 'hobbies'],
-      message: " It looks like you're prioritizing yourself today. Enjoy the reset."
+      message: " Great to see you prioritizing yourself today."
     },
     structured: {
       categories: ['routine', 'appointments'],
-      message: " Your day is highly structured today. Stick to the routine and you'll crush it."
+      message: " Your day is highly structured."
     },
     social: {
       categories: ['social', 'family', 'date'],
-      message: " You've got a very social day ahead! Enjoy the connections."
+      message: " You've got a social day ahead!"
     },
     admin: {
       categories: ['finance', 'bills'],
-      message: " Looks like an admin day. Perfect time to get your finances organized."
+      message: " Looks like an admin day."
     },
     travel: {
       categories: ['travel'],
-      message: " Looks like you're on the move today! Safe travels."
+      message: " Safe travels today!"
     },
     pets: {
       categories: ['pets'],
-      message: " Today is all about taking care of the furry friends!"
+      message: " Give the furry friends some love today."
     }
   };
 
   const themeCounts: Record<string, number> = {};
-  
+
   // Map tasks to their umbrella theme
   tasks.forEach(task => {
     const cat = task.task_category?.name?.toLowerCase() || 'task';
@@ -178,6 +185,6 @@ export function generateDailyBrief(tasks: TaskWithSubtasks[]): DailyBrief {
   }
 
   return {
-    message: `${tasksSummary}${themeMessage}${freeTimeMessage} ${randomEnding}`
+    message: `${tasksSummary} ${themeMessage} \n ${freeTimeMessage} ${randomEnding}`
   }
 }
