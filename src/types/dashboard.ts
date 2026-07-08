@@ -1,4 +1,4 @@
-import { Task, Subtask, User } from '@/types/database';
+import { Task, Subtask, User, Wallet} from '@/types/database';
 
 export interface TaskWithSubtasks extends Omit<Task, 'task_category_id'> {
   subtasks: Subtask[];
@@ -7,7 +7,4 @@ export interface TaskWithSubtasks extends Omit<Task, 'task_category_id'> {
 
 export type UserSummary = Pick<User, 'id'> & Partial<Pick<User, 'email' | 'first_name'>>;
 
-export interface DashboardPageProps {
-  initialTasks?: TaskWithSubtasks[];
-  user?: UserSummary;
-}
+export type WalletSummary = Wallet;

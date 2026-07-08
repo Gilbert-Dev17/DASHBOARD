@@ -15,7 +15,8 @@ export const AgendaSection = ({ initialTasks }:Tasks) => {
 
     const today = new Date ();
     const [tasks, setTasks] = useState<TaskWithSubtasks[]>(initialTasks || []);
-    
+    // !! update use useMutate from tanstack, for instant caching?
+
     // Keep local optimistic state in sync with server realtime updates
     useEffect(() => {
       setTasks(initialTasks || []);
@@ -27,26 +28,49 @@ export const AgendaSection = ({ initialTasks }:Tasks) => {
 
     const handleToggleTask = async ( taskId: string, isDone: boolean, task_name: string) => {
         setTasks(current =>
-            current.map(task =>
-                task.id === taskId
-                    ? { ...task, is_done: isDone }
-                    : task
-            )
+            current.map(task => {
+                if (task.id !== taskId) return task;
+                return {
+                    ...task,
+                    is_done: isDone,
+                    subtasks: task.subtasks ? task.subtasks.map(st => ({ ...st, is_done: isDone })) : []
+                };
+            })
         );
         try {
-            await toggleTask(taskId, isDone);
+            const result = await toggleTask(taskId, isDone);
+
+            if (!result.success) {
+                setTasks(current =>
+                    current.map(task => {
+                        if (task.id !== taskId) return task;
+                        return {
+                            ...task,
+                            is_done: !isDone,
+                            subtasks: task.subtasks ? task.subtasks.map(st => ({ ...st, is_done: !isDone })) : []
+                        };
+                    })
+                );
+                toast.error(result.message);
+                return;
+            }
+
             toast.success(
                 isDone
                     ? `"${task_name}" completed.`
                     : `"${task_name}" reopened.`
                 );
         } catch {
+            // Network-level error (e.g. user lost internet connection before fetch could fire)
             setTasks(current =>
-                current.map(task =>
-                    task.id === taskId
-                        ? { ...task, is_done: !isDone }
-                        : task
-                )
+                current.map(task => {
+                    if (task.id !== taskId) return task;
+                    return {
+                        ...task,
+                        is_done: !isDone,
+                        subtasks: task.subtasks ? task.subtasks.map(st => ({ ...st, is_done: !isDone })) : []
+                    };
+                })
             );
             toast.error("Failed to update task.");
         }
@@ -67,7 +91,27 @@ export const AgendaSection = ({ initialTasks }:Tasks) => {
             })
         );
         try {
-            await toggleSubTask(subtaskId, isDone);
+            const result = await toggleSubTask(subtaskId, isDone);
+
+            if (!result.success) {
+                // Application-level error
+                setTasks(currentTasks =>
+                    currentTasks.map(task => {
+                        if (task.id !== taskId) return task;
+                        if (!task.subtasks) return task;
+
+                        return {
+                            ...task,
+                            subtasks: task.subtasks.map(st =>
+                                st.id === subtaskId ? { ...st, is_done: !isDone } : st
+                            )
+                        };
+                    })
+                );
+                toast.error(result.message);
+                return;
+            }
+
             toast.success(
                 isDone
                     ? `"${subtask_name}" completed.`

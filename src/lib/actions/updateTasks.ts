@@ -26,8 +26,19 @@ export async function toggleTask(taskId: string, isDone: boolean) {
 
   if (error) {
     console.error(error);
-    throw error;
+    return { success: false, message: error.message };
   }
+
+//   // Cascade the update down to all nested subtasks
+//   const { error: subtaskError } = await supabase
+//     .from("subtasks")
+//     .update({ is_done: isDone })
+//     .eq("task_id", taskId);
+
+//   if (subtaskError) {
+//     console.error(subtaskError);
+//     return { success: false, message: "Task updated, but failed to update subtasks" };
+//   }
 
    return { success: true, message: "Task is Finished" };
 }
@@ -40,7 +51,10 @@ export async function toggleSubTask(subtaskId: string, isDone: boolean) {
         .update({ is_done: isDone })
         .eq('id', subtaskId)
 
-    if (error) throw error
+    if (error) {
+        console.error(error);
+        return { success: false, message: error.message };
+    }
 
     revalidatePath('/home')
 

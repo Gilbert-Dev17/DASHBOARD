@@ -1,5 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
-import type { TaskWithSubtasks } from '@/types/dashboard'
+import type { TaskWithSubtasks, WalletSummary } from '@/types/dashboard'
 
 const APP_TIMEZONE = 'Asia/Manila';
 
@@ -39,4 +39,22 @@ export async function getHomeData(userId: string): Promise<TaskWithSubtasks[]> {
   }
 
   return (tasks ?? []) as unknown as TaskWithSubtasks[];
+}
+
+export async function getWalletData(userId: string):Promise<WalletSummary[]> {
+  const supabase = await createClient();
+
+  const {data: wallet, error} = await supabase
+  .from('wallets')
+  .select('*')
+  .eq('user_id', userId)
+  .order('created_at', {ascending: true})
+
+
+  if (error) {
+    console.error("Error fetching wallets:", error.message);
+    throw error;
+  }
+
+  return wallet as WalletSummary[];
 }
