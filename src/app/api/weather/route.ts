@@ -61,11 +61,14 @@ export async function GET(req: NextRequest) {
       sunSet: format(new Date(raw.sys.sunset * 1000), 'p'),
     }
 
-    console.log('[weather-route] data', data)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[weather-route] data', data)
+    }
+
     try{
-    return NextResponse.json(data, {
-      headers: { 'Cache-Control': 'private, max-age=600' },
-    })
+      return NextResponse.json(data, {
+        headers: { 'Cache-Control': 'private, max-age=600' },
+      })
   } catch (err) {
     console.error('[weather-route]', err)
     return NextResponse.json({ error: 'Failed to fetch weather' }, { status: 502 })

@@ -29,17 +29,6 @@ export async function toggleTask(taskId: string, isDone: boolean) {
     return { success: false, message: error.message };
   }
 
-//   // Cascade the update down to all nested subtasks
-//   const { error: subtaskError } = await supabase
-//     .from("subtasks")
-//     .update({ is_done: isDone })
-//     .eq("task_id", taskId);
-
-//   if (subtaskError) {
-//     console.error(subtaskError);
-//     return { success: false, message: "Task updated, but failed to update subtasks" };
-//   }
-
    return { success: true, message: "Task is Finished" };
 }
 
