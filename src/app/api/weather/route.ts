@@ -5,10 +5,6 @@ import {format} from 'date-fns'
 
 // TODO: Consider updating to Google's Weather api call, which is more accurate and has better coverage than OpenWeatherMap. For now, we use OpenWeatherMap because it's free and easy to use. (Google's API requires billing and is more complex to set up.)
 
-
-// * make the dashboard backend ready, connect all of the components to the same interface, and add a supabase backend for user data and tasks. For now, we just return a static user summary. (must be all the same interface.)
-// !! Keep DRY (Don't Repeat Yourself) in mind.
-
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const lat = searchParams.get('lat')

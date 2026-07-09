@@ -19,6 +19,7 @@ export const TASK_CATEGORIES = [
   'pets',
   'bills',
   'appointments',
+  'school'
 ] as const
 
 export type TaskCategory = (typeof TASK_CATEGORIES)[number]
@@ -44,4 +45,5 @@ export const CATEGORY_LABELS: Record<TaskCategory, string> = {
   pets: 'Pets',
   bills: 'Bills',
   appointments: 'Appointments',
+  school: 'School'
 }

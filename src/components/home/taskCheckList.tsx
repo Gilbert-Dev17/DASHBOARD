@@ -164,7 +164,7 @@ export const AgendaSection = ({ initialTasks }:Tasks) => {
                     <span className={`text-base lg:text-lg tracking-wide ${task.is_done ? 'line-through' : ''}`}>
                       {task.task_name}
                     </span>
-                    <span className="text-[10px] lg:text-xs font-medium tracking-wider uppercase transition-colors duration-500">
+                    <span className="text-[10px] lg:text-xs font-medium text-accent tracking-wider uppercase transition-colors duration-500">
                       {task.task_category?.name}
                     </span>
                   </div>

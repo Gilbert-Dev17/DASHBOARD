@@ -53,9 +53,9 @@ export default function DashboardPage({ initialTasks, user, wallets}: DashboardP
         <WeatherCard />
       </header>
 
-      {/* <pre className="bg-muted p-4 rounded text-xs overflow-auto max-h-96">
-      {JSON.stringify(initialTasks, null, 2)}
-      </pre> */}
+      {/* <pre className="bg-muted p-4 rounded text-xs overflow-auto max-h-96"> */}
+        {/* {JSON.stringify(initialTasks, null, 2)} */}
+      {/* </pre> */}
 
       {/* MAIN GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">

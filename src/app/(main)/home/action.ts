@@ -1,11 +1,6 @@
 import { createClient } from "@/lib/supabase/server";
 import type { TaskWithSubtasks, WalletSummary } from '@/types/dashboard'
-
-const APP_TIMEZONE = 'Asia/Manila';
-
-export function getTodayInTimezone(timeZone: string = APP_TIMEZONE, now: Date = new Date()): string {
-  return new Intl.DateTimeFormat('en-CA', { timeZone, year: 'numeric', month: '2-digit', day: '2-digit' }).format(now);
-}
+import { getTodayInTimezone } from "@/hooks/getTimezone";
 
 export async function getHomeData(userId: string): Promise<TaskWithSubtasks[]> {
   const supabase = await createClient();
