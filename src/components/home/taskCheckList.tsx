@@ -6,7 +6,7 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { TaskWithSubtasks } from '@/types/dashboard'
 import { formatTime } from '@/lib/formatTime'
 import { toast } from "sonner"
-import { Card, CardContent } from '@/components/ui/card'
+import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { toggleTask, toggleSubTask } from '@/lib/actions/updateTasks'
 
 interface TasksProps {
@@ -96,7 +96,7 @@ export const AgendaSection = ({ initialTasks }: TasksProps) => {
             {/* Timeline Axis Line */}
             <div className="absolute top-0 -bottom-25 left-20 w-px bg-border/50" />
 
-            <ol className="space-y-8 list-none m-0 p-0">
+            <ol className="space-y-10 list-none m-0 p-0">
               {tasks.map((task) => (
                 <li key={task.id} className="relative flex items-start min-h-12 w-full">
 
@@ -118,7 +118,7 @@ export const AgendaSection = ({ initialTasks }: TasksProps) => {
                         task.is_done ? 'opacity-50 grayscale bg-muted/30' : 'bg-card'
                       }`}
                     >
-                      <CardContent className="p-4 flex flex-col gap-3">
+                      <CardContent className="flex flex-col gap-3">
 
                         {/* Task Header */}
                         <div className="flex items-start justify-between gap-4">
