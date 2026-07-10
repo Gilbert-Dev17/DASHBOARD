@@ -257,7 +257,7 @@ export const QuickAddModal = () => {
             onClick={handleClick}
             onKeyDown={handleKeyDown}
             placeholder={`Buy groceries @errands 10:00\n  Get milk\n  Get bread\nFinish report @work 3:00pm\nWalk the dog @pets`}
-            className="w-full min-h-50 p-4 rounded-lg border bg-transparent text-sm leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground/40"
+            className="w-full min-h-50 max-h-80 p-4 rounded-lg border bg-transparent text-sm leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground/40"
             spellCheck={false}
             autoFocus
           />

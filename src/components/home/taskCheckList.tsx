@@ -1,202 +1,179 @@
 'use client'
 
-import{ useState, useMemo, useEffect } from 'react'
+import { useMemo, useState, useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { Checkbox } from '@/components/ui/checkbox'
 import { TaskWithSubtasks } from '@/types/dashboard'
 import { formatTime } from '@/lib/formatTime'
-import { toast } from "sonner";
-
+import { toast } from "sonner"
+import { Card, CardContent } from '@/components/ui/card'
 import { toggleTask, toggleSubTask } from '@/lib/actions/updateTasks'
 
-interface Tasks { initialTasks: TaskWithSubtasks[] }
+interface TasksProps {
+  initialTasks: TaskWithSubtasks[]
+}
 
-export const AgendaSection = ({ initialTasks }:Tasks) => {
+// --- Optimistic Update Helpers ---
+function getOptimisticTasks(tasks: TaskWithSubtasks[], taskId: string, isDone: boolean): TaskWithSubtasks[] {
+  return tasks.map(task => {
+    if (task.id !== taskId) return task
+    return {
+      ...task,
+      is_done: isDone,
+      subtasks: task.subtasks ? task.subtasks.map(st => ({ ...st, is_done: isDone })) : []
+    }
+  })
+}
 
-    const today = new Date ();
-    const [tasks, setTasks] = useState<TaskWithSubtasks[]>(initialTasks || []);
-    // !! update use useMutate from tanstack, for instant caching?
+function getOptimisticSubtasks(tasks: TaskWithSubtasks[], taskId: string, subtaskId: string, isDone: boolean): TaskWithSubtasks[] {
+  return tasks.map(task => {
+    if (task.id !== taskId || !task.subtasks) return task
+    return {
+      ...task,
+      subtasks: task.subtasks.map(st => st.id === subtaskId ? { ...st, is_done: isDone } : st)
+    }
+  })
+}
 
-    // Keep local optimistic state in sync with server realtime updates
-    useEffect(() => {
-      setTasks(initialTasks || []);
-    }, [initialTasks]);
+export const AgendaSection = ({ initialTasks }: TasksProps) => {
 
-    const tasksForSelectedDate = useMemo(() => {
-      return tasks
-    }, [tasks, today]);
+  const [tasks, setTasks] = useState<TaskWithSubtasks[]>(initialTasks || [])
 
-    const handleToggleTask = async ( taskId: string, isDone: boolean, task_name: string) => {
-        setTasks(current =>
-            current.map(task => {
-                if (task.id !== taskId) return task;
-                return {
-                    ...task,
-                    is_done: isDone,
-                    subtasks: task.subtasks ? task.subtasks.map(st => ({ ...st, is_done: isDone })) : []
-                };
-            })
-        );
-        try {
-            const result = await toggleTask(taskId, isDone);
+  useEffect(() => {
+    setTasks(initialTasks || [])
+  }, [initialTasks])
 
-            if (!result.success) {
-                setTasks(current =>
-                    current.map(task => {
-                        if (task.id !== taskId) return task;
-                        return {
-                            ...task,
-                            is_done: !isDone,
-                            subtasks: task.subtasks ? task.subtasks.map(st => ({ ...st, is_done: !isDone })) : []
-                        };
-                    })
-                );
-                toast.error(result.message);
-                return;
-            }
 
-            toast.success(
-                isDone
-                    ? `"${task_name}" completed.`
-                    : `"${task_name}" reopened.`
-                );
-        } catch {
-            // Network-level error (e.g. user lost internet connection before fetch could fire)
-            setTasks(current =>
-                current.map(task => {
-                    if (task.id !== taskId) return task;
-                    return {
-                        ...task,
-                        is_done: !isDone,
-                        subtasks: task.subtasks ? task.subtasks.map(st => ({ ...st, is_done: !isDone })) : []
-                    };
-                })
-            );
-            toast.error("Failed to update task.");
-        }
-    };
+  const { mutate: handleToggleTask } = useMutation({
+    mutationFn: async ({ taskId, isDone, taskName }: { taskId: string, isDone: boolean, taskName: string }) => {
+      const result = await toggleTask(taskId, isDone)
+      if (!result.success) throw new Error(result.message)
+      return { isDone, taskName }
+    },
+    onMutate: async ({ taskId, isDone }) => {
+      setTasks(current => getOptimisticTasks(current, taskId, isDone))
+    },
+    onSuccess: ({ isDone, taskName }) => {
+      toast.success(isDone ? `"${taskName}" completed.` : `"${taskName}" reopened.`)
+    },
+    onError: (error, { taskId, isDone }) => {
+      setTasks(current => getOptimisticTasks(current, taskId, !isDone))
+      toast.error(error.message || "Failed to update task.")
+    }
+  })
 
-    const handleToggleSubtask = async (taskId: string, subtaskId: string, isDone: boolean, subtask_name: string) => {
-        setTasks(currentTasks =>
-            currentTasks.map(task => {
-                if (task.id !== taskId) return task;
-                if (!task.subtasks) return task;
-
-                return {
-                    ...task,
-                    subtasks: task.subtasks.map(st =>
-                        st.id === subtaskId ? { ...st, is_done: isDone } : st
-                    )
-                };
-            })
-        );
-        try {
-            const result = await toggleSubTask(subtaskId, isDone);
-
-            if (!result.success) {
-                // Application-level error
-                setTasks(currentTasks =>
-                    currentTasks.map(task => {
-                        if (task.id !== taskId) return task;
-                        if (!task.subtasks) return task;
-
-                        return {
-                            ...task,
-                            subtasks: task.subtasks.map(st =>
-                                st.id === subtaskId ? { ...st, is_done: !isDone } : st
-                            )
-                        };
-                    })
-                );
-                toast.error(result.message);
-                return;
-            }
-
-            toast.success(
-                isDone
-                    ? `"${subtask_name}" completed.`
-                    : `"${subtask_name}" reopened.`
-                );
-        } catch {
-            setTasks(currentTasks =>
-                currentTasks.map(task => {
-                    if (task.id !== taskId) return task;
-                    if (!task.subtasks) return task;
-
-                    return {
-                        ...task,
-                        subtasks: task.subtasks.map(st =>
-                            st.id === subtaskId ? { ...st, is_done: !isDone } : st
-                        )
-                    };
-                })
-            );
-            toast.error("Failed to update subtask.");
-        }
-    };
+  const { mutate: handleToggleSubtask } = useMutation({
+    mutationFn: async ({ taskId, subtaskId, isDone, subtaskName }: { taskId: string, subtaskId: string, isDone: boolean, subtaskName: string }) => {
+      const result = await toggleSubTask(subtaskId, isDone)
+      if (!result.success) throw new Error(result.message)
+      return { isDone, subtaskName }
+    },
+    onMutate: async ({ taskId, subtaskId, isDone }) => {
+      setTasks(current => getOptimisticSubtasks(current, taskId, subtaskId, isDone))
+    },
+    onSuccess: ({ isDone, subtaskName }) => {
+      toast.success(isDone ? `"${subtaskName}" completed.` : `"${subtaskName}" reopened.`)
+    },
+    onError: (error, { taskId, subtaskId, isDone }) => {
+      setTasks(current => getOptimisticSubtasks(current, taskId, subtaskId, !isDone))
+      toast.error(error.message || "Failed to update subtask.")
+    }
+  })
 
   return (
-    <section className="lg:col-span-7" aria-labelledby="agenda-heading">
-      <div className="flex justify-between items-end mb-6 lg:mb-8">
+    <section className="lg:col-span-7 flex flex-col h-full overflow-hidden" aria-labelledby="agenda-heading">
+      <div className="flex justify-between items-end mb-6 lg:mb-8 shrink-0">
         <h2 id="agenda-heading" className="text-xs font-semibold uppercase tracking-[0.2em] transition-colors duration-500">
           Today's Agenda
         </h2>
       </div>
-      <div className="flex flex-col" role="list">
-        {tasksForSelectedDate.length === 0 ? (
-          <p className="text-muted-foreground py-4">No tasks for today.</p>
-        ) : (
-          tasksForSelectedDate.map((task) => (
-            <article
-              key={task.id}
-              role="listitem"
-              className={`flex flex-col py-5 lg:py-6 border-b border-dashed transition-all duration-300 group`}
-            >
-              <div className={`flex items-center justify-between w-full cursor-pointer ${task.is_done ? 'opacity-40' : 'hover:opacity-80'}`}>
-                <div className="flex items-center gap-4 lg:gap-6">
-                  <Checkbox
-                    className="rounded-full border-2"
-                    checked={task.is_done}
-                    onCheckedChange={() => handleToggleTask(task.id, !task.is_done, task.task_name)}
-                    aria-label={`Mark "${task.task_name}" as ${task.is_done ? 'incomplete' : 'complete'}`}
-                  />
-                  <div className="flex flex-col gap-1">
-                    <span className={`text-base lg:text-lg tracking-wide ${task.is_done ? 'line-through' : ''}`}>
-                      {task.task_name}
-                    </span>
-                    <span className="text-[10px] lg:text-xs font-medium text-accent tracking-wider uppercase transition-colors duration-500">
-                      {task.task_category?.name}
-                    </span>
+
+      {tasks.length === 0 ? (
+        <p className="text-muted-foreground py-4">No tasks for today.</p>
+      ) : (
+        <div className="flex-1 min-h-0 max-h-[650px] pr-4 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div className="relative pb-8 pt-4">
+            {/* Timeline Axis Line */}
+            <div className="absolute top-0 -bottom-25 left-20 w-px bg-border/50" />
+
+            <ol className="space-y-8 list-none m-0 p-0">
+              {tasks.map((task) => (
+                <li key={task.id} className="relative flex items-start min-h-12 w-full">
+
+                  {/* Left Side: Time & Axis Dot */}
+                  <div className="absolute left-0 top-4 w-20 flex items-center justify-end">
+                    <time dateTime={task.time || undefined} className="text-[10px] font-mono tabular-nums text-muted-foreground mr-4 leading-none tracking-widest uppercase">
+                      {task.time && task.time.split(':').length === 3 && task.time.split(':')[2] !== '00'
+                        ? 'OPEN BLOCK'
+                        : (task.time ? formatTime(task.time) : '--:--')}
+                    </time>
+
+                    {/* Axis Dot */}
+                    <div className="absolute -right-1 h-2 w-2 rounded-full bg-accent ring-4 ring-background z-10 transition-colors duration-300" />
                   </div>
-                </div>
-                {task.time && (
-                  <time dateTime={task.time} className="text-sm font-medium tabular-nums">
-                    {formatTime(task.time)}
-                  </time>
-                )}
-              </div>
-              {/* SUBTASKS */}
-              {task.subtasks && task.subtasks.length > 0 && (
-                <div className="mt-4 ml-10 lg:ml-12 flex flex-col gap-3">
-                  {task.subtasks.map(subtask => (
-                    <div key={subtask.id} className={`flex items-center gap-3 ${subtask.is_done ? 'opacity-50' : 'hover:opacity-80'}`}>
-                       <Checkbox
-                          className="rounded-sm border-2 w-4 h-4"
-                          checked={subtask.is_done}
-                          onCheckedChange={() => handleToggleSubtask(task.id, subtask.id, !subtask.is_done, subtask.subtask_name)}
-                          aria-label={`Mark "${subtask.subtask_name}" as ${subtask.is_done ? 'incomplete' : 'complete'}`}
-                        />
-                        <span className={`text-sm ${subtask.is_done ? 'line-through' : ''}`}>
-                          {subtask.subtask_name}
-                        </span>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </article>
-          ))
-        )}
-      </div>
+                  {/* Task Card Container */}
+                  <article className="pl-28 w-full">
+                    <Card
+                      className={`w-full max-w-lg transition-all duration-300 hover:-translate-y-0.5 border-dashed ${
+                        task.is_done ? 'opacity-50 grayscale bg-muted/30' : 'bg-card'
+                      }`}
+                    >
+                      <CardContent className="p-4 flex flex-col gap-3">
+
+                        {/* Task Header */}
+                        <div className="flex items-start justify-between gap-4">
+                          <div className="flex flex-col gap-1">
+                            <span className={`font-medium text-sm tracking-wide ${task.is_done ? 'line-through text-muted-foreground' : ''}`}>
+                              {task.task_name}
+                            </span>
+                            <span className="text-[10px] font-semibold uppercase tracking-wider text-accent">
+                              {task.task_category?.name}
+                            </span>
+                          </div>
+
+                          <Checkbox
+                            className="rounded-full border-2 shrink-0 mt-0.5"
+                            checked={task.is_done}
+                            onCheckedChange={(checked) => handleToggleTask({
+                              taskId: task.id,
+                              isDone: checked as boolean,
+                              taskName: task.task_name
+                            })}
+                            aria-label={`Mark "${task.task_name}" as ${task.is_done ? 'incomplete' : 'complete'}`}
+                          />
+                        </div>
+
+                        {/* Subtasks */}
+                        {task.subtasks && task.subtasks.length > 0 && (
+                          <ul className="mt-1 space-y-2.5 border-l-2 border-muted pl-3 ml-1 list-none m-0">
+                            {task.subtasks.map((st) => (
+                              <li key={st.id} className="flex items-center justify-between gap-3 group">
+                                <span className={`text-xs ${st.is_done ? 'line-through text-muted-foreground' : 'text-foreground/90'}`}>
+                                  {st.subtask_name}
+                                </span>
+                                <Checkbox
+                                  className="rounded-sm border-2 w-3.5 h-3.5 opacity-0 group-hover:opacity-100 data-[state=checked]:opacity-100 transition-opacity"
+                                  checked={st.is_done}
+                                  onCheckedChange={(checked) => handleToggleSubtask({
+                                    taskId: task.id,
+                                    subtaskId: st.id,
+                                    isDone: checked as boolean,
+                                    subtaskName: st.subtask_name
+                                  })}
+                                />
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </CardContent>
+                    </Card>
+                  </article>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </div>
+      )}
     </section>
   )
 }
