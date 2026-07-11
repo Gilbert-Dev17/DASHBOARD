@@ -221,6 +221,9 @@ export const QuickAddModal = () => {
       return
     }
 
+    // Dispatch optimistic event so AgendaSection picks up tasks instantly
+    window.dispatchEvent(new CustomEvent('optimistic-tasks', { detail: parsed }))
+
     addTasks(parsed)
   }
 

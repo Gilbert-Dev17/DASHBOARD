@@ -8,7 +8,6 @@ export interface QuickAddRegistry {
     match: (pathname: string) => boolean
     Component: ComponentType<any>
 }
-// TODO: Populate Quick Add Registry with more components as needed
 
 export const quickAddRegistry: QuickAddRegistry[] = [
   {

@@ -1,6 +1,6 @@
 'use client'
 
-import { useMemo, useState, useEffect } from 'react'
+import { useMemo, useState, useEffect, useCallback } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { Checkbox } from '@/components/ui/checkbox'
 import { TaskWithSubtasks } from '@/types/dashboard'
@@ -8,6 +8,7 @@ import { formatTime } from '@/lib/formatTime'
 import { toast } from "sonner"
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { toggleTask, toggleSubTask } from '@/lib/actions/updateTasks'
+import type { ParsedTask } from '@/utils/parseTaskLines'
 
 interface TasksProps {
   initialTasks: TaskWithSubtasks[]
@@ -43,6 +44,43 @@ export const AgendaSection = ({ initialTasks }: TasksProps) => {
     setTasks(initialTasks || [])
   }, [initialTasks])
 
+  // Listen for optimistic tasks from QuickAddModal
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const parsed = (e as CustomEvent<ParsedTask[]>).detail
+
+      const optimistic: TaskWithSubtasks[] = parsed.map(p => ({
+        id: crypto.randomUUID(),
+        user_id: '',
+        task_name: p.name,
+        time: p.time || undefined,
+        is_done: false,
+        created_for_date: new Date().toISOString().split('T')[0],
+        created_at: new Date().toISOString(),
+        task_category: p.category ? { id: null, name: p.category } : null,
+        subtasks: p.subtasks.map(s => ({
+          id: crypto.randomUUID(),
+          task_id: '',
+          subtask_name: s,
+          is_done: false,
+          created_at: new Date().toISOString(),
+        })),
+      }))
+
+      setTasks(current => {
+        const merged = [...current, ...optimistic]
+        return merged.sort((a, b) => {
+          if (a.time && b.time) return a.time.localeCompare(b.time)
+          if (a.time && !b.time) return -1
+          if (!a.time && b.time) return 1
+          return 0
+        })
+      })
+    }
+
+    window.addEventListener('optimistic-tasks', handler)
+    return () => window.removeEventListener('optimistic-tasks', handler)
+  }, [])
 
   const { mutate: handleToggleTask } = useMutation({
     mutationFn: async ({ taskId, isDone, taskName }: { taskId: string, isDone: boolean, taskName: string }) => {
