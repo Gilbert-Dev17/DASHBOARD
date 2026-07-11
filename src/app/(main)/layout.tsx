@@ -8,9 +8,9 @@ export default function MainLayout({
     children: ReactNode
 }>){
     return (
-        <body className="min-h-full flex flex-col">
+        <section className="min-h-full flex flex-col" suppressHydrationWarning>
             <Navbar />
             {children}
-        </body>
+        </section>
     )
 }
