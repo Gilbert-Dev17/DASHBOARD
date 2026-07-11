@@ -6,6 +6,7 @@ import { useGeolocation } from '@/hooks/geoLocation'
 import type { WeatherData, Coordinates } from '@/types/weather'
 import { Separator } from '../ui/separator'
 import { Stat, WeatherCardSkeleton } from './weatherCardSkeleton'
+import {toast} from 'sonner'
 
 async function fetchWeather(lat: number, lon: number, signal: AbortSignal): Promise<WeatherData> {
   const res = await fetch(`/api/weather?lat=${lat}&lon=${lon}`, { signal })
@@ -13,8 +14,8 @@ async function fetchWeather(lat: number, lon: number, signal: AbortSignal): Prom
   return res.json() as Promise<WeatherData>
 }
 
-function hasCoords(c: Coordinates | 0): c is Coordinates {
-  return c !== 0
+function hasCoords(c: Coordinates | 0 | null): c is Coordinates {
+  return c !== 0 && c !== null
 }
 
 export function WeatherCard() {
@@ -27,6 +28,8 @@ export function WeatherCard() {
     queryFn: ({ signal }) => fetchWeather(coords!.lat, coords!.lon, signal),
     enabled: !!coords,
     staleTime: 5 * 60_000,
+    refetchInterval: 10 * 60_000,
+    refetchOnWindowFocus: false
   })
 
   const isLoadingWeather = !!coords && isPending && isFetching
@@ -43,13 +46,16 @@ export function WeatherCard() {
           <MapPin size={16} aria-hidden="true" className="text-accent" />
           <span>Location access was denied, so we can&apos;t show local weather.</span>
           <button
-            type="button"
-            onClick={requestLocation}
-            className="inline-flex items-center gap-1 underline underline-offset-2 font-medium"
-          >
-            <RefreshCw size={14} aria-hidden="true" />
-            Try again
-          </button>
+              type="button"
+              onClick={() => {
+                toast.loading('Refreshing weather...', { id: 'weather-refresh' });
+                requestLocation();
+              }}
+              className="inline-flex items-center gap-1 underline underline-offset-2 font-medium"
+            >
+              <RefreshCw size={14} aria-hidden="true" />
+              Try again
+            </button>
         </div>
       )}
 
@@ -60,7 +66,10 @@ export function WeatherCard() {
       {permissionStatus === 'error' && (
         <div className="flex items-center gap-3 text-sm">
           <span role="alert">{errorMessage ?? 'Could not detect your location.'}</span>
-          <button type="button" onClick={requestLocation} className="underline underline-offset-2 font-medium">
+          <button type="button" onClick={() => {
+              toast.loading('Fetching weather...', { id: 'weather-fetch' });
+              refetch();
+            }} className="underline underline-offset-2 font-medium">
             Retry
           </button>
         </div>

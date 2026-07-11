@@ -5,10 +5,6 @@ import {format} from 'date-fns'
 
 // TODO: Consider updating to Google's Weather api call, which is more accurate and has better coverage than OpenWeatherMap. For now, we use OpenWeatherMap because it's free and easy to use. (Google's API requires billing and is more complex to set up.)
 
-
-// * make the dashboard backend ready, connect all of the components to the same interface, and add a supabase backend for user data and tasks. For now, we just return a static user summary. (must be all the same interface.)
-// !! Keep DRY (Don't Repeat Yourself) in mind.
-
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const lat = searchParams.get('lat')
@@ -61,11 +57,14 @@ export async function GET(req: NextRequest) {
       sunSet: format(new Date(raw.sys.sunset * 1000), 'p'),
     }
 
-    console.log('[weather-route] data', data)
+    if (process.env.NODE_ENV === 'development') {
+      console.log('[weather-route] data', data)
+    }
+
     try{
-    return NextResponse.json(data, {
-      headers: { 'Cache-Control': 'private, max-age=600' },
-    })
+      return NextResponse.json(data, {
+        headers: { 'Cache-Control': 'private, max-age=600' },
+      })
   } catch (err) {
     console.error('[weather-route]', err)
     return NextResponse.json({ error: 'Failed to fetch weather' }, { status: 502 })

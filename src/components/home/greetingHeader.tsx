@@ -2,22 +2,19 @@
 
 import React, {useMemo} from 'react'
 import {format} from 'date-fns'
-import { Task } from './schemas'
+import { TaskWithSubtasks } from '@/types/dashboard'
 import { generateDailyBrief } from '@/utils/daily-brief'
 
 interface userGreeting {
-    firstName: string;
-    tasks?: Task[];
+    firstName?: string;
+    tasks?: TaskWithSubtasks[];
 }
-
-// TODO: connect everything in the dashboard page, the schemas should only have one source of truth at all time so then we call only creates copies if needed
-// * and have the proper setup for the dashboard page where we prop drill. goodluckk we can do this and get a freaking job rorrrrrrr
 
 const parseBoldText = (text: string) => {
   const parts = text.split(/(\*\*.*?\*\*)/g);
   return parts.map((part, i) => {
     if (part.startsWith('**') && part.endsWith('**')) {
-      return <span key={i} className="font-bold">{part.slice(2, -2)}</span>;
+      return <span key={i} className="font-semibold text-accent">{part.slice(2, -2)}</span>;
     }
     return <React.Fragment key={i}>{part}</React.Fragment>;
   });
@@ -50,7 +47,7 @@ export const GreetingHeader = ({firstName, tasks = []}: userGreeting) => {
         if (hour >= 17 && hour < 19) return pick(lateAfternoon)
         if (hour >= 19 && hour < 21) return pick(evening)
         return pick(night)
-        }, [])
+      }, [])
 
     const brief = useMemo(() => generateDailyBrief(tasks), [tasks]);
 
@@ -63,7 +60,7 @@ export const GreetingHeader = ({firstName, tasks = []}: userGreeting) => {
           </h1>
         </div>
 
-        <p className="text-2xl md:text-3xl lg:text-4xl leading-snug font-light max-w-4xl tracking-tight">
+        <p className="text-2xl md:text-3xl lg:text-4xl leading-snug font-light max-w-5xl tracking-tight">
           {greeting}, <span className="font-bold">{firstName}</span>. {parseBoldText(brief.message)}
         </p>
     </>

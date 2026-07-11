@@ -98,6 +98,6 @@ const dayProgress = useMemo(() => {
             <Progress value={dayProgress} aria-label="Day Progress" />
             </div>
         </div>
-        </section>
+    </section>
   )
 }

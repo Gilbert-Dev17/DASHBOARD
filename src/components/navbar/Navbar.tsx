@@ -12,7 +12,6 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { getActiveQuickAdds } from './quick-add-registry'
 
 
-
 const Navbar = () => {
   const pathname = usePathname();
   const activeQuickAdds = getActiveQuickAdds(pathname);
@@ -82,18 +81,20 @@ const Navbar = () => {
         </Button>
 
         {/* Profile Avatar */}
-        <button
-          className={`w-10 h-10 rounded-full overflow-hidden border-2 transition-all duration-300 ml-1 hover:opacity-80 ${
-            pathname === '/profile'
-              ? 'border-primary opacity-100 scale-100'
-              : 'border-transparent opacity-80 scale-95'
-          }`}
-        >
-          <Avatar className="w-full h-full grayscale">
-            <AvatarImage  alt="Profile" className="object-cover" />
-            <AvatarFallback>PR</AvatarFallback>
-          </Avatar>
-        </button>
+        <Link href="/profile" className="outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-full ml-1">
+          <button
+            className={`w-10 h-10 rounded-full overflow-hidden border-2 transition-all duration-300 hover:opacity-80 ${
+              pathname === '/profile'
+                ? 'border-primary opacity-100 scale-100'
+                : 'border-transparent opacity-80 scale-95'
+            }`}
+          >
+            <Avatar className="w-full h-full grayscale">
+              <AvatarImage  alt="Profile" className="object-cover" />
+              <AvatarFallback>PR</AvatarFallback>
+            </Avatar>
+          </button>
+        </Link>
 
       </nav>
     </header>
