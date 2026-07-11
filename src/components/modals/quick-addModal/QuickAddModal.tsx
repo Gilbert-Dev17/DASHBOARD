@@ -5,7 +5,7 @@ import { useSearchParams } from 'next/navigation'
 import { useGlobalShortcut } from '@/hooks/useGlobalShortcut'
 import { useMutation } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
-import { TASK_CATEGORIES, CATEGORY_LABELS, type TaskCategory } from '../modals/add-planner/constants'
+import { TASK_CATEGORIES, CATEGORY_LABELS, type TaskCategory } from '../../../lib/constants/tasks'
 import { parseTaskLines, sortParsedTasks, type ParsedTask } from '@/utils/parseTaskLines'
 import { submitQuickAddTasks } from '@/lib/actions/quick-add'
 import {
@@ -14,8 +14,8 @@ import {
 } from '@/components/ui/dialog'
 import { Spinner } from '@/components/ui/spinner'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '../ui/textarea'
-import { Kbd, KbdGroup } from '../ui/kbd'
+import { Textarea } from '../../ui/textarea'
+import { Kbd, KbdGroup } from '../../ui/kbd'
 import { toast } from 'sonner'
 
 export const QuickAddModal = () => {

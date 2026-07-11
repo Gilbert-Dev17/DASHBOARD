@@ -1,5 +1,5 @@
 import { TaskWithSubtasks } from '@/types/dashboard'
-import { CATEGORY_LABELS, TaskCategory } from '@/components/modals/add-planner/constants'
+import { CATEGORY_LABELS, TaskCategory } from '@/lib/constants/tasks'
 
 const ENDINGS = [
   "Let's make today count.",

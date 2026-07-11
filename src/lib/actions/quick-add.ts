@@ -89,7 +89,9 @@ export async function submitQuickAddTasks(tasks: ParsedTask[], targetDate?: stri
       if (subtasksError) throw new Error(`Failed to insert subtasks: ${subtasksError.message}`)
     }
 
-    console.log(`[data]`, insertedTasks, subtasksToInsert )
+    if(process.env.NODE_ENV === 'development'){
+      console.log(`[data]`, insertedTasks, subtasksToInsert )
+    }
 
     revalidatePath('/home')
 

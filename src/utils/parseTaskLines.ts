@@ -1,4 +1,4 @@
-import { TASK_CATEGORIES, type TaskCategory } from '@/components/modals/add-planner/constants'
+import { TASK_CATEGORIES, type TaskCategory } from '@/lib/constants/tasks'
 
 export interface ParsedTask {
   name: string
