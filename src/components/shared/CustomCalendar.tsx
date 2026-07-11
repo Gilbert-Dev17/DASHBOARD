@@ -32,7 +32,7 @@ export const CustomCalendar = ({ initialDate = new Date(), datesWithTasks = [] }
         onSelect={handleSelect}
         captionLayout='dropdown'
         className="w-full bg-transparent font-semibold uppercase tracking-wider"
-        
+
         // Add custom modifiers to highlight days with tasks
         modifiers={{
           hasTask: activeDates

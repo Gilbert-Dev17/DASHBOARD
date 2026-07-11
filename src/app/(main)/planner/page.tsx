@@ -25,11 +25,13 @@ export default async function page(props: pageProps) {
   const finalDateStr = isValidDate ? selectedDateStr : getTodayInTimezone()
   const dateObj = parseISO(finalDateStr)
 
-  const selectedTasks = await getTasksByDate(user.id, finalDateStr)
-
   const startStr = format(startOfMonth(dateObj), 'yyyy-MM-dd')
   const endStr = format(endOfMonth(dateObj), 'yyyy-MM-dd')
-  const datesWithTasks = await getMonthTasksSummary(user.id, startStr, endStr)
+
+  const [selectedTasks, datesWithTasks] = await Promise.all([
+    getTasksByDate(user.id, finalDateStr),
+    getMonthTasksSummary(user.id, startStr, endStr)
+  ])
 
   const isToday = finalDateStr === getTodayInTimezone()
   const agendaTitle = isToday ? "Today's Schedule" : `${format(dateObj, 'MMMM d')} Schedule`

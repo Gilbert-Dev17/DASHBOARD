@@ -1,6 +1,5 @@
 import { createClient } from "@/lib/supabase/server";
 import type { TaskWithSubtasks } from '@/types/dashboard'
-import { getTodayInTimezone } from "@/hooks/getTimezone";
 
 export async function getTasksByDate(userId: string, dateStr: string): Promise<TaskWithSubtasks[]> {
   const supabase = await createClient();
@@ -35,7 +34,6 @@ export async function getTasksByDate(userId: string, dateStr: string): Promise<T
   return (tasks ?? []) as unknown as TaskWithSubtasks[];
 }
 
-// Fetches a summary of tasks for a month (used for dots on the calendar)
 export async function getMonthTasksSummary(userId: string, startStr: string, endStr: string) {
   const supabase = await createClient();
 
