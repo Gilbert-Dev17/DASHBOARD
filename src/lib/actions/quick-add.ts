@@ -5,9 +5,9 @@ import { revalidatePath } from 'next/cache'
 import { ParsedTask } from '@/utils/parseTaskLines'
 import { getTodayInTimezone } from '@/hooks/getTimezone'
 
-export async function submitQuickAddTasks(tasks: ParsedTask[]) {
+export async function submitQuickAddTasks(tasks: ParsedTask[], targetDate?: string) {
 
-  const today = getTodayInTimezone();
+  const today = targetDate || getTodayInTimezone();
 
   if (!tasks || tasks.length === 0) {
     return { success: false, message: 'No tasks to add.' }

@@ -1,22 +1,46 @@
 'use client'
 
-import React, {useState} from 'react'
-
-import {format} from 'date-fns'
-import {Card} from '@/components/ui/card'
+import React from 'react'
+import { useRouter } from 'next/navigation'
+import { format, parseISO } from 'date-fns'
+import { Card } from '@/components/ui/card'
 import { Calendar } from '@/components/ui/calendar'
 
-export const CustomCalendar = () => {
-    const [date, setDate] = useState<Date | undefined>(new Date())
+interface CustomCalendarProps {
+  initialDate?: Date;
+  datesWithTasks?: string[]; // Array of 'YYYY-MM-DD' strings
+}
+
+export const CustomCalendar = ({ initialDate = new Date(), datesWithTasks = [] }: CustomCalendarProps) => {
+  const router = useRouter()
+
+  const handleSelect = (date: Date | undefined) => {
+    if (!date) return
+    const dateStr = format(date, 'yyyy-MM-dd')
+    // Push the selected date to the URL to trigger a server-side fetch
+    router.push(`/planner?date=${dateStr}`)
+  }
+
+  // Convert string array to Date array for the calendar modifier
+  const activeDates = datesWithTasks.map(dateStr => parseISO(dateStr))
 
   return (
     <Card className="lg:col-span-8 p-6 bg-secondary">
       <Calendar
         mode="single"
-        selected={date}
-        onSelect={setDate}
+        selected={initialDate}
+        onSelect={handleSelect}
         captionLayout='dropdown'
         className="w-full bg-transparent font-semibold uppercase tracking-wider"
+        
+        // Add custom modifiers to highlight days with tasks
+        modifiers={{
+          hasTask: activeDates
+        }}
+        modifiersClassNames={{
+          hasTask: "relative after:content-[''] after:absolute after:bottom-1 after:left-1/2 after:-translate-x-1/2 after:w-1 after:h-1 after:bg-accent after:rounded-full"
+        }}
+
         // 1. Format the weekdays to 3 letters (Sun, Mon, Tue)
         formatters={{
           formatWeekdayName: (date) => format(date, "E"),
@@ -29,8 +53,6 @@ export const CustomCalendar = () => {
 
           button_previous: "static h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
           button_next: "static h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
-          // Style the weekdays (v10 uses 'weekday' instead of 'head_cell')
-        //   weekday: " font-semibold text-[0.75rem] uppercase tracking-wider w-9 text-center",
         }}
         // 3. Updated components for v10
         components={{

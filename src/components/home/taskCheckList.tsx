@@ -12,6 +12,7 @@ import type { ParsedTask } from '@/utils/parseTaskLines'
 
 interface TasksProps {
   initialTasks: TaskWithSubtasks[]
+  selectedDateStr?: string // Passed in when viewing a specific date on the planner
 }
 
 // --- Optimistic Update Helpers ---
@@ -36,14 +37,14 @@ function getOptimisticSubtasks(tasks: TaskWithSubtasks[], taskId: string, subtas
   })
 }
 
-export const AgendaSection = ({ initialTasks }: TasksProps) => {
+export const AgendaSection = ({ initialTasks, selectedDateStr }: TasksProps) => {
 
   const [tasks, setTasks] = useState<TaskWithSubtasks[]>(initialTasks || [])
 
   useEffect(() => {
     setTasks(initialTasks || [])
   }, [initialTasks])
-
+// TODO: turn into a reusable component
   // Listen for optimistic tasks from QuickAddModal
   useEffect(() => {
     const handler = (e: Event) => {
@@ -55,7 +56,7 @@ export const AgendaSection = ({ initialTasks }: TasksProps) => {
         task_name: p.name,
         time: p.time || undefined,
         is_done: false,
-        created_for_date: new Date().toISOString().split('T')[0],
+        created_for_date: selectedDateStr || new Date().toISOString().split('T')[0],
         created_at: new Date().toISOString(),
         task_category: p.category ? { id: null, name: p.category } : null,
         subtasks: p.subtasks.map(s => ({
@@ -80,7 +81,8 @@ export const AgendaSection = ({ initialTasks }: TasksProps) => {
 
     window.addEventListener('optimistic-tasks', handler)
     return () => window.removeEventListener('optimistic-tasks', handler)
-  }, [])
+    // Pass selectedDateStr into the dependency array so it binds correctly
+  }, [selectedDateStr])
 
   const { mutate: handleToggleTask } = useMutation({
     mutationFn: async ({ taskId, isDone, taskName }: { taskId: string, isDone: boolean, taskName: string }) => {
