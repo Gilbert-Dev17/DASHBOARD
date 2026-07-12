@@ -32,7 +32,7 @@ export const NetWorthOverview = ({ wallets }: NetWorthProps) => {
         <h2 id="finances-heading" className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground">
           Net Worth
         </h2>
-        <div className="text-5xl md:text-6xl font-light tracking-tighter tabular-nums flex items-baseline gap-1">
+        <div className="text-5xl md:text-6xl font-light text-accent tracking-tighter tabular-nums flex items-baseline gap-1">
           {netWorth < 0 ? '-' : ''}{nwDollars.replace('-', '')}
           {nwCents && <span className="text-2xl md:text-3xl text-muted-foreground">.{nwCents}</span>}
         </div>

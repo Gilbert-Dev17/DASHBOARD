@@ -193,20 +193,19 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
                     {/* Axis Dot */}
                     <div className="absolute -right-1 h-2 w-2 rounded-full bg-accent ring-4 ring-background z-10 transition-colors duration-300" />
                   </div>
-                  {/* Task Card Container */}
-                  <article className="pl-28 w-full">
+                  {/* Task Container */}
+                  <article className='pl-28 w-full'>
                     <Card
-                      className={`w-full max-w-lg transition-all duration-300 hover:-translate-y-0.5 border-dashed cursor-pointer ${
-                        task.is_done ? 'opacity-50 grayscale bg-muted/30' : 'bg-card'
+                      className={` max-w-lg cursor-pointer group transition-all duration-300 bg-transparent  ${
+                        task.is_done ? 'opacity-50 grayscale' : ''
                       }`}
                       onClick={() => setEditingTask(task)}
                     >
                       <CardContent className="flex flex-col gap-3">
-
                         {/* Task Header */}
                         <div className="flex items-start justify-between gap-4">
-                          <div className="flex flex-col gap-1">
-                            <span className={`font-medium text-sm tracking-wide ${task.is_done ? 'line-through text-muted-foreground' : ''}`}>
+                          <div className="flex flex-col">
+                            <span className={`font-medium text-sm tracking-wide ${task.is_done ? 'line-through text-muted-foreground' : 'text-foreground/90 group-hover:text-foreground'}`}>
                               {task.task_name}
                             </span>
                             <span className="text-[10px] font-semibold uppercase tracking-wider text-accent">
