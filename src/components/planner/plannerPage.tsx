@@ -13,7 +13,7 @@ interface PageProps {
   agendaTitle: string
   initialTasks: TaskWithSubtasks[]
   dateObj: Date
-  datesWithTasks: string[]
+  datesWithTasks: { date: string; count: number }[]
   finalDate: string
 }
 
@@ -47,7 +47,7 @@ export function PlannerPage({ agendaTitle, initialTasks, dateObj, datesWithTasks
                )}
              </div>
 
-            <AgendaSection initialTasks={initialTasks} selectedDateStr={finalDate} />
+            <AgendaSection initialTasks={initialTasks} selectedDateStr={finalDate} showTitle={false} />
           </div>
       </div>
     </PageComponent>

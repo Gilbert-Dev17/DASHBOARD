@@ -1,7 +1,8 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type { TaskWithSubtasks } from '@/types/dashboard'
 
-export async function getTasksByDate(userId: string, dateStr: string): Promise<TaskWithSubtasks[]> {
+export const getTasksByDate = cache(async (userId: string, dateStr: string): Promise<TaskWithSubtasks[]> => {
   const supabase = await createClient();
 
   const { data: tasks, error } = await supabase
@@ -32,9 +33,9 @@ export async function getTasksByDate(userId: string, dateStr: string): Promise<T
   }
 
   return (tasks ?? []) as unknown as TaskWithSubtasks[];
-}
+});
 
-export async function getMonthTasksSummary(userId: string, startStr: string, endStr: string) {
+export const getMonthTasksSummary = cache(async (userId: string, startStr: string, endStr: string) => {
   const supabase = await createClient();
 
   const { data, error } = await supabase
@@ -49,7 +50,15 @@ export async function getMonthTasksSummary(userId: string, startStr: string, end
     return [];
   }
 
-  // Extract unique dates that have at least one task
-  const datesWithTasks = Array.from(new Set(data?.map(t => t.created_for_date) || []));
-  return datesWithTasks;
-}
+  // Group tasks by date and count them
+  const countsByDate = data?.reduce((acc: Record<string, number>, task) => {
+    const date = task.created_for_date
+    acc[date] = (acc[date] || 0) + 1
+    return acc
+  }, {}) || {}
+
+  return Object.entries(countsByDate).map(([date, count]) => ({
+    date,
+    count
+  }));
+});

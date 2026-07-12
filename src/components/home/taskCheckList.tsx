@@ -13,6 +13,7 @@ import type { ParsedTask } from '@/utils/parseTaskLines'
 interface TasksProps {
   initialTasks: TaskWithSubtasks[]
   selectedDateStr?: string // Passed in when viewing a specific date on the planner
+  showTitle?: boolean
 }
 
 // --- Optimistic Update Helpers ---
@@ -37,7 +38,7 @@ function getOptimisticSubtasks(tasks: TaskWithSubtasks[], taskId: string, subtas
   })
 }
 
-export const AgendaSection = ({ initialTasks, selectedDateStr }: TasksProps) => {
+export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true }: TasksProps) => {
 
   const [tasks, setTasks] = useState<TaskWithSubtasks[]>(initialTasks || [])
 
@@ -122,11 +123,13 @@ export const AgendaSection = ({ initialTasks, selectedDateStr }: TasksProps) => 
 
   return (
     <section className="lg:col-span-7 flex flex-col h-full overflow-hidden" aria-labelledby="agenda-heading">
-      <div className="flex justify-between items-end mb-6 lg:mb-8 shrink-0">
-        <h2 id="agenda-heading" className="text-xs font-semibold uppercase tracking-[0.2em] transition-colors duration-500">
-          Today's Agenda
-        </h2>
-      </div>
+      {showTitle && (
+        <div className="flex justify-between items-end mb-6 lg:mb-8 shrink-0">
+          <h2 id="agenda-heading" className="text-xs font-semibold uppercase tracking-[0.2em] transition-colors duration-500">
+            Today's Agenda
+          </h2>
+        </div>
+      )}
 
       {tasks.length === 0 ? (
         <p className="text-muted-foreground py-4">No tasks for today.</p>

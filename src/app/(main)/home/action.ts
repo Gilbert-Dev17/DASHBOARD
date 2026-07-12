@@ -1,8 +1,9 @@
+import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type { TaskWithSubtasks, WalletSummary } from '@/types/dashboard'
 import { getTodayInTimezone } from "@/hooks/getTimezone";
 
-export async function getHomeData(userId: string): Promise<TaskWithSubtasks[]> {
+export const getHomeData = cache(async (userId: string): Promise<TaskWithSubtasks[]> => {
   const supabase = await createClient();
   const today = getTodayInTimezone();
 
@@ -34,17 +35,16 @@ export async function getHomeData(userId: string): Promise<TaskWithSubtasks[]> {
   }
 
   return (tasks ?? []) as unknown as TaskWithSubtasks[];
-}
+});
 
-export async function getWalletData(userId: string):Promise<WalletSummary[]> {
+export const getWalletData = cache(async (userId: string): Promise<WalletSummary[]> => {
   const supabase = await createClient();
 
-  const {data: wallet, error} = await supabase
-  .from('wallets')
-  .select('*')
-  .eq('user_id', userId)
-  .order('created_at', {ascending: true})
-
+  const { data: wallet, error } = await supabase
+    .from('wallets')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: true })
 
   if (error) {
     console.error("Error fetching wallets:", error.message);
@@ -52,4 +52,4 @@ export async function getWalletData(userId: string):Promise<WalletSummary[]> {
   }
 
   return wallet as WalletSummary[];
-}
+});
