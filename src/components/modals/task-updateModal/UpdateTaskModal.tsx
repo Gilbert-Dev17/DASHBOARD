@@ -11,7 +11,7 @@ import { TaskWithSubtasks } from '@/types/dashboard'
 import { editTaskSchema, type EditTaskFormValues } from './schemas'
 import {
   Dialog, DialogContent, DialogDescription,
-  DialogHeader, DialogTitle,
+  DialogHeader, DialogTitle, DialogFooter
 } from '@/components/ui/dialog'
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
@@ -21,6 +21,8 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
+
+import { DeleteTaskModal } from '../task-deleteModal/DeleteTaskModal'
 
 interface UpdateTaskModalProps {
   task: TaskWithSubtasks
@@ -32,6 +34,7 @@ export const UpdateTaskModal = ({ task, open, onOpenChange }: UpdateTaskModalPro
   const [deletedSubtaskIds, setDeletedSubtaskIds] = useState<string[]>([])
   const [newSubtaskText, setNewSubtaskText] = useState('')
   const newSubtaskRef = useRef<HTMLInputElement>(null)
+
 
   const {
     register, handleSubmit, control, setValue, watch, reset, formState: { errors },
@@ -251,21 +254,30 @@ export const UpdateTaskModal = ({ task, open, onOpenChange }: UpdateTaskModalPro
           </div>
 
           {/* ── Footer ── */}
-          <div className="flex items-center justify-end gap-3 mt-2">
-            <Button type="button" variant="ghost" onClick={() => onOpenChange(false)} disabled={isPending}>
-              Cancel
-            </Button>
-            <Button type="submit" disabled={isPending}>
-              {isPending ? (
-                <span className="inline-flex items-center gap-2">
-                  <Spinner />
-                  Saving...
-                </span>
-              ) : (
-                'Save Changes'
-              )}
-            </Button>
-          </div>
+          <DialogFooter className="sm:justify-between items-center">
+
+              <DeleteTaskModal
+                taskId={task.id}
+                taskName={task.task_name}
+                onDeleted={() => onOpenChange(false)}
+              />
+
+            <div className="flex items-center justify-end gap-3 ">
+              <Button type="button" variant="secondary" onClick={() => onOpenChange(false)} disabled={isPending}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isPending}>
+                {isPending ? (
+                  <span className="inline-flex items-center gap-2">
+                    <Spinner />
+                    Saving...
+                  </span>
+                ) : (
+                  'Save Changes'
+                )}
+              </Button>
+            </div>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { revalidatePath } from 'next/cache'
+import { getUser } from "../auth/get-user"
 
 interface SubtaskUpdate {
   id: string
@@ -23,7 +24,7 @@ interface EditTaskPayload {
 export async function submitTaskEdit(payload: EditTaskPayload) {
   try {
     const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
+    const user = await getUser();
     if (!user) return { success: false, message: 'Not authenticated.' }
 
     // 1. Resolve category ID if a category name was provided
