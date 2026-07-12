@@ -1,22 +1,22 @@
 'use client'
 
-import { useMemo, useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { Checkbox } from '@/components/ui/checkbox'
 import { TaskWithSubtasks } from '@/types/dashboard'
 import { formatTime } from '@/lib/formatTime'
 import { toast } from "sonner"
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { toggleTask, toggleSubTask } from '@/lib/actions/updateTasks'
+import { Card, CardContent, } from '@/components/ui/card'
+import { toggleTask, toggleSubTask } from '@/lib/actions/toggleTasks'
+import { UpdateTaskModal } from '@/components/modals/task-updateModal/UpdateTaskModal'
 import type { ParsedTask } from '@/utils/parseTaskLines'
 
 interface TasksProps {
   initialTasks: TaskWithSubtasks[]
-  selectedDateStr?: string // Passed in when viewing a specific date on the planner
+  selectedDateStr?: string
   showTitle?: boolean
 }
 
-// --- Optimistic Update Helpers ---
 function getOptimisticTasks(tasks: TaskWithSubtasks[], taskId: string, isDone: boolean): TaskWithSubtasks[] {
   return tasks.map(task => {
     if (task.id !== taskId) return task
@@ -41,12 +41,13 @@ function getOptimisticSubtasks(tasks: TaskWithSubtasks[], taskId: string, subtas
 export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true }: TasksProps) => {
 
   const [tasks, setTasks] = useState<TaskWithSubtasks[]>(initialTasks || [])
+  const [editingTask, setEditingTask] = useState<TaskWithSubtasks | null>(null)
 
   useEffect(() => {
     setTasks(initialTasks || [])
   }, [initialTasks])
 // TODO: turn into a reusable component
-  // Listen for optimistic tasks from QuickAddModal
+  //* Listen for optimistic tasks from QuickAddModal
   useEffect(() => {
     const handler = (e: Event) => {
       const parsed = (e as CustomEvent<ParsedTask[]>).detail
@@ -122,6 +123,7 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
   })
 
   return (
+    <>
     <section className="lg:col-span-7 flex flex-col h-full overflow-hidden" aria-labelledby="agenda-heading">
       {showTitle && (
         <div className="flex justify-between items-end mb-6 lg:mb-8 shrink-0">
@@ -157,9 +159,10 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
                   {/* Task Card Container */}
                   <article className="pl-28 w-full">
                     <Card
-                      className={`w-full max-w-lg transition-all duration-300 hover:-translate-y-0.5 border-dashed ${
+                      className={`w-full max-w-lg transition-all duration-300 hover:-translate-y-0.5 border-dashed cursor-pointer ${
                         task.is_done ? 'opacity-50 grayscale bg-muted/30' : 'bg-card'
                       }`}
+                      onClick={() => setEditingTask(task)}
                     >
                       <CardContent className="flex flex-col gap-3">
 
@@ -218,5 +221,15 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
         </div>
       )}
     </section>
+
+    {/* Edit Task Modal */}
+    {editingTask && (
+      <UpdateTaskModal
+        task={editingTask}
+        open={!!editingTask}
+        onOpenChange={(open) => { if (!open) setEditingTask(null) }}
+      />
+    )}
+  </>
   )
 }
