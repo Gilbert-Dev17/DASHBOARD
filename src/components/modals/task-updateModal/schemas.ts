@@ -15,7 +15,7 @@ export const editTaskSchema = z.object({
   subtasks: z
     .array(
       z.object({
-        id: z.string().nullable(),
+        dbId: z.string().nullable(),
         name: z.string().trim().min(1, 'Subtask name cannot be empty.'),
       })
     )

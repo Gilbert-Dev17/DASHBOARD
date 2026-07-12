@@ -9,6 +9,7 @@ import { TASK_CATEGORIES, CATEGORY_LABELS } from '@/lib/constants/tasks'
 import { submitTaskEdit } from '@/lib/actions/edit-task'
 import { TaskWithSubtasks } from '@/types/dashboard'
 import { editTaskSchema, type EditTaskFormValues } from './schemas'
+import { Kbd } from '@/components/ui/kbd'
 import {
   Dialog, DialogContent, DialogDescription,
   DialogHeader, DialogTitle, DialogFooter
@@ -37,14 +38,14 @@ export const UpdateTaskModal = ({ task, open, onOpenChange }: UpdateTaskModalPro
 
 
   const {
-    register, handleSubmit, control, setValue, watch, reset, formState: { errors },
+    register, handleSubmit, control, setValue, watch, reset, formState: { errors, isDirty },
   } = useForm<EditTaskFormValues>({
     resolver: zodResolver(editTaskSchema as any),
     defaultValues: {
       task_name: task.task_name,
       time: task.time ? task.time.slice(0, 5) : '',
       category: (task.task_category?.name as EditTaskFormValues['category']) || undefined,
-      subtasks: task.subtasks?.map(st => ({ id: st.id, name: st.subtask_name })) || [],
+      subtasks: task.subtasks?.map(st => ({ dbId: st.id, name: st.subtask_name })) || [],
     },
   })
 
@@ -61,7 +62,7 @@ export const UpdateTaskModal = ({ task, open, onOpenChange }: UpdateTaskModalPro
       task_name: task.task_name,
       time: task.time ? task.time.slice(0, 5) : '',
       category: (task.task_category?.name as EditTaskFormValues['category']) || undefined,
-      subtasks: task.subtasks?.map(st => ({ id: st.id, name: st.subtask_name })) || [],
+      subtasks: task.subtasks?.map(st => ({ dbId: st.id, name: st.subtask_name })) || [],
     })
     setDeletedSubtaskIds([])
     setNewSubtaskText('')
@@ -69,13 +70,13 @@ export const UpdateTaskModal = ({ task, open, onOpenChange }: UpdateTaskModalPro
 
   // ── Mutation ──
   const { mutate: editTask, isPending } = useMutation({
-    mutationFn: (values: EditTaskFormValues) => {
+    mutationFn: ({ values, deletedIds }: { values: EditTaskFormValues, deletedIds: string[] }) => {
       const updated = values.subtasks
-        .filter(st => st.id !== null)
-        .map(st => ({ id: st.id!, subtask_name: st.name }))
+        .filter(st => st.dbId !== null)
+        .map(st => ({ id: st.dbId!, subtask_name: st.name }))
 
       const added = values.subtasks
-        .filter(st => st.id === null)
+        .filter(st => st.dbId === null)
         .map(st => st.name)
 
       return submitTaskEdit({
@@ -83,7 +84,7 @@ export const UpdateTaskModal = ({ task, open, onOpenChange }: UpdateTaskModalPro
         task_name: values.task_name,
         time: values.time ? `${values.time}:00` : null,
         category_name: values.category || null,
-        subtasks: { updated, added, deleted: deletedSubtaskIds },
+        subtasks: { updated, added, deleted: deletedIds },
       })
     },
     onSuccess: (result) => {
@@ -103,15 +104,16 @@ export const UpdateTaskModal = ({ task, open, onOpenChange }: UpdateTaskModalPro
   const addSubtask = () => {
     const trimmed = newSubtaskText.trim()
     if (!trimmed) return
-    append({ id: null, name: trimmed })
+    append({ dbId: null, name: trimmed })
     setNewSubtaskText('')
     requestAnimationFrame(() => newSubtaskRef.current?.focus())
   }
 
   const removeSubtask = (index: number) => {
-    const removed = fields[index]
-    if (removed.id) {
-      setDeletedSubtaskIds(prev => [...prev, removed.id!])
+    const subtaskValues = watch('subtasks')
+    const removed = subtaskValues?.[index]
+    if (removed?.dbId) {
+      setDeletedSubtaskIds(prev => [...prev, removed.dbId!])
     }
     remove(index)
   }
@@ -124,7 +126,10 @@ export const UpdateTaskModal = ({ task, open, onOpenChange }: UpdateTaskModalPro
   }
 
   const onSubmit = (values: EditTaskFormValues) => {
-    editTask(values)
+    window.dispatchEvent(new CustomEvent('optimistic-task-update', {
+      detail: { taskId: task.id, values }
+    }))
+    editTask({ values, deletedIds: deletedSubtaskIds })
   }
 
   return (
@@ -256,22 +261,24 @@ export const UpdateTaskModal = ({ task, open, onOpenChange }: UpdateTaskModalPro
           {/* ── Footer ── */}
           <DialogFooter className="sm:justify-between items-center">
 
-              <DeleteTaskModal
-                taskId={task.id}
-                taskName={task.task_name}
-                onDeleted={() => onOpenChange(false)}
-              />
+            <DeleteTaskModal
+              taskId={task.id}
+              taskName={task.task_name}
+              onDeleted={() => onOpenChange(false)}
+            />
 
             <div className="flex items-center justify-end gap-3 ">
               <Button type="button" variant="secondary" onClick={() => onOpenChange(false)} disabled={isPending}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isPending}>
+              <Button type="submit" disabled={isPending || newSubtaskText.trim().length > 0 || !isDirty}>
                 {isPending ? (
                   <span className="inline-flex items-center gap-2">
                     <Spinner />
                     Saving...
                   </span>
+                ) : newSubtaskText.trim().length > 0 ? (
+                  <span> Hit <Kbd className='bg-foreground'>Enter</Kbd> to add subtask </span>
                 ) : (
                   'Save Changes'
                 )}

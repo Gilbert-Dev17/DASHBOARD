@@ -26,7 +26,6 @@ export const QuickAddModal = () => {
   const searchParams = useSearchParams()
   const targetDateStr = searchParams.get('date')
 
-  // ── Autocomplete State ──
   const [showMenu, setShowMenu] = useState(false)
   const [menuFilter, setMenuFilter] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)

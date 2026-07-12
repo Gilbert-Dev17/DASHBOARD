@@ -86,6 +86,43 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
       // Pass selectedDateStr into the dependency array so it binds correctly
   }, [selectedDateStr])
 
+    //* Listen for optimistic task updates from UpdateTaskModal
+    useEffect(() => {
+      const handler = (e: Event) => {
+        const { taskId, values } = (e as CustomEvent).detail
+
+        setTasks(current => {
+          const updated = current.map(task => {
+            if (task.id !== taskId) return task
+
+            return {
+              ...task,
+              task_name: values.task_name,
+              time: values.time ? `${values.time}:00` : undefined,
+              task_category: values.category ? { id: task.task_category?.id || null, name: values.category } : null,
+              subtasks: (values.subtasks || []).map((st: any) => ({
+                id: st.dbId || crypto.randomUUID(),
+                task_id: taskId,
+                subtask_name: st.name,
+                is_done: task.subtasks?.find(oldSt => oldSt.id === st.dbId)?.is_done || false,
+                created_at: new Date().toISOString()
+              }))
+            }
+          })
+
+          return updated.sort((a, b) => {
+            if (a.time && b.time) return a.time.localeCompare(b.time)
+            if (a.time && !b.time) return -1
+            if (!a.time && b.time) return 1
+            return 0
+          })
+        })
+      }
+
+      window.addEventListener('optimistic-task-update', handler)
+      return () => window.removeEventListener('optimistic-task-update', handler)
+    }, [])
+
   const { mutate: handleToggleTask } = useMutation({
     mutationFn: async ({ taskId, isDone, taskName }: { taskId: string, isDone: boolean, taskName: string }) => {
       const result = await toggleTask(taskId, isDone)
