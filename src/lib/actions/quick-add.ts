@@ -5,9 +5,9 @@ import { revalidatePath } from 'next/cache'
 import { ParsedTask } from '@/utils/parseTaskLines'
 import { getTodayInTimezone } from '@/hooks/getTimezone'
 
-export async function submitQuickAddTasks(tasks: ParsedTask[]) {
+export async function submitQuickAddTasks(tasks: ParsedTask[], targetDate?: string) {
 
-  const today = getTodayInTimezone();
+  const today = targetDate || getTodayInTimezone();
 
   if (!tasks || tasks.length === 0) {
     return { success: false, message: 'No tasks to add.' }
@@ -89,11 +89,15 @@ export async function submitQuickAddTasks(tasks: ParsedTask[]) {
       if (subtasksError) throw new Error(`Failed to insert subtasks: ${subtasksError.message}`)
     }
 
-    console.log(`[data]`, insertedTasks, subtasksToInsert )
+    if(process.env.NODE_ENV === 'development'){
+      console.log(`[data]`, insertedTasks, subtasksToInsert )
+    }
 
     revalidatePath('/home')
+    revalidatePath('/planner')
 
-    return { success: true, message: 'Tasks added successfully!' }
+    
+    return { success: true, message: 'Tasks successfully added!' }
   } catch (error: any) {
     console.error('Quick Add Error:', error)
     return { success: false, message: error.message || 'An unexpected error occurred.' }

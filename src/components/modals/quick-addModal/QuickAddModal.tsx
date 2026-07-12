@@ -1,11 +1,12 @@
 'use client'
 
 import { useCallback, useEffect, useState, useRef, type ChangeEvent, type KeyboardEvent } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { useGlobalShortcut } from '@/hooks/useGlobalShortcut'
 import { useMutation } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
-import { TASK_CATEGORIES, CATEGORY_LABELS, type TaskCategory } from '../modals/add-planner/constants'
-import { parseTaskLines, sortParsedTasks } from '@/utils/parseTaskLines'
+import { TASK_CATEGORIES, CATEGORY_LABELS, type TaskCategory } from '../../../lib/constants/tasks'
+import { parseTaskLines, sortParsedTasks, type ParsedTask } from '@/utils/parseTaskLines'
 import { submitQuickAddTasks } from '@/lib/actions/quick-add'
 import {
   Dialog, DialogContent, DialogDescription,
@@ -13,8 +14,8 @@ import {
 } from '@/components/ui/dialog'
 import { Spinner } from '@/components/ui/spinner'
 import { Button } from '@/components/ui/button'
-import { Textarea } from '../ui/textarea'
-import { Kbd, KbdGroup } from '../ui/kbd'
+import { Textarea } from '../../ui/textarea'
+import { Kbd, KbdGroup } from '../../ui/kbd'
 import { toast } from 'sonner'
 
 export const QuickAddModal = () => {
@@ -22,6 +23,8 @@ export const QuickAddModal = () => {
   const [text, setText] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
+  const searchParams = useSearchParams()
+  const targetDateStr = searchParams.get('date')
 
   // ── Autocomplete State ──
   const [showMenu, setShowMenu] = useState(false)
@@ -31,7 +34,7 @@ export const QuickAddModal = () => {
   const [atTokenStart, setAtTokenStart] = useState<number | null>(null)
 
   const { mutate: addTasks, isPending } = useMutation({
-    mutationFn: submitQuickAddTasks,
+    mutationFn: (tasks: ParsedTask[]) => submitQuickAddTasks(tasks, targetDateStr || undefined),
     onSuccess: (result) => {
       if (result.success) {
         toast.success(result.message)

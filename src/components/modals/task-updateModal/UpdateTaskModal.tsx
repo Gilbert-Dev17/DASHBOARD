@@ -1,0 +1,285 @@
+'use client'
+
+import { useState, useRef, useEffect, type KeyboardEvent } from 'react'
+import { useForm, useFieldArray } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { useMutation } from '@tanstack/react-query'
+import { X, Plus } from 'lucide-react'
+import { TASK_CATEGORIES, CATEGORY_LABELS } from '@/lib/constants/tasks'
+import { submitTaskEdit } from '@/lib/actions/edit-task'
+import { TaskWithSubtasks } from '@/types/dashboard'
+import { editTaskSchema, type EditTaskFormValues } from './schemas'
+import {
+  Dialog, DialogContent, DialogDescription,
+  DialogHeader, DialogTitle, DialogFooter
+} from '@/components/ui/dialog'
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from '@/components/ui/select'
+import { Spinner } from '@/components/ui/spinner'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { toast } from 'sonner'
+
+import { DeleteTaskModal } from '../task-deleteModal/DeleteTaskModal'
+
+interface UpdateTaskModalProps {
+  task: TaskWithSubtasks
+  open: boolean
+  onOpenChange: (open: boolean) => void
+}
+
+export const UpdateTaskModal = ({ task, open, onOpenChange }: UpdateTaskModalProps) => {
+  const [deletedSubtaskIds, setDeletedSubtaskIds] = useState<string[]>([])
+  const [newSubtaskText, setNewSubtaskText] = useState('')
+  const newSubtaskRef = useRef<HTMLInputElement>(null)
+
+
+  const {
+    register, handleSubmit, control, setValue, watch, reset, formState: { errors },
+  } = useForm<EditTaskFormValues>({
+    resolver: zodResolver(editTaskSchema as any),
+    defaultValues: {
+      task_name: task.task_name,
+      time: task.time ? task.time.slice(0, 5) : '',
+      category: (task.task_category?.name as EditTaskFormValues['category']) || undefined,
+      subtasks: task.subtasks?.map(st => ({ id: st.id, name: st.subtask_name })) || [],
+    },
+  })
+
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: 'subtasks',
+  })
+
+  const category = watch('category')
+
+  // Reset form when task prop changes (different task clicked)
+  useEffect(() => {
+    reset({
+      task_name: task.task_name,
+      time: task.time ? task.time.slice(0, 5) : '',
+      category: (task.task_category?.name as EditTaskFormValues['category']) || undefined,
+      subtasks: task.subtasks?.map(st => ({ id: st.id, name: st.subtask_name })) || [],
+    })
+    setDeletedSubtaskIds([])
+    setNewSubtaskText('')
+  }, [task, reset])
+
+  // ── Mutation ──
+  const { mutate: editTask, isPending } = useMutation({
+    mutationFn: (values: EditTaskFormValues) => {
+      const updated = values.subtasks
+        .filter(st => st.id !== null)
+        .map(st => ({ id: st.id!, subtask_name: st.name }))
+
+      const added = values.subtasks
+        .filter(st => st.id === null)
+        .map(st => st.name)
+
+      return submitTaskEdit({
+        taskId: task.id,
+        task_name: values.task_name,
+        time: values.time ? `${values.time}:00` : null,
+        category_name: values.category || null,
+        subtasks: { updated, added, deleted: deletedSubtaskIds },
+      })
+    },
+    onSuccess: (result) => {
+      if (result.success) {
+        toast.success(result.message)
+        onOpenChange(false)
+      } else {
+        toast.error(result.message)
+      }
+    },
+    onError: (error) => {
+      toast.error('Failed to update task: ' + error.message)
+    },
+  })
+
+  // ── Subtask Handlers ──
+  const addSubtask = () => {
+    const trimmed = newSubtaskText.trim()
+    if (!trimmed) return
+    append({ id: null, name: trimmed })
+    setNewSubtaskText('')
+    requestAnimationFrame(() => newSubtaskRef.current?.focus())
+  }
+
+  const removeSubtask = (index: number) => {
+    const removed = fields[index]
+    if (removed.id) {
+      setDeletedSubtaskIds(prev => [...prev, removed.id!])
+    }
+    remove(index)
+  }
+
+  const handleNewSubtaskKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      addSubtask()
+    }
+  }
+
+  const onSubmit = (values: EditTaskFormValues) => {
+    editTask(values)
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={(value) => {
+      onOpenChange(value)
+      if (!value) {
+        reset()
+        setDeletedSubtaskIds([])
+        setNewSubtaskText('')
+      }
+    }}>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle className="font-bold">Edit Task</DialogTitle>
+          <DialogDescription>
+            Update the task details below.
+          </DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 mt-2" noValidate>
+
+          {/* Task Name */}
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="edit-task-name" className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              Task Name
+            </Label>
+            <Input
+              id="edit-task-name"
+              {...register('task_name')}
+              placeholder="Enter task name"
+              autoFocus
+            />
+            {errors.task_name && (
+              <p className="text-xs text-destructive">{errors.task_name.message}</p>
+            )}
+          </div>
+
+          {/* Time & Category Row */}
+          <div className="grid grid-cols-2 gap-4">
+            {/* Time */}
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="edit-task-time" className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                Time
+              </Label>
+              <Input
+                id="edit-task-time"
+                type="time"
+                {...register('time')}
+              />
+            </div>
+
+            {/* Category */}
+            <div className="flex flex-col gap-2">
+              <Label className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                Category
+              </Label>
+              <Select value={category} onValueChange={(val) => setValue('category', val as EditTaskFormValues['category'], { shouldValidate: true })}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select category" />
+                </SelectTrigger>
+                <SelectContent>
+                  {TASK_CATEGORIES.map(cat => (
+                    <SelectItem key={cat} value={cat}>
+                      {CATEGORY_LABELS[cat]}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.category && (
+                <p className="text-xs text-destructive">{errors.category.message}</p>
+              )}
+            </div>
+          </div>
+
+          {/* Subtasks */}
+          <div className="flex flex-col gap-2">
+            <Label className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+              Subtasks
+            </Label>
+
+            {fields.length > 0 && (
+              <ul className="flex flex-col gap-2 border-l-2 border-muted pl-3 ml-1">
+                {fields.map((field, i) => (
+                  <li key={field.id} className="flex items-center gap-2 group">
+                    <Input
+                      {...register(`subtasks.${i}.name`)}
+                      className="h-8 text-sm"
+                      placeholder="Subtask name"
+                    />
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      className="h-7 w-7 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+                      onClick={() => removeSubtask(i)}
+                      aria-label={`Remove subtask`}
+                    >
+                      <X size={14} />
+                    </Button>
+                  </li>
+                ))}
+              </ul>
+            )}
+
+            {/* Add New Subtask */}
+            <div className="flex items-center gap-2 mt-1">
+              <Input
+                ref={newSubtaskRef}
+                value={newSubtaskText}
+                onChange={e => setNewSubtaskText(e.target.value)}
+                onKeyDown={handleNewSubtaskKeyDown}
+                placeholder="Add a subtask..."
+                className="h-8 text-sm"
+              />
+              <Button
+                type="button"
+                variant="ghost"
+                size="icon"
+                className="h-7 w-7 shrink-0"
+                onClick={addSubtask}
+                disabled={!newSubtaskText.trim()}
+                aria-label="Add subtask"
+              >
+                <Plus size={14} />
+              </Button>
+            </div>
+          </div>
+
+          {/* ── Footer ── */}
+          <DialogFooter className="sm:justify-between items-center">
+
+              <DeleteTaskModal
+                taskId={task.id}
+                taskName={task.task_name}
+                onDeleted={() => onOpenChange(false)}
+              />
+
+            <div className="flex items-center justify-end gap-3 ">
+              <Button type="button" variant="secondary" onClick={() => onOpenChange(false)} disabled={isPending}>
+                Cancel
+              </Button>
+              <Button type="submit" disabled={isPending}>
+                {isPending ? (
+                  <span className="inline-flex items-center gap-2">
+                    <Spinner />
+                    Saving...
+                  </span>
+                ) : (
+                  'Save Changes'
+                )}
+              </Button>
+            </div>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
+}

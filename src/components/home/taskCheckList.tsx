@@ -1,20 +1,22 @@
 'use client'
 
-import { useMemo, useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { Checkbox } from '@/components/ui/checkbox'
 import { TaskWithSubtasks } from '@/types/dashboard'
 import { formatTime } from '@/lib/formatTime'
 import { toast } from "sonner"
-import { Card, CardContent, CardHeader } from '@/components/ui/card'
-import { toggleTask, toggleSubTask } from '@/lib/actions/updateTasks'
+import { Card, CardContent, } from '@/components/ui/card'
+import { toggleTask, toggleSubTask } from '@/lib/actions/toggleTasks'
+import { UpdateTaskModal } from '@/components/modals/task-updateModal/UpdateTaskModal'
 import type { ParsedTask } from '@/utils/parseTaskLines'
 
 interface TasksProps {
   initialTasks: TaskWithSubtasks[]
+  selectedDateStr?: string
+  showTitle?: boolean
 }
 
-// --- Optimistic Update Helpers ---
 function getOptimisticTasks(tasks: TaskWithSubtasks[], taskId: string, isDone: boolean): TaskWithSubtasks[] {
   return tasks.map(task => {
     if (task.id !== taskId) return task
@@ -36,51 +38,53 @@ function getOptimisticSubtasks(tasks: TaskWithSubtasks[], taskId: string, subtas
   })
 }
 
-export const AgendaSection = ({ initialTasks }: TasksProps) => {
+export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true }: TasksProps) => {
 
   const [tasks, setTasks] = useState<TaskWithSubtasks[]>(initialTasks || [])
+  const [editingTask, setEditingTask] = useState<TaskWithSubtasks | null>(null)
 
   useEffect(() => {
-    setTasks(initialTasks || [])
-  }, [initialTasks])
+      setTasks(initialTasks || [])
+    }, [initialTasks])
+  // TODO: turn into a reusable component
+    //* Listen for optimistic tasks from QuickAddModal
+    useEffect(() => {
+      const handler = (e: Event) => {
+        const parsed = (e as CustomEvent<ParsedTask[]>).detail
 
-  // Listen for optimistic tasks from QuickAddModal
-  useEffect(() => {
-    const handler = (e: Event) => {
-      const parsed = (e as CustomEvent<ParsedTask[]>).detail
-
-      const optimistic: TaskWithSubtasks[] = parsed.map(p => ({
-        id: crypto.randomUUID(),
-        user_id: '',
-        task_name: p.name,
-        time: p.time || undefined,
-        is_done: false,
-        created_for_date: new Date().toISOString().split('T')[0],
-        created_at: new Date().toISOString(),
-        task_category: p.category ? { id: null, name: p.category } : null,
-        subtasks: p.subtasks.map(s => ({
+        const optimistic: TaskWithSubtasks[] = parsed.map(p => ({
           id: crypto.randomUUID(),
-          task_id: '',
-          subtask_name: s,
+          user_id: '',
+          task_name: p.name,
+          time: p.time || undefined,
           is_done: false,
+          created_for_date: selectedDateStr || new Date().toISOString().split('T')[0],
           created_at: new Date().toISOString(),
-        })),
-      }))
+          task_category: p.category ? { id: null, name: p.category } : null,
+          subtasks: p.subtasks.map(s => ({
+            id: crypto.randomUUID(),
+            task_id: '',
+            subtask_name: s,
+            is_done: false,
+            created_at: new Date().toISOString(),
+          })),
+        }))
 
-      setTasks(current => {
-        const merged = [...current, ...optimistic]
-        return merged.sort((a, b) => {
-          if (a.time && b.time) return a.time.localeCompare(b.time)
-          if (a.time && !b.time) return -1
-          if (!a.time && b.time) return 1
-          return 0
+        setTasks(current => {
+          const merged = [...current, ...optimistic]
+          return merged.sort((a, b) => {
+            if (a.time && b.time) return a.time.localeCompare(b.time)
+            if (a.time && !b.time) return -1
+            if (!a.time && b.time) return 1
+            return 0
+          })
         })
-      })
-    }
+      }
 
-    window.addEventListener('optimistic-tasks', handler)
-    return () => window.removeEventListener('optimistic-tasks', handler)
-  }, [])
+      window.addEventListener('optimistic-tasks', handler)
+      return () => window.removeEventListener('optimistic-tasks', handler)
+      // Pass selectedDateStr into the dependency array so it binds correctly
+  }, [selectedDateStr])
 
   const { mutate: handleToggleTask } = useMutation({
     mutationFn: async ({ taskId, isDone, taskName }: { taskId: string, isDone: boolean, taskName: string }) => {
@@ -119,12 +123,15 @@ export const AgendaSection = ({ initialTasks }: TasksProps) => {
   })
 
   return (
+    <>
     <section className="lg:col-span-7 flex flex-col h-full overflow-hidden" aria-labelledby="agenda-heading">
-      <div className="flex justify-between items-end mb-6 lg:mb-8 shrink-0">
-        <h2 id="agenda-heading" className="text-xs font-semibold uppercase tracking-[0.2em] transition-colors duration-500">
-          Today's Agenda
-        </h2>
-      </div>
+      {showTitle && (
+        <div className="flex justify-between items-end mb-6 lg:mb-8 shrink-0">
+          <h2 id="agenda-heading" className="text-xs font-semibold uppercase tracking-[0.2em] transition-colors duration-500">
+            Today's Agenda
+          </h2>
+        </div>
+      )}
 
       {tasks.length === 0 ? (
         <p className="text-muted-foreground py-4">No tasks for today.</p>
@@ -152,9 +159,10 @@ export const AgendaSection = ({ initialTasks }: TasksProps) => {
                   {/* Task Card Container */}
                   <article className="pl-28 w-full">
                     <Card
-                      className={`w-full max-w-lg transition-all duration-300 hover:-translate-y-0.5 border-dashed ${
+                      className={`w-full max-w-lg transition-all duration-300 hover:-translate-y-0.5 border-dashed cursor-pointer ${
                         task.is_done ? 'opacity-50 grayscale bg-muted/30' : 'bg-card'
                       }`}
+                      onClick={() => setEditingTask(task)}
                     >
                       <CardContent className="flex flex-col gap-3">
 
@@ -172,6 +180,7 @@ export const AgendaSection = ({ initialTasks }: TasksProps) => {
                           <Checkbox
                             className="rounded-full border-2 shrink-0 mt-0.5"
                             checked={task.is_done}
+                            onClick={(e) => e.stopPropagation()}
                             onCheckedChange={(checked) => handleToggleTask({
                               taskId: task.id,
                               isDone: checked as boolean,
@@ -192,6 +201,7 @@ export const AgendaSection = ({ initialTasks }: TasksProps) => {
                                 <Checkbox
                                   className="rounded-sm border-2 w-3.5 h-3.5 opacity-0 group-hover:opacity-100 data-[state=checked]:opacity-100 transition-opacity"
                                   checked={st.is_done}
+                                  onClick={(e) => e.stopPropagation()}
                                   onCheckedChange={(checked) => handleToggleSubtask({
                                     taskId: task.id,
                                     subtaskId: st.id,
@@ -213,5 +223,15 @@ export const AgendaSection = ({ initialTasks }: TasksProps) => {
         </div>
       )}
     </section>
+
+    {/* Edit Task Modal */}
+    {editingTask && (
+      <UpdateTaskModal
+        task={editingTask}
+        open={!!editingTask}
+        onOpenChange={(open) => { if (!open) setEditingTask(null) }}
+      />
+    )}
+  </>
   )
 }

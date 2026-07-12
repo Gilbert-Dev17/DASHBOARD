@@ -1,6 +1,5 @@
 import { ComponentType } from 'react'
-import { AddPlannerModal } from '@/components/modals/add-planner/AddPlannerModal'
-import { QuickAddModal } from '../home/QuickAddModal'
+import { QuickAddModal } from '../modals/quick-addModal/QuickAddModal'
 import { AddIncomeExpenseModal } from '@/components/modals/add-transaction/add-income-expense-modal'
 
 export interface QuickAddRegistry {
@@ -12,13 +11,8 @@ export interface QuickAddRegistry {
 export const quickAddRegistry: QuickAddRegistry[] = [
   {
     id: 'home',
-    match: (pathname) => pathname.startsWith('/home'),
+    match: (pathname) => pathname.startsWith('/home') || pathname.startsWith('/planner') ,
     Component: QuickAddModal,
-  },
-  {
-    id: 'planner',
-    match: (pathname) => pathname.startsWith('/planner'),
-    Component: AddPlannerModal,
   },
   {
     id: 'expenses',
