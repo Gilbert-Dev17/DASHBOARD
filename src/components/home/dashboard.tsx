@@ -7,7 +7,7 @@ import { TaskWithSubtasks, UserSummary, WalletSummary} from '@/types/dashboard'
 import { GreetingHeader } from './greetingHeader'
 import { WeatherCard } from '@/components/home/weatherCard'
 import { AgendaSection } from './taskCheckList'
-import { WalletCarousel } from './WalletCarousel'
+import { NetWorthOverview } from './NetWorthOverview'
 
 import { useDashboard } from '@/hooks/useDashboard'
 import { Skeleton } from "@/components/ui/skeleton"
@@ -67,7 +67,7 @@ export default function DashboardPage({ initialTasks, user, wallets}: DashboardP
         <aside className="lg:col-span-5 space-y-16 mt-8 lg:mt-0">
 
         {/* FINANCES / ACCOUNTS SECTION */}
-        <WalletCarousel walletData={wallets}/>
+        <NetWorthOverview wallets={wallets}/>
 
         {/* PROGRESS SECTION */}
         <LifeProgress />
