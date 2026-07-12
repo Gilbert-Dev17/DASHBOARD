@@ -44,46 +44,46 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
   const [editingTask, setEditingTask] = useState<TaskWithSubtasks | null>(null)
 
   useEffect(() => {
-    setTasks(initialTasks || [])
-  }, [initialTasks])
-// TODO: turn into a reusable component
-  //* Listen for optimistic tasks from QuickAddModal
-  useEffect(() => {
-    const handler = (e: Event) => {
-      const parsed = (e as CustomEvent<ParsedTask[]>).detail
+      setTasks(initialTasks || [])
+    }, [initialTasks])
+  // TODO: turn into a reusable component
+    //* Listen for optimistic tasks from QuickAddModal
+    useEffect(() => {
+      const handler = (e: Event) => {
+        const parsed = (e as CustomEvent<ParsedTask[]>).detail
 
-      const optimistic: TaskWithSubtasks[] = parsed.map(p => ({
-        id: crypto.randomUUID(),
-        user_id: '',
-        task_name: p.name,
-        time: p.time || undefined,
-        is_done: false,
-        created_for_date: selectedDateStr || new Date().toISOString().split('T')[0],
-        created_at: new Date().toISOString(),
-        task_category: p.category ? { id: null, name: p.category } : null,
-        subtasks: p.subtasks.map(s => ({
+        const optimistic: TaskWithSubtasks[] = parsed.map(p => ({
           id: crypto.randomUUID(),
-          task_id: '',
-          subtask_name: s,
+          user_id: '',
+          task_name: p.name,
+          time: p.time || undefined,
           is_done: false,
+          created_for_date: selectedDateStr || new Date().toISOString().split('T')[0],
           created_at: new Date().toISOString(),
-        })),
-      }))
+          task_category: p.category ? { id: null, name: p.category } : null,
+          subtasks: p.subtasks.map(s => ({
+            id: crypto.randomUUID(),
+            task_id: '',
+            subtask_name: s,
+            is_done: false,
+            created_at: new Date().toISOString(),
+          })),
+        }))
 
-      setTasks(current => {
-        const merged = [...current, ...optimistic]
-        return merged.sort((a, b) => {
-          if (a.time && b.time) return a.time.localeCompare(b.time)
-          if (a.time && !b.time) return -1
-          if (!a.time && b.time) return 1
-          return 0
+        setTasks(current => {
+          const merged = [...current, ...optimistic]
+          return merged.sort((a, b) => {
+            if (a.time && b.time) return a.time.localeCompare(b.time)
+            if (a.time && !b.time) return -1
+            if (!a.time && b.time) return 1
+            return 0
+          })
         })
-      })
-    }
+      }
 
-    window.addEventListener('optimistic-tasks', handler)
-    return () => window.removeEventListener('optimistic-tasks', handler)
-    // Pass selectedDateStr into the dependency array so it binds correctly
+      window.addEventListener('optimistic-tasks', handler)
+      return () => window.removeEventListener('optimistic-tasks', handler)
+      // Pass selectedDateStr into the dependency array so it binds correctly
   }, [selectedDateStr])
 
   const { mutate: handleToggleTask } = useMutation({
@@ -180,6 +180,7 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
                           <Checkbox
                             className="rounded-full border-2 shrink-0 mt-0.5"
                             checked={task.is_done}
+                            onClick={(e) => e.stopPropagation()}
                             onCheckedChange={(checked) => handleToggleTask({
                               taskId: task.id,
                               isDone: checked as boolean,
@@ -200,6 +201,7 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
                                 <Checkbox
                                   className="rounded-sm border-2 w-3.5 h-3.5 opacity-0 group-hover:opacity-100 data-[state=checked]:opacity-100 transition-opacity"
                                   checked={st.is_done}
+                                  onClick={(e) => e.stopPropagation()}
                                   onCheckedChange={(checked) => handleToggleSubtask({
                                     taskId: task.id,
                                     subtaskId: st.id,
