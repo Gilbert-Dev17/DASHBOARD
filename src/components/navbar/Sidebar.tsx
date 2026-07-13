@@ -16,7 +16,7 @@ const Sidebar = () => {
 
   return (
     <aside className="fixed left-4 md:left-6 top-1/2 -translate-y-1/2 z-40">
-      <nav className="flex flex-col items-start gap-2 p-2 rounded-md bg-background/50 backdrop-blur-xl shadow-lg border border-border transition-all duration-500 group">
+      <nav className="flex flex-col items-start gap-2 p-2 rounded-md bg-background/50 backdrop-blur-xl shadow-lg border border-border transition-all duration-300 group">
         {navItems.map((item) => {
           const active = pathname === item.point;
           const Icon = item.icon;
