@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { unstable_cache } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import type { TaskWithSubtasks, WalletSummary } from '@/types/dashboard'
 import { getTodayInTimezone } from "@/utils/timezone";
@@ -7,49 +8,61 @@ export const getHomeData = cache(async (userId: string): Promise<TaskWithSubtask
   const supabase = await createClient();
   const today = getTodayInTimezone();
 
-  const { data: tasks, error } = await supabase
-    .from('tasks')
-    .select(`
-      id,
-      user_id,
-      task_name,
-      time,
-      is_done,
-      created_for_date,
-      subtasks (
-        id,
-        is_done,
-        subtask_name
-      ),
-      task_category:task_categories!tasks_task_category_id_fkey (
-        id,
-        name
-      )`)
-    .eq('user_id', userId)
-    .eq('created_for_date', today)
-    .order('time', { ascending: true, nullsFirst: false });
+  return unstable_cache(
+    async () => {
+      const { data: tasks, error } = await supabase
+        .from('tasks')
+        .select(`
+          id,
+          user_id,
+          task_name,
+          time,
+          is_done,
+          created_for_date,
+          subtasks (
+            id,
+            is_done,
+            subtask_name
+          ),
+          task_category:task_categories!tasks_task_category_id_fkey (
+            id,
+            name
+          )`)
+        .eq('user_id', userId)
+        .eq('created_for_date', today)
+        .order('time', { ascending: true, nullsFirst: false });
 
-  if (error) {
-    console.error("Error fetching tasks:", error.message);
-    throw error;
-  }
+      if (error) {
+        console.error("Error fetching tasks:", error.message);
+        throw error;
+      }
 
-  return (tasks ?? []) as unknown as TaskWithSubtasks[];
+      return (tasks ?? []) as unknown as TaskWithSubtasks[];
+    },
+    [`home-tasks-${userId}-${today}`],
+    { tags: [`tasks-${userId}`], revalidate: 3600 }
+  )();
 });
 
 export const getWalletData = cache(async (userId: string): Promise<WalletSummary[]> => {
   const supabase = await createClient();
 
-  const { data: wallet, error } = await supabase
-    .from('wallets')
-    .select('*')
-    .eq('user_id', userId)
-    .order('created_at', { ascending: true })
+  return unstable_cache(
+    async () => {
+      const { data: wallet, error } = await supabase
+        .from('wallets')
+        .select('*')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: true })
 
-  if (error) {
-    console.error("Error fetching wallets:", error.message);
-    throw error;
-  }
+      if (error) {
+        console.error("Error fetching wallets:", error.message);
+        throw error;
+      }
 
-  return wallet as WalletSummary[];
+      return wallet as WalletSummary[];
+    },
+    [`wallets-${userId}`],
+    { tags: [`wallets-${userId}`], revalidate: 3600 }
+  )();
 });

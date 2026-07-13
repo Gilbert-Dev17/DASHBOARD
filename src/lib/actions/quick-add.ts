@@ -96,7 +96,7 @@ export async function submitQuickAddTasks(tasks: ParsedTask[], targetDate?: stri
     revalidatePath('/home')
     revalidatePath('/planner')
 
-    
+
     return { success: true, message: 'Tasks successfully added!' }
   } catch (error: any) {
     console.error('Quick Add Error:', error)
