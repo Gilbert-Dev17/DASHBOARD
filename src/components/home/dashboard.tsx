@@ -6,7 +6,7 @@ import PageComponent from '@/components/shared/PageComponent'
 import { TaskWithSubtasks, UserSummary, WalletSummary} from '@/types/dashboard'
 import { GreetingHeader } from './greetingHeader'
 import { WeatherCard } from '@/components/home/weatherCard'
-import { AgendaSection } from './taskCheckList'
+import { AgendaSection } from '@/components/shared/AgendaSection'
 import { NetWorthOverview } from './NetWorthOverview'
 
 import { useDashboard } from '@/hooks/useDashboard'

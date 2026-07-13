@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import Link from 'next/link'
 
 import { ArrowDownLeft, ArrowUpRight, DrumstickIcon, ShoppingBag, Tv, Heart, ShoppingBasket, BusFront, School, HelpCircle, Wallet as WalletIcon, CreditCard, TrendingUp, TrendingDown } from 'lucide-react'
@@ -19,6 +19,9 @@ import {
   CarouselPrevious,
 } from "@/components/ui/carousel"
 import { Separator } from '@/components/ui/separator'
+import { formatCurrency } from '@/utils/currency'
+import { summary as mockSummary, categories as mockCategories, recentTransactions as mockTransactions, mockWallets } from '@/lib/mockData'
+import { Timeline, TimelineItem, TimelineTime, TimelineContent } from '@/components/ui/timeline'
 
 // Map string keys from the database to Lucide React components
 export const ICON_MAP: Record<string, React.ElementType> = {
@@ -31,14 +34,6 @@ export const ICON_MAP: Record<string, React.ElementType> = {
   'school': School,
 };
 
-// Format currency standardizer
-const formatCurrency = (amount: number, currencyCode: string = 'USD') => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currencyCode,
-  }).format(amount);
-};
-
 interface ExpenseTrackerProps {
   initialFilter?: 'week' | 'month' | 'year';
   summary?: FinancialSummary & { trend?: number };
@@ -48,24 +43,9 @@ interface ExpenseTrackerProps {
 
 export default function ExpenseTrackerPage({
   initialFilter = 'week',
-  summary = {
-    balance: 150250.75, // Net Worth
-    income: 850.00,
-    expense: 200.00,
-    currency: 'USD',
-    trend: 5.2
-  },
-  categories = [
-    { name: 'Groceries', total: 120, iconKey: 'groceries' },
-    { name: 'Transport', total: 65, iconKey: 'transport' },
-    { name: 'Foods & Drinks', total: 15, iconKey: 'foods-drinks' },
-  ],
-  transactions = [
-    { date: '2026-06-11T14:00:00Z', note: 'Uber to Downtown', amount: 65.00, type: 'expense', category: 'Transport', currency: 'USD' },
-    { date: '2026-06-10T09:30:00Z', note: 'Common Ground Coffee', amount: 15.00, type: 'expense', category: 'Foods & Drinks', currency: 'USD' },
-    { date: '2026-06-09T18:00:00Z', note: 'Freelance Design Work', amount: 850.00, type: 'income', category: 'Income', currency: 'USD' },
-    { date: '2026-06-08T12:00:00Z', note: 'Trader Joes Groceries', amount: 120.00, type: 'expense', category: 'Groceries', currency: 'USD' },
-  ]
+  summary = mockSummary,
+  categories = mockCategories,
+  transactions = mockTransactions
 }: ExpenseTrackerProps) {
 
   const formattedBalance = formatCurrency(summary.balance, summary.currency);
@@ -76,16 +56,6 @@ export default function ExpenseTrackerPage({
 
   const formattedExpense = formatCurrency(summary.expense, summary.currency);
   const [expenseMain, expenseCents] = formattedExpense.split('.');
-
-  // Mock Wallets Data
-  const mockWallets = [
-    { id: '1', name: 'Main Checking', balance: 5250.75, type: 'asset', trend: 2.1 },
-    { id: '2', name: 'Emergency Fund', balance: 10000.00, type: 'asset', trend: 0.5 },
-    { id: '3', name: 'Credit Card', balance: 1250.00, type: 'liability', trend: -1.5 },
-    { id: '4', name: 'Vanguard Index', balance: 136250.00, type: 'asset', trend: 8.4 },
-    { id: '5', name: 'Bitcoin', balance: 136250.00, type: 'asset', trend: 8.4 },
-
-  ];
 
   return (
     <PageComponent>
@@ -245,50 +215,45 @@ export default function ExpenseTrackerPage({
             </Button>
           </header>
 
-          <div className="flex-1 relative pb-8 pt-4">
-            {/* Timeline Axis Line */}
-            <div className="absolute top-0 bottom-0 left-20 w-px bg-border/50" />
+          {transactions.length === 0 ? (
+            <div className="flex-1 flex flex-col items-center justify-center py-16 text-muted-foreground text-sm">
+              No recent logs yet.
+            </div>
+          ) : (
+            <Timeline>
+              {transactions.map((txn) => {
+                const dateObj = new Date(txn.date);
 
-            {transactions.length === 0 ? (
-              <div className="flex flex-col items-center justify-center py-16 text-muted-foreground text-sm">
-                No recent logs yet.
-              </div>
-            ) : (
-              <ol className="space-y-6 list-none m-0 p-0">
-                {transactions.map((txn) => {
-                  const dateObj = new Date(txn.date);
+                return (
+                  <TimelineItem key={txn.date}>
+                    <TimelineTime dateTime={txn.date}>
+                      {dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </TimelineTime>
 
-                  return (
-                    <li key={txn.date} className="relative flex items-start w-full">
-                      {/* Left Side: Time & Axis Dot */}
-                      <div className="absolute left-0 top-3 w-20 flex items-center justify-end">
-                        <time dateTime={txn.date} className="text-[10px] font-mono tabular-nums text-muted-foreground mr-4 leading-none tracking-widest uppercase">
-                          {dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                        </time>
-                        {/* Axis Dot */}
-                        <div className="absolute -right-1 h-2 w-2 rounded-full bg-accent ring-4 ring-background z-10 transition-colors duration-300" />
-                      </div>
-
-                      {/* Transaction Content */}
-                      <article className="pl-28 w-full group transition-all duration-300">
-                        <div className="flex flex-col py-2 px-3 -ml-3 rounded-lg hover:bg-secondary/40 transition-colors">
-                          <div className="flex justify-between items-start gap-4">
-                            <span className="font-medium text-sm leading-tight text-foreground/90 group-hover:text-foreground">{txn.note}</span>
-                            <span className={`tabular-nums font-semibold shrink-0 ${txn.type === 'income' ? 'text-emerald-500' : 'text-foreground'}`}>
-                              {txn.type === 'income' ? '+' : '-'}{formatCurrency(txn.amount, txn.currency)}
-                            </span>
-                          </div>
-                          <span className="text-[10px] uppercase tracking-wider text-muted-foreground/80 mt-1">
-                            {txn.category}
+                    <TimelineContent>
+                      <div className="flex flex-col py-2 px-3 -ml-3 rounded-lg hover:bg-secondary/40 transition-colors">
+                        <div className="flex justify-between items-start gap-4">
+                          <span className="font-medium text-sm leading-tight text-foreground/90 group-hover:text-foreground">{txn.note}</span>
+                          <span className={`tabular-nums font-semibold shrink-0 ${txn.type === 'income' ? 'text-emerald-500' : 'text-foreground'}`}>
+                            {txn.type === 'income' ? '+' : '-'}{formatCurrency(txn.amount, txn.currency)}
                           </span>
                         </div>
-                      </article>
-                    </li>
-                  )
-                })}
-              </ol>
-            )}
-          </div>
+                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground/80 mt-1 flex items-center gap-2">
+                          <span>{txn.category}</span>
+                          {txn.walletName && (
+                            <>
+                              <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
+                              <span className="text-muted-foreground/60">{txn.walletName}</span>
+                            </>
+                          )}
+                        </span>
+                      </div>
+                    </TimelineContent>
+                  </TimelineItem>
+                )
+              })}
+            </Timeline>
+          )}
         </section>
       </div>
     </PageComponent>

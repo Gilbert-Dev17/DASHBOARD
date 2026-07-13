@@ -3,7 +3,7 @@
 import { createClient } from '../supabase/server'
 import { revalidatePath } from 'next/cache'
 import { ParsedTask } from '@/utils/parseTaskLines'
-import { getTodayInTimezone } from '@/hooks/getTimezone'
+import { getTodayInTimezone } from '@/utils/timezone'
 
 export async function submitQuickAddTasks(tasks: ParsedTask[], targetDate?: string) {
 

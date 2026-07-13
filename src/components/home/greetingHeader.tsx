@@ -77,7 +77,7 @@ export const GreetingHeader = ({firstName, tasks = []}: userGreeting) => {
           </div>
         </div>
 
-        <p className="text-2xl md:text-3xl lg:text-4xl leading-snug font-light max-w-5xl tracking-tight text-pretty">
+        <p className="text-2xl md:text-3xl lg:text-4xl leading-snug font-light max-w-5xl tracking-tight text-pretty whitespace-pre-wrap">
           {greeting}, <span className="font-bold">{firstName}</span>. {parseBoldText(brief.message)}
         </p>
     </>

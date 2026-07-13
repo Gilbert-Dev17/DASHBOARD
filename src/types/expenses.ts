@@ -6,6 +6,7 @@ export interface Transaction {
   type: 'income' | 'expense';
   category: string;
   currency: string;
+  walletName?: string;
 }
 
 export interface CategorySummary {

@@ -3,6 +3,7 @@ import { getUser } from '@/lib/auth/get-user'
 import PageComponent from '@/components/shared/PageComponent'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ProfileSettings } from '@/components/profile/ProfileSettings'
+import { profileStats as stats } from '@/lib/mockData'
 
 export default async function ProfilePage() {
   const user = await getUser()
@@ -15,12 +16,7 @@ export default async function ProfilePage() {
     ? user.first_name.charAt(0).toUpperCase()
     : user.email?.charAt(0).toUpperCase() || 'U'
 
-  // Placeholder mocked stats
-  const stats = {
-    tasksCompleted: 142,
-    tasksOpen: 12,
-    totalExpenses: 45000.50,
-  }
+
 
   const [dollars, cents] = `₱${stats.totalExpenses.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`.split('.')
 

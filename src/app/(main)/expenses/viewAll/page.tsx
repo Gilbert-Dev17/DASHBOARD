@@ -5,8 +5,9 @@ import Link from 'next/link';
 
 import { ArrowLeft, Filter, Bus } from 'lucide-react';
 import PageComponent from '@/components/shared/PageComponent';
-
 import { Button } from '@/components/ui/button';
+import { formatCurrency } from '@/utils/currency';
+import { allTransactions as transactions } from '@/lib/mockData';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Accordion,
@@ -30,48 +31,7 @@ const LOG_FILTERS = [
   { name: 'Year', value: 'year' },
 ];
 
-// Format currency standardizer
-const formatCurrency = (amount: number, currencyCode: string = 'USD') => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currencyCode,
-  }).format(amount);
-};
 
-const transactions = [
-  {
-    id: 1,
-    date: '2026-06-11T14:00:00Z',
-    icon: Bus,
-    name: 'Transport #1 : 100 Market St, San Francisco',
-    category: 'TRANSPORT',
-    amount: 105,
-  },
-  {
-    id: 2,
-    date: '2026-06-11T09:00:00Z',
-    icon: Bus,
-    name: 'Transport #2 : 200 Market St, San Francisco',
-    category: 'TRANSPORT',
-    amount: 65,
-  },
-  {
-    id: 3,
-    date: '2026-06-10T11:30:00Z',
-    icon: Bus,
-    name: 'Transport #3 : 300 Market St, San Francisco',
-    category: 'TRANSPORT',
-    amount: 80,
-  },
-  {
-    id: 4,
-    date: '2026-05-20T16:45:00Z',
-    icon: Bus,
-    name: 'Transport #4 : Oakland',
-    category: 'TRANSPORT',
-    amount: 120,
-  },
-];
 
 function getWeekKey(date: Date) {
   const start = new Date(date);

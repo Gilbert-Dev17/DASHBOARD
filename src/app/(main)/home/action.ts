@@ -1,7 +1,7 @@
 import { cache } from "react";
 import { createClient } from "@/lib/supabase/server";
 import type { TaskWithSubtasks, WalletSummary } from '@/types/dashboard'
-import { getTodayInTimezone } from "@/hooks/getTimezone";
+import { getTodayInTimezone } from "@/utils/timezone";
 
 export const getHomeData = cache(async (userId: string): Promise<TaskWithSubtasks[]> => {
   const supabase = await createClient();

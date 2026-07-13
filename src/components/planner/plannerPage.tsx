@@ -2,11 +2,11 @@
 
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { AgendaSection } from '@/components/home/taskCheckList'
+import { AgendaSection } from '@/components/shared/AgendaSection'
 import PageComponent from '@/components/shared/PageComponent'
 import { CustomCalendar } from '@/components/shared/CustomCalendar'
 import { TaskWithSubtasks } from '@/types/dashboard'
-import { getTodayInTimezone } from '@/hooks/getTimezone'
+import { getTodayInTimezone } from '@/utils/timezone'
 import { useRouter } from 'next/navigation'
 
 interface PageProps {

@@ -44,7 +44,7 @@ export function ProfileSettings({ email }: ProfileSettingsProps) {
 
         <div className="space-y-4">
           {/* Email */}
-          <Card className="border-dashed bg-card">
+          <Card variant="dashed">
             <CardContent className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <Mail size={16} className="text-accent shrink-0" />
@@ -57,7 +57,7 @@ export function ProfileSettings({ email }: ProfileSettingsProps) {
           </Card>
 
           {/* Google OAuth — Active */}
-          <Card className="border-dashed bg-card">
+          <Card variant="dashed">
             <CardContent className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <svg viewBox="0 0 24 24" width="16" height="16" className="shrink-0">
@@ -85,7 +85,7 @@ export function ProfileSettings({ email }: ProfileSettingsProps) {
 
         <div className="space-y-4">
           {/* Theme */}
-          <Card className="border-dashed bg-card">
+          <Card variant="dashed">
             <CardContent className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 {resolvedTheme === 'dark' ? <Moon size={16} className="text-accent shrink-0" /> : <Sun size={16} className="text-accent shrink-0" />}
@@ -106,7 +106,7 @@ export function ProfileSettings({ email }: ProfileSettingsProps) {
           </Card>
 
           {/* Currency */}
-          <Card className="border-dashed bg-card">
+          <Card variant="dashed">
             <CardContent className="flex items-center justify-between">
               <div>
                 <span className="text-sm font-medium">Currency</span>

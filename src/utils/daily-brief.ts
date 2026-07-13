@@ -185,6 +185,6 @@ export function generateDailyBrief(tasks: TaskWithSubtasks[]): DailyBrief {
   }
 
   return {
-    message: `${tasksSummary} ${themeMessage} \n ${freeTimeMessage} ${randomEnding}`
+    message: `${tasksSummary} ${themeMessage} ${freeTimeMessage} ${randomEnding}`
   }
 }

@@ -4,6 +4,7 @@ import React from 'react'
 import { WalletSummary } from '@/types/dashboard'
 import { Card, CardContent } from '@/components/ui/card'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { formatCurrency } from '@/utils/currency'
 
 interface NetWorthProps { wallets: WalletSummary[] }
 
@@ -20,10 +21,7 @@ export const NetWorthOverview = ({ wallets }: NetWorthProps) => {
 
   // Default to USD if no wallets exist, otherwise use the first wallet's currency
   const currency = safeWallets.length > 0 ? safeWallets[0].currency : 'PHP'
-  const formatMoney = (amount: number) =>
-    new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(amount)
-
-  const [nwDollars, nwCents] = formatMoney(netWorth).split('.')
+  const [nwDollars, nwCents] = formatCurrency(netWorth, currency).split('.')
 
   return (
     <section aria-labelledby="finances-heading" className="w-full flex flex-col gap-6">
@@ -40,17 +38,17 @@ export const NetWorthOverview = ({ wallets }: NetWorthProps) => {
 
       {/* ── Summary Cards ── */}
       <div className="grid grid-cols-2 gap-4">
-        <Card className="border-dashed bg-card/40 transition-colors hover:bg-card/60">
+        <Card variant="dashed" className="transition-colors hover:bg-card/60">
           <CardContent className="p-4 flex flex-col gap-1">
             <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">Assets</span>
-            <span className="text-lg tabular-nums text-foreground/90">{formatMoney(totalAssets)}</span>
+            <span className="text-lg tabular-nums text-foreground/90">{formatCurrency(totalAssets, currency)}</span>
           </CardContent>
         </Card>
 
-        <Card className="border-dashed bg-card/40 transition-colors hover:bg-card/60">
+        <Card variant="dashed" className="transition-colors hover:bg-card/60">
           <CardContent className="p-4 flex flex-col gap-1">
             <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">Liabilities</span>
-            <span className="text-lg tabular-nums text-foreground/90">{formatMoney(totalLiabilities)}</span>
+            <span className="text-lg tabular-nums text-foreground/90">{formatCurrency(totalLiabilities, currency)}</span>
           </CardContent>
         </Card>
       </div>
@@ -74,7 +72,7 @@ export const NetWorthOverview = ({ wallets }: NetWorthProps) => {
                       {assets.map(a => (
                         <li key={a.id} className="flex justify-between items-center text-sm">
                           <span className="text-foreground/80">{a.name}</span>
-                          <span className="tabular-nums font-medium">{formatMoney(a.balance)}</span>
+                          <span className="tabular-nums font-medium">{formatCurrency(a.balance)}</span>
                         </li>
                       ))}
                     </ul>
@@ -91,7 +89,7 @@ export const NetWorthOverview = ({ wallets }: NetWorthProps) => {
                       {liabilities.map(l => (
                         <li key={l.id} className="flex justify-between items-center text-sm">
                           <span className="text-foreground/80">{l.name}</span>
-                          <span className="tabular-nums font-medium text-destructive/80">{formatMoney(l.balance)}</span>
+                          <span className="tabular-nums font-medium text-destructive/80">-{formatCurrency(l.balance, currency)}</span>
                         </li>
                       ))}
                     </ul>

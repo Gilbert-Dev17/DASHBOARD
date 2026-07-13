@@ -1,4 +1,4 @@
-import { getTodayInTimezone } from '@/hooks/getTimezone'
+import { getTodayInTimezone } from '@/utils/timezone'
 import { startOfMonth, endOfMonth, parseISO, format } from 'date-fns'
 
 import { PlannerPage } from "@/components/planner/plannerPage"
