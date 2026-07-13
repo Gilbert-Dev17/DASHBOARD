@@ -5,7 +5,6 @@ import Link from 'next/link'
 
 import { ArrowDownLeft, ArrowUpRight, DrumstickIcon, ShoppingBag, Tv, Heart, ShoppingBasket, BusFront, School, HelpCircle, Wallet as WalletIcon, CreditCard, TrendingUp, TrendingDown } from 'lucide-react'
 
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import PageComponent from '@/components/shared/PageComponent'
@@ -92,7 +91,7 @@ export default function ExpenseTrackerPage({
     <PageComponent>
 
       {/* SUMMARY SECTION */}
-      <section aria-label="Financial Summary" className="flex flex-col xl:flex-row xl:items-end justify-between gap-8 xl:gap-16 mb-8 pb-12 border-b border-dashed border-border/50">
+      <section aria-label="Financial Summary" className="flex flex-col xl:flex-row xl:items-center justify-between gap-8 xl:gap-12 mb-8 pb-8 border-b border-dashed border-border/50">
         {/* Left Side: Net Worth */}
         <div className="flex flex-col">
           <div className="flex items-center gap-4 mb-4">
@@ -106,16 +105,21 @@ export default function ExpenseTrackerPage({
               </div>
             )}
           </div>
-          <div className="text-6xl md:text-7xl lg:text-[7rem] leading-none font-light tracking-tighter tabular-nums flex items-baseline">
+          <div className="text-6xl md:text-7xl lg:text-[7rem] leading-none font-light tracking-tighter tabular-nums flex items-baseline mb-4">
             {balanceMain}<span className="text-4xl md:text-5xl lg:text-6xl text-muted-foreground/40">.{balanceCents}</span>
           </div>
+          <p className="text-xs lg:text-sm text-muted-foreground/70 max-w-sm font-medium">
+            {summary.trend && summary.trend >= 0
+              ? `Up ${summary.trend}% from last month, driven by recent Income.`
+              : `Down ${Math.abs(summary.trend || 0)}% from last month, driven by recent Expenses.`}
+          </p>
         </div>
 
         {/* Vertical Separator */}
         <Separator orientation='vertical' className="hidden xl:block w-px self-stretch bg-border/50 opacity-60" />
 
         {/* Right Side: Income & Expense */}
-        <div className="flex flex-col sm:flex-row items-start sm:items-end gap-12 sm:gap-16 xl:pb-2 w-full">
+        <div className="flex flex-row items-center gap-8 sm:gap-16 w-full xl:w-auto">
            {/* Income */}
            <div className="flex flex-col gap-3">
              <div className="flex items-center gap-2">

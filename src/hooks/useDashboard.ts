@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
+import { toast } from 'sonner'
 
 export function useDashboard() {
   const [supabase] = useState(() => createClient());
@@ -18,10 +19,11 @@ export function useDashboard() {
         router.refresh();
       })
       .subscribe((status) => {
-        if (process.env.NODE_ENV === 'development') {
-          if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-            console.error('Dashboard realtime channel failed:', status);
-          }
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          console.error('Dashboard realtime channel failed:', status);
+          toast.error('Realtime connection lost', {
+            description: 'Live updates are currently unavailable. Please refresh the page if this persists.',
+          });
         }
       });
 

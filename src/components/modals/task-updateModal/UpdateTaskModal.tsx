@@ -9,7 +9,7 @@ import { TASK_CATEGORIES, CATEGORY_LABELS } from '@/lib/constants/tasks'
 import { submitTaskEdit } from '@/lib/actions/edit-task'
 import { TaskWithSubtasks } from '@/types/dashboard'
 import { editTaskSchema, type EditTaskFormValues } from './schemas'
-import { Kbd } from '@/components/ui/kbd'
+import { Kbd, KbdGroup } from '@/components/ui/kbd'
 import {
   Dialog, DialogContent, DialogDescription,
   DialogHeader, DialogTitle, DialogFooter
@@ -149,7 +149,19 @@ export const UpdateTaskModal = ({ task, open, onOpenChange }: UpdateTaskModalPro
           </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-5 mt-2" noValidate>
+        <form
+          onSubmit={handleSubmit(onSubmit)}
+          onKeyDown={(e) => {
+            if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+              e.preventDefault()
+              if (!isPending && newSubtaskText.trim().length === 0 && isDirty) {
+                handleSubmit(onSubmit)()
+              }
+            }
+          }}
+          className="flex flex-col gap-5 mt-2"
+          noValidate
+        >
 
           {/* Task Name */}
           <div className="flex flex-col gap-2">
@@ -280,7 +292,9 @@ export const UpdateTaskModal = ({ task, open, onOpenChange }: UpdateTaskModalPro
                 ) : newSubtaskText.trim().length > 0 ? (
                   <span> Hit <Kbd className='bg-foreground'>Enter</Kbd> to add subtask </span>
                 ) : (
-                  'Save Changes'
+                  <span className="flex items-center gap-2">
+                    Save Changes
+                  </span>
                 )}
               </Button>
             </div>
