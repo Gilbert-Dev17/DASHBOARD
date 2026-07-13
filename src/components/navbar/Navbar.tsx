@@ -4,15 +4,13 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
-import { Home, CheckSquare, Wallet, Sun, Moon } from 'lucide-react'
+import { Sun, Moon } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Label } from '../ui/label'
-import { Separator } from "@/components/ui/separator"
+import { Separator } from '../ui/separator'
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { getActiveQuickAdds } from './quick-add-registry'
-
-import { getUser } from '@/lib/auth/get-user'
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -20,45 +18,11 @@ const Navbar = () => {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-
-
   useEffect(() => setMounted(true), []);
 
-  const navItems = [
-    { icon: Home, label: 'Home', point: '/home' },
-    { icon: CheckSquare, label: 'Planner', point: '/planner' },
-    { icon: Wallet, label: 'Expenses', point: '/expenses' }
-  ];
-
   return (
-    <header className="hidden lg:flex sticky top-0 z-40 w-full justify-end pt-4 pr-8 ">
-      <nav className="flex items-center gap-2 px-3 py-1 rounded-md bg-background/50 backdrop-blur-xl shadow-md border border-border pointer-events-auto transition-all duration-500">
-        {navItems.map((item) => {
-          const active = pathname === item.point;
-          const Icon = item.icon;
-
-          return (
-            <Button
-              key={item.point}
-              variant={active ? "secondary" : "ghost"}
-              className={`rounded-md transition-all duration-300 ${active ? 'px-4 border-b-accent' : 'px-3'}`}
-              asChild
-            >
-              <Link href={item.point} className="flex items-center gap-2">
-                <div className={`transition-transform duration-300 ${active ? 'scale-100' : 'scale-95'}`}>
-                  <Icon size={18} />
-                </div>
-                {active && (
-                  <span className="text-sm font-medium tracking-wide whitespace-nowrap">
-                    {item.label}
-                  </span>
-                )}
-              </Link>
-            </Button>
-          );
-        })}
-
-        <Separator orientation="vertical" className="bg-muted-foreground/30" />
+    <header className="hidden lg:flex sticky top-0 z-40 w-full justify-end pt-4 pr-8 pointer-events-none">
+      <nav className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-background/50 backdrop-blur-xl shadow-md border border-border pointer-events-auto transition-all duration-500">
 
         {/* Quick Add Button */}
         {activeQuickAdds.map(({ id, Component }) => (
@@ -85,7 +49,6 @@ const Navbar = () => {
         </Button>
 
         <Separator orientation="vertical" className="bg-muted-foreground/30" />
-
 
         {/* Profile Avatar */}
         <Link href="/profile" className="outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-md">
