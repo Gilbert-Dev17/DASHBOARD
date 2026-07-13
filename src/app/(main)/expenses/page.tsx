@@ -12,11 +12,7 @@ import { ChartPieDonutText } from '@/components/shared/CategoryCharts'
 import { AddCategoryModal } from '@/components/modals/add-category/AddCategoryModal'
 import { FinancialSummary, CategorySummary, Transaction } from '@/types/expenses'
 import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
+  Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious,
 } from "@/components/ui/carousel"
 import { Separator } from '@/components/ui/separator'
 import { formatCurrency } from '@/utils/currency'
@@ -75,7 +71,7 @@ export default function ExpenseTrackerPage({
               </div>
             )}
           </div>
-          <div className="text-6xl md:text-7xl lg:text-[7rem] leading-none font-light tracking-tighter tabular-nums flex items-baseline mb-4">
+          <div className="text-6xl md:text-7xl lg:text-[7rem] leading-none font-mono tracking-tighter tabular-nums flex items-baseline mb-4">
             {balanceMain}<span className="text-4xl md:text-5xl lg:text-6xl text-muted-foreground/40">.{balanceCents}</span>
           </div>
           <p className="text-xs lg:text-sm text-muted-foreground/70 max-w-sm font-medium">
@@ -98,7 +94,7 @@ export default function ExpenseTrackerPage({
                  Income
                </span>
              </div>
-             <div className="text-4xl lg:text-5xl font-light text-emerald-500 tabular-nums tracking-tight flex items-baseline">
+             <div className="text-4xl lg:text-5xl font-mono text-emerald-500 tabular-nums tracking-tight flex items-baseline">
                +{incomeMain}<span className="text-lg lg:text-2xl opacity-60">.{incomeCents}</span>
              </div>
            </div>
@@ -111,7 +107,7 @@ export default function ExpenseTrackerPage({
                  Expense
                </span>
              </div>
-             <div className="text-4xl lg:text-5xl font-light text-rose-500 tabular-nums tracking-tight flex items-baseline">
+             <div className="text-4xl lg:text-5xl font-mono text-rose-500 tabular-nums tracking-tight flex items-baseline">
                -{expenseMain}<span className="text-lg lg:text-2xl opacity-60">.{expenseCents}</span>
              </div>
            </div>
@@ -142,7 +138,7 @@ export default function ExpenseTrackerPage({
                       <Icon size={16} className={isLiability ? "text-destructive/70" : "text-muted-foreground"} />
                     </CardHeader>
                     <CardContent>
-                      <div className={`text-2xl tabular-nums font-medium ${isLiability ? "text-destructive/90" : "text-foreground"}`}>
+                      <div className={`text-2xl tabular-nums font-mono ${isLiability ? "text-destructive/90" : "text-foreground"}`}>
                         {isLiability ? "-" : ""}{formatCurrency(wallet.balance, summary.currency)}
                       </div>
                       <div className="flex items-center justify-between mt-2">
@@ -234,7 +230,7 @@ export default function ExpenseTrackerPage({
                       <div className="flex flex-col py-2 px-3 -ml-3 rounded-lg hover:bg-secondary/40 transition-colors">
                         <div className="flex justify-between items-start gap-4">
                           <span className="font-medium text-sm leading-tight text-foreground/90 group-hover:text-foreground">{txn.note}</span>
-                          <span className={`tabular-nums font-semibold shrink-0 ${txn.type === 'income' ? 'text-emerald-500' : 'text-foreground'}`}>
+                          <span className={`tabular-nums font-mono shrink-0 ${txn.type === 'income' ? 'text-emerald-500' : 'text-foreground'}`}>
                             {txn.type === 'income' ? '+' : '-'}{formatCurrency(txn.amount, txn.currency)}
                           </span>
                         </div>

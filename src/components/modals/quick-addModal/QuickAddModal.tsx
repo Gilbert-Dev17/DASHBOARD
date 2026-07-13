@@ -235,7 +235,7 @@ export const QuickAddModal = () => {
         <Button
           variant="default"
           size="icon"
-          className="rounded-full transition-all duration-300 hover:scale-105"
+          className="rounded-md transition-all duration-300 hover:scale-105"
           aria-label="Quick add tasks"
         >
           <Plus size={18} strokeWidth={2.5} aria-hidden />

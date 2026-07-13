@@ -19,6 +19,7 @@ export const mockWallets = [
   { id: '2', name: 'Emergency Fund', balance: 10000.00, type: 'asset', trend: 0.5 },
   { id: '3', name: 'Credit Card', balance: 1250.00, type: 'liability', trend: -1.5 },
   { id: '4', name: 'Vanguard Index', balance: 136250.00, type: 'asset', trend: 8.4 },
+  { id: '5', name: 'Bitcoing', balance: 136250.00, type: 'asset', trend: 7.4 },
 ];
 
 export const recentTransactions = [

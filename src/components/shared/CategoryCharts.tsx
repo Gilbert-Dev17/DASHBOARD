@@ -125,7 +125,7 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
                             <tspan
                             x={viewBox.cx}
                             y={(viewBox.cy || 0) + 16}
-                            className="fill-foreground text-2xl font-bold"
+                            className="fill-foreground text-2xl font-mono"
                             >
                             ${totalAmount.toLocaleString()}
                             </tspan>

@@ -24,7 +24,7 @@ export const CustomCalendar = ({ initialDate = new Date(), datesWithTasks = [] }
   const task3Dates = datesWithTasks.filter(d => d.count >= 15).map(d => parseISO(d.date))
 
   return (
-    <Card className="lg:col-span-8 p-6 bg-secondary">
+    <Card className="lg:col-span-8 p-6 bg-secondary rounded-md">
       <Calendar
         mode="single"
         selected={initialDate}

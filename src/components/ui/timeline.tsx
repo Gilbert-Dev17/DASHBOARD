@@ -28,7 +28,7 @@ const TimelineTime = React.forwardRef<HTMLTimeElement, React.TimeHTMLAttributes<
         className={cn("text-[10px] font-mono tabular-nums text-muted-foreground mr-4 leading-none tracking-widest uppercase", className)}
         {...props}
       />
-      <div className="absolute -right-1 h-2 w-2 rounded-full bg-accent ring-4 ring-background z-10 transition-colors duration-300" />
+      <div className="absolute -right-1 h-2 w-2 rounded-md bg-accent ring-4 ring-background z-10 transition-colors duration-300" />
     </div>
   )
 )
@@ -42,7 +42,7 @@ const TimelineContent = React.forwardRef<HTMLElement, TimelineContentProps>(
   ({ className, withCard, children, ...props }, ref) => (
     <article ref={ref} className={cn("pl-28 w-full group transition-all duration-300", className)} {...props}>
       {withCard ? (
-        <Card className="bg-transparent border-border/40 transition-colors">
+        <Card className="bg-transparent border-border/40 transition-colors rounded-md">
           <CardContent >
             {children}
           </CardContent>

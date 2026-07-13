@@ -38,14 +38,14 @@ export const NetWorthOverview = ({ wallets }: NetWorthProps) => {
 
       {/* ── Summary Cards ── */}
       <div className="grid grid-cols-2 gap-4">
-        <Card variant="dashed" className="transition-colors hover:bg-card/60">
+        <Card variant="dashed" className="transition-colors hover:bg-card/60 rounded-md">
           <CardContent className="p-4 flex flex-col gap-1">
             <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">Assets</span>
             <span className="text-lg tabular-nums text-foreground/90">{formatCurrency(totalAssets, currency)}</span>
           </CardContent>
         </Card>
 
-        <Card variant="dashed" className="transition-colors hover:bg-card/60">
+        <Card variant="dashed" className="transition-colors hover:bg-card/60 rounded-md">
           <CardContent className="p-4 flex flex-col gap-1">
             <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">Liabilities</span>
             <span className="text-lg tabular-nums text-foreground/90">{formatCurrency(totalLiabilities, currency)}</span>
