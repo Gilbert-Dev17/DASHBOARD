@@ -30,14 +30,14 @@ export const NetWorthOverview = ({ wallets }: NetWorthProps) => {
         <h2 id="finances-heading" className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground">
           Net Worth
         </h2>
-        <div className="text-5xl md:text-6xl font-light text-accent tracking-tighter tabular-nums flex items-baseline gap-1">
+        <div className="text-5xl md:text-6xl font-mono text-accent tracking-tighter tabular-nums flex items-baseline gap-1">
           {netWorth < 0 ? '-' : ''}{nwDollars.replace('-', '')}
           {nwCents && <span className="text-2xl md:text-3xl text-muted-foreground">.{nwCents}</span>}
         </div>
       </div>
 
       {/* ── Summary Cards ── */}
-      <div className="grid grid-cols-2 gap-4">
+      {/* <div className="grid grid-cols-2 gap-4">
         <Card variant="dashed" className="transition-colors hover:bg-card/60 rounded-md">
           <CardContent className="p-4 flex flex-col gap-1">
             <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">Assets</span>
@@ -51,7 +51,7 @@ export const NetWorthOverview = ({ wallets }: NetWorthProps) => {
             <span className="text-lg tabular-nums text-foreground/90">{formatCurrency(totalLiabilities, currency)}</span>
           </CardContent>
         </Card>
-      </div>
+      </div> */}
 
       {safeWallets.length > 0 && (
         <Accordion type="single" collapsible className="w-full">

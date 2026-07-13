@@ -11,7 +11,7 @@ export default function MainLayout({
 }>){
     return (
         <section className="min-h-full flex flex-col" suppressHydrationWarning>
-            <Sidebar />
+            {/* <Sidebar /> */}
             <Navbar />
             {children}
         </section>
