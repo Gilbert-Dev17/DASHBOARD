@@ -1,16 +1,16 @@
-import { cache } from "react";
-import { unstable_cache } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
+'use server'
+
+import { cacheTag } from "next/cache";
 import type { TaskWithSubtasks, WalletSummary } from '@/types/dashboard'
 import { getTodayInTimezone } from "@/utils/timezone";
+import { createClient } from "@/lib/supabase/server";
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
-export const getHomeData = cache(async (userId: string): Promise<TaskWithSubtasks[]> => {
-  const supabase = await createClient();
-  const today = getTodayInTimezone();
+async function fetchCachedHomeData(userId: string, today: string){
+  'use cache'
+  cacheTag(`tasks-${userId}`);
 
-  return unstable_cache(
-    async () => {
-      const { data: tasks, error } = await supabase
+  const { data: tasks, error } = await supabaseAdmin
         .from('tasks')
         .select(`
           id,
@@ -32,37 +32,52 @@ export const getHomeData = cache(async (userId: string): Promise<TaskWithSubtask
         .eq('created_for_date', today)
         .order('time', { ascending: true, nullsFirst: false });
 
-      if (error) {
-        console.error("Error fetching tasks:", error.message);
-        throw error;
-      }
+  if (error) {
+    console.error("Error fetching tasks:", error.message);
+    throw error;
+  }
 
-      return (tasks ?? []) as unknown as TaskWithSubtasks[];
-    },
-    [`home-tasks-${userId}-${today}`],
-    { tags: [`tasks-${userId}`], revalidate: 3600 }
-  )();
-});
+  return (tasks ?? []) as unknown as TaskWithSubtasks[];
+}
 
-export const getWalletData = cache(async (userId: string): Promise<WalletSummary[]> => {
+
+export async function getHomeData(userId: string) {
+  const supabase = await createClient();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  if (!user || user.id !== userId) {
+      throw new Error('Unauthorized or invalid user ID');
+  }
+
+  const today = getTodayInTimezone()
+  return fetchCachedHomeData(user.id, today)
+}
+
+async function fetchedCachedWalletData(userId: string){
+  'use cache'
+  cacheTag(`wallets-${userId}`)
+
+  const { data: wallet, error } = await supabaseAdmin
+      .from('wallets')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: true })
+    if (error) {
+      console.error("Error fetching wallets:", error.message);
+      throw error;
+    }
+
+    return wallet as WalletSummary[];
+}
+
+export async function getWalletData(userId: string) {
   const supabase = await createClient();
 
-  return unstable_cache(
-    async () => {
-      const { data: wallet, error } = await supabase
-        .from('wallets')
-        .select('*')
-        .eq('user_id', userId)
-        .order('created_at', { ascending: true })
+  const { data: { user } } = await supabase.auth.getUser();
 
-      if (error) {
-        console.error("Error fetching wallets:", error.message);
-        throw error;
-      }
+  if (!user || user.id !== userId) {
+      throw new Error('Unauthorized or invalid user ID');
+  }
 
-      return wallet as WalletSummary[];
-    },
-    [`wallets-${userId}`],
-    { tags: [`wallets-${userId}`], revalidate: 3600 }
-  )();
-});
+  return fetchedCachedWalletData(userId);
+}
