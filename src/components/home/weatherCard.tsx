@@ -38,7 +38,7 @@ export function WeatherCard() {
     <section
       aria-label="Current weather at your location"
       aria-live="polite"
-      className="mt-16 p-6 lg:p-8 rounded-[2rem] border relative overflow-hidden flex flex-col md:flex-row gap-8 justify-between md:items-center shadow-sm bg-secondary/50 transition-colors duration-500"
+      className="mt-16 p-6 lg:p-8 rounded-md border relative overflow-hidden flex flex-col md:flex-row gap-8 justify-between md:items-center shadow-sm bg-secondary/50 transition-colors duration-500"
     >
 
       {permissionStatus === 'denied' && (

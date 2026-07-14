@@ -1,11 +1,15 @@
-import { cache } from "react";
+'use server'
+
+import { cacheTag } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import type { TaskWithSubtasks } from '@/types/dashboard'
+import { supabaseAdmin } from "@/lib/supabase/admin";
 
-export const getTasksByDate = cache(async (userId: string, dateStr: string): Promise<TaskWithSubtasks[]> => {
-  const supabase = await createClient();
+async function fetchCachedTasksByDate(userId: string, dateStr: string ){
+  'use cache'
+  cacheTag(`planner-tasks-${userId}`)
 
-  const { data: tasks, error } = await supabase
+  const {data: tasks, error } = await supabaseAdmin
     .from('tasks')
     .select(`
       id,
@@ -25,32 +29,43 @@ export const getTasksByDate = cache(async (userId: string, dateStr: string): Pro
       )`)
     .eq('user_id', userId)
     .eq('created_for_date', dateStr)
-    .order('time', { ascending: true, nullsFirst: false });
+    .order('time', {ascending: true, nullsFirst: false});
 
-  if (error) {
-    console.error(`Error fetching tasks for ${dateStr}:`, error.message);
-    throw error;
-  }
+    if (error) {
+      console.error(`Error fetching tasks for ${dateStr}:`, error.message);
+      throw error;
+    }
 
-  return (tasks ?? []) as unknown as TaskWithSubtasks[];
-});
+    return (tasks ?? []) as unknown as TaskWithSubtasks[];
+}
 
-export const getMonthTasksSummary = cache(async (userId: string, startStr: string, endStr: string) => {
+export async function getTasksByDate(userId: string, dateStr: string){
   const supabase = await createClient();
 
-  const { data, error } = await supabase
+  const {data: {user}} = await supabase.auth.getUser();
+
+  if (!user || user.id !== userId){
+    throw new Error('Unauthorized or invalid user ID');
+  }
+
+  return fetchCachedTasksByDate(userId, dateStr)
+}
+
+async function fetchCachedMonthTasksSummary(userId: string, startStr: string, endStr: string){
+  'use cache'
+  cacheTag(`planner-summary-${userId}`)
+
+  const { data, error } = await supabaseAdmin
     .from('tasks')
     .select('created_for_date')
     .eq('user_id', userId)
     .gte('created_for_date', startStr)
     .lte('created_for_date', endStr);
-
   if (error) {
     console.error("Error fetching month summary:", error.message);
     return [];
   }
 
-  // Group tasks by date and count them
   const countsByDate = data?.reduce((acc: Record<string, number>, task) => {
     const date = task.created_for_date
     acc[date] = (acc[date] || 0) + 1
@@ -61,4 +76,16 @@ export const getMonthTasksSummary = cache(async (userId: string, startStr: strin
     date,
     count
   }));
-});
+}
+
+export async function getMonthTasksSummary(userId: string, startStr: string, endStr: string) {
+  const supabase = await createClient();
+
+  const {data: {user}} = await supabase.auth.getUser()
+
+  if (!user|| user.id !== userId ){
+    throw new Error('Unauthorized or invalid user ID');
+  }
+
+  return fetchCachedMonthTasksSummary(userId, startStr, endStr)
+}

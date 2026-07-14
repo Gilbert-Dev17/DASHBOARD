@@ -26,7 +26,6 @@ export const QuickAddModal = () => {
   const searchParams = useSearchParams()
   const targetDateStr = searchParams.get('date')
 
-  // ── Autocomplete State ──
   const [showMenu, setShowMenu] = useState(false)
   const [menuFilter, setMenuFilter] = useState('')
   const [selectedIndex, setSelectedIndex] = useState(0)
@@ -236,7 +235,7 @@ export const QuickAddModal = () => {
         <Button
           variant="default"
           size="icon"
-          className="rounded-full transition-all duration-300 hover:scale-105"
+          className="rounded-md transition-all duration-300 hover:scale-105"
           aria-label="Quick add tasks"
         >
           <Plus size={18} strokeWidth={2.5} aria-hidden />

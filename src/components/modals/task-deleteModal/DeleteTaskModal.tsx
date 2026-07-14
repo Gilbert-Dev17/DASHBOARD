@@ -41,11 +41,11 @@ export const DeleteTaskModal = ({taskId, taskName, onDeleted }: DeleteModalProps
       <AlertDialogTrigger asChild>
         <Button
           type="button"
-          variant="outline"
+          variant="ghost"
           className=" text-destructive hover:bg-destructive/10 hover:text-destructive transition-colors duration-300"
         >
             <Trash2 size={16} />
-            Delete
+            {/* Delete */}
         </Button>
       </AlertDialogTrigger>
       <AlertDialogContent size='sm' >

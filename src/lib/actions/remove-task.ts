@@ -2,7 +2,7 @@
 
 import { createClient } from "../supabase/server"
 import { getUser } from "../auth/get-user"
-import { revalidatePath } from "next/cache"
+import { updateTag } from "next/cache"
 
 export async function RemoveTask(taskId: string) {
 
@@ -17,9 +17,7 @@ export async function RemoveTask(taskId: string) {
         .eq('id',taskId)
         .eq('user_id', user.id)
 
-    revalidatePath('/home')
-    revalidatePath('/planner')
-
+      updateTag(`tasks-${user.id}`);
 
     if (error) {
       console.error('Error deleting task:', error)

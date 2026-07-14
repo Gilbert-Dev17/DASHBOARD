@@ -51,6 +51,7 @@ export interface Wallet {
     name: string;
     balance: number;
     currency: string;
+    type: 'asset' | 'liability';
     created_at: string;
 }
 

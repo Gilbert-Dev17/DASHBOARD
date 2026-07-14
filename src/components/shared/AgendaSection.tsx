@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Timeline, TimelineItem, TimelineTime, TimelineContent } from '@/components/ui/timeline'
 import { TaskWithSubtasks } from '@/types/dashboard'
 import { formatTime } from '@/lib/formatTime'
 import { toast } from "sonner"
@@ -86,6 +87,43 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
       // Pass selectedDateStr into the dependency array so it binds correctly
   }, [selectedDateStr])
 
+    //* Listen for optimistic task updates from UpdateTaskModal
+    useEffect(() => {
+      const handler = (e: Event) => {
+        const { taskId, values } = (e as CustomEvent).detail
+
+        setTasks(current => {
+          const updated = current.map(task => {
+            if (task.id !== taskId) return task
+
+            return {
+              ...task,
+              task_name: values.task_name,
+              time: values.time ? `${values.time}:00` : undefined,
+              task_category: values.category ? { id: task.task_category?.id || null, name: values.category } : null,
+              subtasks: (values.subtasks || []).map((st: any) => ({
+                id: st.dbId || crypto.randomUUID(),
+                task_id: taskId,
+                subtask_name: st.name,
+                is_done: task.subtasks?.find(oldSt => oldSt.id === st.dbId)?.is_done || false,
+                created_at: new Date().toISOString()
+              }))
+            }
+          })
+
+          return updated.sort((a, b) => {
+            if (a.time && b.time) return a.time.localeCompare(b.time)
+            if (a.time && !b.time) return -1
+            if (!a.time && b.time) return 1
+            return 0
+          })
+        })
+      }
+
+      window.addEventListener('optimistic-task-update', handler)
+      return () => window.removeEventListener('optimistic-task-update', handler)
+    }, [])
+
   const { mutate: handleToggleTask } = useMutation({
     mutationFn: async ({ taskId, isDone, taskName }: { taskId: string, isDone: boolean, taskName: string }) => {
       const result = await toggleTask(taskId, isDone)
@@ -137,89 +175,74 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
         <p className="text-muted-foreground py-4">No tasks for today.</p>
       ) : (
         <div className="flex-1 min-h-0 max-h-[650px] pr-4 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-          <div className="relative pb-8 pt-4">
-            {/* Timeline Axis Line */}
-            <div className="absolute top-0 -bottom-25 left-20 w-px bg-border/50" />
+          <Timeline className="space-y-8">
+            {tasks.map((task) => (
+              <TimelineItem key={task.id}>
 
-            <ol className="space-y-10 list-none m-0 p-0">
-              {tasks.map((task) => (
-                <li key={task.id} className="relative flex items-start min-h-12 w-full">
+                <TimelineTime dateTime={task.time || undefined}>
+                    {task.time && task.time.split(':').length === 3 && task.time.split(':')[2] !== '00'
+                      ? 'OPEN BLOCK'
+                      : (task.time ? formatTime(task.time) : '--:--')}
+                </TimelineTime>
 
-                  {/* Left Side: Time & Axis Dot */}
-                  <div className="absolute left-0 top-4 w-20 flex items-center justify-end">
-                    <time dateTime={task.time || undefined} className="text-[10px] font-mono tabular-nums text-muted-foreground mr-4 leading-none tracking-widest uppercase">
-                      {task.time && task.time.split(':').length === 3 && task.time.split(':')[2] !== '00'
-                        ? 'OPEN BLOCK'
-                        : (task.time ? formatTime(task.time) : '--:--')}
-                    </time>
+                <TimelineContent
+                  withCard
+                  className={`max-w-lg cursor-pointer ${task.is_done ? 'opacity-50 grayscale' : ''}`}
+                  onClick={() => setEditingTask(task)}
+                >
+                  <div className="flex flex-col gap-3">
+                    {/* Task Header */}
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex flex-col">
+                        <span className={`font-medium text-sm tracking-wide ${task.is_done ? 'line-through text-muted-foreground' : 'text-foreground/90 group-hover:text-foreground'}`}>
+                          {task.task_name}
+                        </span>
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-accent">
+                          {task.task_category?.name}
+                        </span>
+                      </div>
 
-                    {/* Axis Dot */}
-                    <div className="absolute -right-1 h-2 w-2 rounded-full bg-accent ring-4 ring-background z-10 transition-colors duration-300" />
+                      <Checkbox
+                        className="rounded-full border-2 shrink-0 mt-0.5"
+                        checked={task.is_done}
+                        onClick={(e) => e.stopPropagation()}
+                        onCheckedChange={(checked) => handleToggleTask({
+                          taskId: task.id,
+                          isDone: checked as boolean,
+                          taskName: task.task_name
+                        })}
+                        aria-label={`Mark "${task.task_name}" as ${task.is_done ? 'incomplete' : 'complete'}`}
+                      />
+                    </div>
+
+                    {/* Subtasks */}
+                    {task.subtasks && task.subtasks.length > 0 && (
+                      <ul className="mt-1 space-y-2.5 border-l-2 border-muted pl-3 ml-1 list-none m-0">
+                        {task.subtasks.map((st) => (
+                          <li key={st.id} className="flex items-center justify-between gap-3 group">
+                            <span className={`text-xs ${st.is_done ? 'line-through text-muted-foreground' : 'text-foreground/90'}`}>
+                              {st.subtask_name}
+                            </span>
+                            <Checkbox
+                              className="rounded-sm border-2 w-3.5 h-3.5 opacity-0 group-hover:opacity-100 data-[state=checked]:opacity-100 transition-opacity"
+                              checked={st.is_done}
+                              onClick={(e) => e.stopPropagation()}
+                              onCheckedChange={(checked) => handleToggleSubtask({
+                                taskId: task.id,
+                                subtaskId: st.id,
+                                isDone: checked as boolean,
+                                subtaskName: st.subtask_name
+                              })}
+                            />
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                   </div>
-                  {/* Task Card Container */}
-                  <article className="pl-28 w-full">
-                    <Card
-                      className={`w-full max-w-lg transition-all duration-300 hover:-translate-y-0.5 border-dashed cursor-pointer ${
-                        task.is_done ? 'opacity-50 grayscale bg-muted/30' : 'bg-card'
-                      }`}
-                      onClick={() => setEditingTask(task)}
-                    >
-                      <CardContent className="flex flex-col gap-3">
-
-                        {/* Task Header */}
-                        <div className="flex items-start justify-between gap-4">
-                          <div className="flex flex-col gap-1">
-                            <span className={`font-medium text-sm tracking-wide ${task.is_done ? 'line-through text-muted-foreground' : ''}`}>
-                              {task.task_name}
-                            </span>
-                            <span className="text-[10px] font-semibold uppercase tracking-wider text-accent">
-                              {task.task_category?.name}
-                            </span>
-                          </div>
-
-                          <Checkbox
-                            className="rounded-full border-2 shrink-0 mt-0.5"
-                            checked={task.is_done}
-                            onClick={(e) => e.stopPropagation()}
-                            onCheckedChange={(checked) => handleToggleTask({
-                              taskId: task.id,
-                              isDone: checked as boolean,
-                              taskName: task.task_name
-                            })}
-                            aria-label={`Mark "${task.task_name}" as ${task.is_done ? 'incomplete' : 'complete'}`}
-                          />
-                        </div>
-
-                        {/* Subtasks */}
-                        {task.subtasks && task.subtasks.length > 0 && (
-                          <ul className="mt-1 space-y-2.5 border-l-2 border-muted pl-3 ml-1 list-none m-0">
-                            {task.subtasks.map((st) => (
-                              <li key={st.id} className="flex items-center justify-between gap-3 group">
-                                <span className={`text-xs ${st.is_done ? 'line-through text-muted-foreground' : 'text-foreground/90'}`}>
-                                  {st.subtask_name}
-                                </span>
-                                <Checkbox
-                                  className="rounded-sm border-2 w-3.5 h-3.5 opacity-0 group-hover:opacity-100 data-[state=checked]:opacity-100 transition-opacity"
-                                  checked={st.is_done}
-                                  onClick={(e) => e.stopPropagation()}
-                                  onCheckedChange={(checked) => handleToggleSubtask({
-                                    taskId: task.id,
-                                    subtaskId: st.id,
-                                    isDone: checked as boolean,
-                                    subtaskName: st.subtask_name
-                                  })}
-                                />
-                              </li>
-                            ))}
-                          </ul>
-                        )}
-                      </CardContent>
-                    </Card>
-                  </article>
-                </li>
-              ))}
-            </ol>
-          </div>
+                </TimelineContent>
+              </TimelineItem>
+            ))}
+          </Timeline>
         </div>
       )}
     </section>

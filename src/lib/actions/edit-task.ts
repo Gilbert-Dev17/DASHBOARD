@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { revalidatePath } from 'next/cache'
+import { updateTag } from 'next/cache'
 import { getUser } from "../auth/get-user"
 
 interface SubtaskUpdate {
@@ -100,8 +100,7 @@ export async function submitTaskEdit(payload: EditTaskPayload) {
       if (error) throw error
     }
 
-    revalidatePath('/home')
-    revalidatePath('/planner')
+    updateTag(`tasks-${user.id}`)
 
     return { success: true, message: 'Task updated successfully!' }
   } catch (error: any) {

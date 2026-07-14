@@ -1,18 +1,23 @@
 'use client'
 
-import React, { useState } from 'react'
+import React from 'react'
 import Link from 'next/link'
 
-import { ArrowDownLeft, ArrowUpRight, DrumstickIcon, ShoppingBag, Tv, Heart, ShoppingBasket, BusFront, School, HelpCircle } from 'lucide-react'
+import { ArrowDownLeft, ArrowUpRight, DrumstickIcon, ShoppingBag, Tv, Heart, ShoppingBasket, BusFront, School, HelpCircle, Wallet as WalletIcon, CreditCard, TrendingUp, TrendingDown } from 'lucide-react'
 
-import { HeaderTitle } from '@/components/shared/HeaderTitle'
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import PageComponent from '@/components/shared/PageComponent'
 import { ChartPieDonutText } from '@/components/shared/CategoryCharts'
 import { AddCategoryModal } from '@/components/modals/add-category/AddCategoryModal'
 import { FinancialSummary, CategorySummary, Transaction } from '@/types/expenses'
+import {
+  Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious,
+} from "@/components/ui/carousel"
+import { Separator } from '@/components/ui/separator'
+import { formatCurrency } from '@/utils/currency'
+import { summary as mockSummary, categories as mockCategories, recentTransactions as mockTransactions, mockWallets } from '@/lib/mockData'
+import { Timeline, TimelineItem, TimelineTime, TimelineContent } from '@/components/ui/timeline'
 
 // Map string keys from the database to Lucide React components
 export const ICON_MAP: Record<string, React.ElementType> = {
@@ -25,66 +30,20 @@ export const ICON_MAP: Record<string, React.ElementType> = {
   'school': School,
 };
 
-// Format currency standardizer
-const formatCurrency = (amount: number, currencyCode: string = 'USD') => {
-  return new Intl.NumberFormat('en-US', {
-    style: 'currency',
-    currency: currencyCode,
-  }).format(amount);
-};
-
-// ============================================================================
-// 3. COMPONENT PROPS
-// ============================================================================
-
 interface ExpenseTrackerProps {
   initialFilter?: 'week' | 'month' | 'year';
-  summary?: FinancialSummary;
+  summary?: FinancialSummary & { trend?: number };
   categories?: CategorySummary[];
   transactions?: Transaction[];
 }
 
-// ============================================================================
-// 4. MAIN COMPONENT
-// ============================================================================
-
 export default function ExpenseTrackerPage({
   initialFilter = 'week',
-  summary = {
-    balance: 150250.75,
-    income: 150250.75,
-    expense: 150250.75,
-    currency: 'USD'
-  },
-  categories = [
-    { name: 'Foods & Drinks', total: 1000, iconKey: 'foods-drinks' },
-    { name: 'Shopping', total: 1000, iconKey: 'shopping' },
-    { name: 'Transport', total: 900, iconKey: 'transport' },
-  ],
-  transactions = [
-    { date: '2026-06-11T14:00:00Z', note: 'Transport #1', amount: 65.00, type: 'expense', category: 'Transport', currency: 'PHP' },
-    { date: '2026-06-10T09:30:00Z', note: 'Common Ground ; choco drink + ramen', amount: 250.00, type: 'expense', category: 'Food & Drinks', currency: 'PHP' },
-  ]
+  summary = mockSummary,
+  categories = mockCategories,
+  transactions = mockTransactions
 }: ExpenseTrackerProps) {
 
-  const [expenseFilter, setExpenseFilter] = useState<string>(initialFilter);
-
-  const expenseFilters = [
-    { name: 'This Week', value: 'week' },
-    { name: 'This Month', value: 'month' },
-    { name: 'This Year', value: 'year' },
-  ];
-
-  const filterLabel = expenseFilters.find((f) => f.value === expenseFilter)?.name ?? '';
-
-  // Handler for when the user changes the time period
-  const handleFilterChange = (value: string) => {
-    setExpenseFilter(value);
-    // TODO: In a real app, this should trigger a data refetch
-    // e.g., router.push(`?filter=${value}`) or a data fetching function
-  };
-
-  // Pre-split the balance for the stylized UI requirement
   const formattedBalance = formatCurrency(summary.balance, summary.currency);
   const [balanceMain, balanceCents] = formattedBalance.split('.');
 
@@ -96,81 +55,129 @@ export default function ExpenseTrackerPage({
 
   return (
     <PageComponent>
-      {/* HEADER & FILTER ROW */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between items-center gap-6 mb-12">
-        <HeaderTitle
-          title="Expense Tracker"
-          desc="Manage your categories and spendings."
-        />
-        <nav aria-label="Time period filter">
-          <Tabs value={expenseFilter} onValueChange={handleFilterChange} className="w-fit">
-            <TabsList>
-              {expenseFilters.map((filter) => (
-                <TabsTrigger key={filter.value} value={filter.value}>
-                  {filter.name}
-                </TabsTrigger>
-              ))}
-            </TabsList>
-          </Tabs>
-        </nav>
-      </header>
 
-      {/* SUMMARY CARDS */}
-      <section aria-label="Financial Summary" className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-        <Card>
-          <CardHeader>
-            <CardTitle className="text-sm font-semibold">Total Balance</CardTitle>
-          </CardHeader>
-          <CardContent className="text-3xl lg:text-[2.5rem] leading-none font-light tracking-tight">
-            {balanceMain}<span className="text-xl lg:text-2xl">.{balanceCents}</span>
-          </CardContent>
-        </Card>
+      {/* SUMMARY SECTION */}
+      <section aria-label="Financial Summary" className="flex flex-col xl:flex-row xl:items-center justify-between gap-8 xl:gap-12 mb-8 pb-8 border-b border-dashed border-border/50">
+        {/* Left Side: Net Worth */}
+        <div className="flex flex-col">
+          <div className="flex items-center gap-4 mb-4">
+            <span className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Net Worth</span>
+            {summary.trend !== undefined && (
+              <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-medium ${
+                summary.trend >= 0 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'
+              }`}>
+                {summary.trend >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                {summary.trend > 0 ? '+' : ''}{summary.trend}%
+              </div>
+            )}
+          </div>
+          <div className="text-6xl md:text-7xl lg:text-[7rem] leading-none font-mono tracking-tighter tabular-nums flex items-baseline mb-4">
+            {balanceMain}<span className="text-4xl md:text-5xl lg:text-6xl text-muted-foreground/40">.{balanceCents}</span>
+          </div>
+          <p className="text-xs lg:text-sm text-muted-foreground/70 max-w-sm font-medium">
+            {summary.trend && summary.trend >= 0
+              ? `Up ${summary.trend}% from last month, driven by recent Income.`
+              : `Down ${Math.abs(summary.trend || 0)}% from last month, driven by recent Expenses.`}
+          </p>
+        </div>
 
-        <Card className="relative overflow-hidden">
-          <CardHeader>
-            <CardTitle className="text-sm font-semibold">
-              Income <span className="text-muted-foreground font-normal">({filterLabel})</span>
-            </CardTitle>
-            <div className="absolute top-0 right-0 w-12 h-12 flex items-center justify-center rounded-bl-[1rem] bg-emerald-500 text-white" aria-hidden="true">
-              <ArrowDownLeft size={20} />
+        {/* Vertical Separator */}
+        <Separator orientation='vertical' className="hidden xl:block w-px self-stretch bg-border/50 opacity-60" />
+
+        {/* Right Side: Income & Expense */}
+        <div className="flex flex-row items-center gap-8 sm:gap-16 w-full xl:w-auto">
+           {/* Income */}
+           <div className="flex flex-col gap-3">
+             <div className="flex items-center gap-2">
+               <ArrowDownLeft size={16} className="text-emerald-500" />
+               <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+                 Income
+               </span>
+             </div>
+             <div className="text-4xl lg:text-5xl font-mono text-emerald-500 tabular-nums tracking-tight flex items-baseline">
+               +{incomeMain}<span className="text-lg lg:text-2xl opacity-60">.{incomeCents}</span>
+             </div>
+           </div>
+
+           {/* Expense */}
+           <div className="flex flex-col gap-3">
+             <div className="flex items-center gap-2">
+               <ArrowUpRight size={16} className="text-rose-500" />
+               <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
+                 Expense
+               </span>
+             </div>
+             <div className="text-4xl lg:text-5xl font-mono text-rose-500 tabular-nums tracking-tight flex items-baseline">
+               -{expenseMain}<span className="text-lg lg:text-2xl opacity-60">.{expenseCents}</span>
+             </div>
+           </div>
+        </div>
+      </section>
+
+      {/* WALLETS CAROUSEL */}
+      <section aria-label="Your Wallets" className="mb-16">
+        <Carousel className="w-full" opts={{ align: "start", dragFree: true }}>
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Accounts</h2>
+            <div className="flex items-center gap-2">
+              <CarouselPrevious className="static transform-none translate-x-0 translate-y-0" />
+              <CarouselNext className="static transform-none translate-x-0 translate-y-0" />
             </div>
-          </CardHeader>
-          <CardContent className="text-3xl lg:text-[2.5rem] leading-none font-light tracking-tight text-emerald-500">
-            +{incomeMain}<span className="text-xl lg:text-2xl">.{incomeCents}</span>
-          </CardContent>
-        </Card>
+          </div>
 
-        <Card className="relative overflow-hidden">
-          <CardHeader>
-            <CardTitle className="text-sm font-semibold">
-              Expense <span className="text-muted-foreground font-normal">({filterLabel})</span>
-            </CardTitle>
-            <div className="absolute top-0 right-0 w-12 h-12 flex items-center justify-center rounded-bl-[1rem] bg-rose-500 text-white" aria-hidden="true">
-              <ArrowUpRight size={20} />
-            </div>
-          </CardHeader>
-          <CardContent className="text-3xl lg:text-[2.5rem] leading-none font-light tracking-tight text-rose-500">
-            -{expenseMain}<span className="text-xl lg:text-2xl">.{expenseCents}</span>
-          </CardContent>
-        </Card>
+          <CarouselContent className="ml-4">
+            {mockWallets.map((wallet) => {
+              const Icon = wallet.type === 'asset' ? WalletIcon : CreditCard;
+              const isLiability = wallet.type === 'liability';
+
+              return (
+                <CarouselItem key={wallet.id} className="basis-[85%] md:basis-1/2 lg:basis-1/3 xl:basis-1/4 p-1">
+                  <Card className="h-full flex flex-col justify-between hover:bg-secondary/20 transition-colors">
+                    <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
+                      <CardTitle className="text-sm font-medium text-foreground/80">{wallet.name}</CardTitle>
+                      <Icon size={16} className={isLiability ? "text-destructive/70" : "text-muted-foreground"} />
+                    </CardHeader>
+                    <CardContent>
+                      <div className={`text-2xl tabular-nums font-mono ${isLiability ? "text-destructive/90" : "text-foreground"}`}>
+                        {isLiability ? "-" : ""}{formatCurrency(wallet.balance, summary.currency)}
+                      </div>
+                      <div className="flex items-center justify-between mt-2">
+                        <p className="text-[10px] uppercase tracking-wider text-accent">
+                          {isLiability ? "Liability" : "Asset"}
+                        </p>
+                        {wallet.trend !== undefined && (
+                          <div className={`flex items-center gap-1 text-[10px] font-medium ${
+                            wallet.trend >= 0 ? 'text-emerald-500' : 'text-rose-500'
+                          }`}>
+                            {wallet.trend >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+                            {Math.abs(wallet.trend)}%
+                          </div>
+                        )}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </CarouselItem>
+              )
+            })}
+          </CarouselContent>
+        </Carousel>
       </section>
 
       {/* MAIN CONTENT GRID */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 md:grid-cols-3 gap-12 lg:gap-24">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
 
         {/* CATEGORIES SECTION */}
-        <section className="lg:col-span-7" aria-labelledby="categories-heading">
-          <header className="flex flex-row justify-between items-center border-b border-border pb-4 mb-2">
-            <h2 id="categories-heading" className="text-sm font-semibold">Categories</h2>
+        <section className="lg:col-span-7 flex flex-col" aria-labelledby="categories-heading">
+          <header className="flex flex-row justify-between items-center pb-4 mb-2 shrink-0">
+            <h2 id="categories-heading" className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Spend by Category</h2>
             <AddCategoryModal />
           </header>
 
-          <div aria-hidden="true">
-            {/* Assuming ChartPieDonutText accepts the new CategorySummary interface */}
+          <div aria-hidden="true" className="mb-8 bg-card/30 border rounded-xl p-6">
             <ChartPieDonutText categories={categories} />
           </div>
 
-          <div className="grid grid-cols-2 gap-x-5 mt-6" role="list">
+          <div className="flex flex-col gap-3" role="list">
             {categories.map((category) => {
               const IconComponent = ICON_MAP[category.iconKey] || HelpCircle;
 
@@ -178,15 +185,15 @@ export default function ExpenseTrackerPage({
                 <article
                   key={category.name}
                   role="listitem"
-                  className="flex flex-row justify-between items-center px-2 py-3 rounded-lg hover:bg-secondary/50 transition-colors"
+                  className="group flex flex-row justify-between items-center px-4 py-3 rounded-lg border border-transparent hover:border-border hover:bg-secondary/30 transition-all duration-300"
                 >
-                  <div className="flex flex-row items-center gap-3">
-                    <div className="bg-secondary p-2 rounded-full flex items-center justify-center shrink-0">
-                      <IconComponent size={18} aria-hidden="true" />
+                  <div className="flex flex-row items-center gap-4">
+                    <div className="bg-secondary/60 text-foreground group-hover:bg-background group-hover:shadow-sm p-2.5 rounded-full flex items-center justify-center shrink-0 transition-all duration-300">
+                      <IconComponent size={16} aria-hidden="true" />
                     </div>
-                    <span className="font-medium cursor-pointer">{category.name}</span>
+                    <span className="text-sm font-medium">{category.name}</span>
                   </div>
-                  <span className="font-medium tabular-nums">
+                  <span className="font-semibold tabular-nums text-foreground/90">
                     {formatCurrency(category.total, summary.currency)}
                   </span>
                 </article>
@@ -196,43 +203,52 @@ export default function ExpenseTrackerPage({
         </section>
 
         {/* RECENT LOGS SECTION */}
-        <section className="lg:col-span-5" aria-labelledby="logs-heading">
-          <header className="flex flex-row justify-between items-center border-b border-border pb-4 mb-6">
-            <h2 id="logs-heading" className="text-sm font-semibold">Recent Logs</h2>
-            <Button variant="ghost" size="sm" asChild>
+        <section className="lg:col-span-5 flex flex-col" aria-labelledby="logs-heading">
+          <header className="flex flex-row justify-between items-center pb-4 mb-2 shrink-0">
+            <h2 id="logs-heading" className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Recent Logs</h2>
+            <Button variant="ghost" size="sm" className="text-[10px] uppercase tracking-wider h-8" asChild>
               <Link href="/expenses/viewAll">View All</Link>
             </Button>
           </header>
 
           {transactions.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-16 text-muted-foreground text-sm">
+            <div className="flex-1 flex flex-col items-center justify-center py-16 text-muted-foreground text-sm">
               No recent logs yet.
             </div>
           ) : (
-            <div className="space-y-6" role="list">
+            <Timeline>
               {transactions.map((txn) => {
                 const dateObj = new Date(txn.date);
 
                 return (
-                  <article key={txn.date} role="listitem" className="border-l-2 pl-4 relative border-border">
-                    <div className="absolute w-2 h-2 rounded-full -left-1.25 top-1 transition-colors duration-500 bg-accent" aria-hidden="true"></div>
+                  <TimelineItem key={txn.date}>
+                    <TimelineTime dateTime={txn.date}>
+                      {dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </TimelineTime>
 
-                    <time dateTime={txn.date} className="text-xs mb-1 text-muted-foreground block transition-colors duration-500">
-                      {dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                    </time>
-
-                    <div className="flex justify-between items-start text-sm mb-1">
-                      <span className="font-medium">{txn.note}</span>
-                      <span className={`tabular-nums font-medium transition-colors duration-500 ${txn.type === 'income' ? 'text-emerald-500' : ''}`}>
-                        {txn.type === 'income' ? '+' : '-'}
-                        {/* Using standard formatCurrency here based on the transaction's specific currency */}
-                        {formatCurrency(txn.amount, txn.currency)}
-                      </span>
-                    </div>
-                  </article>
+                    <TimelineContent>
+                      <div className="flex flex-col py-2 px-3 -ml-3 rounded-lg hover:bg-secondary/40 transition-colors">
+                        <div className="flex justify-between items-start gap-4">
+                          <span className="font-medium text-sm leading-tight text-foreground/90 group-hover:text-foreground">{txn.note}</span>
+                          <span className={`tabular-nums font-mono shrink-0 ${txn.type === 'income' ? 'text-emerald-500' : 'text-foreground'}`}>
+                            {txn.type === 'income' ? '+' : '-'}{formatCurrency(txn.amount, txn.currency)}
+                          </span>
+                        </div>
+                        <span className="text-[10px] uppercase tracking-wider text-muted-foreground/80 mt-1 flex items-center gap-2">
+                          <span>{txn.category}</span>
+                          {txn.walletName && (
+                            <>
+                              <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
+                              <span className="text-muted-foreground/60">{txn.walletName}</span>
+                            </>
+                          )}
+                        </span>
+                      </div>
+                    </TimelineContent>
+                  </TimelineItem>
                 )
               })}
-            </div>
+            </Timeline>
           )}
         </section>
       </div>
