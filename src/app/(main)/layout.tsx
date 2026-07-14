@@ -10,9 +10,8 @@ export default function MainLayout({children}: Readonly<{children: ReactNode}>){
         <section className="min-h-full flex flex-col" suppressHydrationWarning>
             {/* <Sidebar /> */}
             <Navbar />
-            <Suspense fallback={<div>Loading dashboard...</div>}>
-                {children}
-            </Suspense>
+            {children}
+
         </section>
     )
 }

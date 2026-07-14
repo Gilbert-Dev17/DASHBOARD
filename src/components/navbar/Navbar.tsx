@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
@@ -12,7 +12,6 @@ import { Separator } from '../ui/separator'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { getActiveQuickAdds } from './quick-add-registry'
 
-import { Suspense } from 'react'
 
 const Navbar = () => {
   const pathname = usePathname();
