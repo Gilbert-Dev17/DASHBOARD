@@ -12,6 +12,8 @@ import { Separator } from '../ui/separator'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { getActiveQuickAdds } from './quick-add-registry'
 
+import { Suspense } from 'react'
+
 const Navbar = () => {
   const pathname = usePathname();
   const activeQuickAdds = getActiveQuickAdds(pathname);
@@ -57,10 +59,11 @@ const Navbar = () => {
 
         <Separator orientation="vertical" className="bg-muted-foreground/30" />
 
-        {/* Quick Add Button */}
-        {activeQuickAdds.map(({ id, Component }) => (
-          <Component key={id} />
-        ))}
+        <Suspense fallback={<div className="w-9 h-9" />}>
+          {activeQuickAdds.map(({ id, Component }) => (
+            <Component key={id} />
+          ))}
+        </Suspense>
 
         {/* Theme Toggle */}
         <Button
