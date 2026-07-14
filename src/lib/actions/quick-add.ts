@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '../supabase/server'
-import { revalidatePath } from 'next/cache'
+import { updateTag } from 'next/cache'
 import { ParsedTask } from '@/utils/parseTaskLines'
 import { getTodayInTimezone } from '@/utils/timezone'
 
@@ -93,8 +93,7 @@ export async function submitQuickAddTasks(tasks: ParsedTask[], targetDate?: stri
       console.log(`[data]`, insertedTasks, subtasksToInsert )
     }
 
-    revalidatePath('/home')
-    revalidatePath('/planner')
+    updateTag(`tasks-${user.id}`)
 
 
     return { success: true, message: 'Tasks successfully added!' }

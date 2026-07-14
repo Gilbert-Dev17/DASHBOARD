@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from "../supabase/server"
-import { revalidateTag, revalidatePath } from "next/cache";
+import { updateTag } from "next/cache";
 
 export async function toggleTask(taskId: string, isDone: boolean) {
     const supabase = await createClient();
@@ -40,8 +40,7 @@ export async function toggleTask(taskId: string, isDone: boolean) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (user) {
-        revalidatePath('/home')
-        revalidatePath('/planner')
+        updateTag(`tasks-${user.id}`);
     }
 
     return { success: true, message: "Task is Finished" };
@@ -62,8 +61,7 @@ export async function toggleSubTask(subtaskId: string, isDone: boolean) {
     const { data: { user } } = await supabase.auth.getUser();
 
     if (user) {
-        revalidatePath('/home')
-        revalidatePath('/planner')
+        updateTag(`tasks-${user.id}`);
     }
 
     return { success: true, message: "Task is Finished" };
