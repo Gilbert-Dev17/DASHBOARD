@@ -1,5 +1,5 @@
 import { ComponentType } from 'react'
-import { QuickAddModal } from '../modals/quick-addModal/QuickAddModal'
+import { QuickAddModal } from '../modals/planner-modals/quick-addModal/QuickAddModal'
 import { AddIncomeExpenseModal } from '@/components/modals/add-transaction/add-income-expense-modal'
 
 export interface QuickAddRegistry {

@@ -17,7 +17,8 @@ export const CategorySection = ({ categories }: CategorySectionProps) => {
         <AddCategoryModal />
       </header>
 
-      <div className="flex-1 min-h-[300px] border border-dashed border-border/50 rounded-2xl bg-secondary/10 flex items-center justify-center p-6 lg:p-8">
+      <div aria-hidden="true" className="mb-8 bg-card/30 border rounded-xl p-6">
+
         <ChartPieDonutText categories={categories} />
       </div>
 

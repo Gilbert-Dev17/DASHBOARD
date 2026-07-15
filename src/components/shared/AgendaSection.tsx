@@ -9,7 +9,7 @@ import { formatTime } from '@/lib/formatTime'
 import { toast } from "sonner"
 import { Card, CardContent, } from '@/components/ui/card'
 import { toggleTask, toggleSubTask } from '@/lib/actions/toggleTasks'
-import { UpdateTaskModal } from '@/components/modals/task-updateModal/UpdateTaskModal'
+import { UpdateTaskModal } from '@/components/modals/planner-modals/task-updateModal/UpdateTaskModal'
 import type { ParsedTask } from '@/utils/parseTaskLines'
 
 interface TasksProps {
