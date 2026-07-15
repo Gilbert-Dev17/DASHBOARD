@@ -1,13 +1,15 @@
 'use client'
 
 import { TrendingUp, TrendingDown } from 'lucide-react'
-import { WalletSummary } from '@/types/dashboard'
+import { WalletSummary, WalletHistory } from '@/types/dashboard'
 import { formatCurrency } from '@/utils/currency'
-import { summary as mockSummary } from '@/lib/mockData'
 
-interface NetWorthProps { wallets: WalletSummary[] }
+interface NetWorthProps {
+  wallets: WalletSummary[];
+  historicalSnapshots?: WalletHistory[];
+}
 
-export const NetWorthOverview = ({ wallets }: NetWorthProps) => {
+export const NetWorthOverview = ({ wallets, historicalSnapshots = [] }: NetWorthProps) => {
   const safeWallets = wallets || []
 
   const isAsset = (type?: any) => ['Debit', 'Assets', 'Stocks', 'Crypto'].includes(type as string);
@@ -20,6 +22,28 @@ export const NetWorthOverview = ({ wallets }: NetWorthProps) => {
   const totalLiabilities = liabilities.reduce((sum, w) => sum + w.balance, 0)
   const netWorth = totalAssets - totalLiabilities
 
+  // ── Calculate Historical Net Worth ──
+  let historicalAssets = 0;
+  let historicalLiabilities = 0;
+
+  historicalSnapshots.forEach(snap => {
+    const currentWallet = safeWallets.find(w => w.id === snap.wallet_id);
+    if (currentWallet) {
+      if (isAsset(currentWallet.type)) historicalAssets += snap.balance;
+      else if (isLiability(currentWallet.type)) historicalLiabilities += snap.balance;
+    }
+  });
+
+  const historicalNetWorth = historicalAssets - historicalLiabilities;
+
+  // ── Calculate Trend Percentage ──
+  let trendPercentage: number | null = null;
+  if (historicalSnapshots.length > 0 && historicalNetWorth !== 0) {
+    trendPercentage = Number((((netWorth - historicalNetWorth) / Math.abs(historicalNetWorth)) * 100).toFixed(1));
+  } else if (historicalSnapshots.length > 0 && historicalNetWorth === 0 && netWorth > 0) {
+    trendPercentage = 100.0; // Infinite growth from 0 is just treated as +100% usually, or just leave it out
+  }
+
   const currency = safeWallets.length > 0 ? safeWallets[0].currency : 'USD'
   const [nwDollars, nwCents] = formatCurrency(netWorth, currency).split('.')
 
@@ -31,12 +55,12 @@ export const NetWorthOverview = ({ wallets }: NetWorthProps) => {
           <h2 id="finances-heading" className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground">
             Net Worth
           </h2>
-          {mockSummary.trend !== undefined && (
+          {trendPercentage !== null && (
             <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-medium ${
-              mockSummary.trend >= 0 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'
+              trendPercentage >= 0 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'
             }`}>
-              {mockSummary.trend >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-              {mockSummary.trend > 0 ? '+' : ''}{mockSummary.trend}%
+              {trendPercentage >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
+              {trendPercentage > 0 ? '+' : ''}{trendPercentage}%
             </div>
           )}
         </div>
@@ -45,9 +69,11 @@ export const NetWorthOverview = ({ wallets }: NetWorthProps) => {
           {nwCents && <span className="text-2xl md:text-3xl text-muted-foreground">.{nwCents}</span>}
         </div>
         <p className="text-xs lg:text-sm text-muted-foreground/70 font-medium max-w-sm">
-          {mockSummary.trend && mockSummary.trend >= 0
-            ? `Up ${mockSummary.trend}% from last month, driven by recent Income.`
-            : `Down ${Math.abs(mockSummary.trend || 0)}% from last month, driven by recent Expenses.`}
+          {trendPercentage === null
+            ? "Waiting for 30 days of data to calculate your first trend."
+            : trendPercentage >= 0
+              ? `Up ${trendPercentage}% from last month's snapshots.`
+              : `Down ${Math.abs(trendPercentage)}% from last month's snapshots.`}
         </p>
       </div>
     </section>

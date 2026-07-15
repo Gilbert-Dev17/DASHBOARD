@@ -3,7 +3,8 @@
 import dynamic from 'next/dynamic'
 
 import PageComponent from '@/components/shared/PageComponent'
-import { TaskWithSubtasks, UserSummary, WalletSummary} from '@/types/dashboard'
+import { TaskWithSubtasks, UserSummary, WalletSummary } from '@/types/dashboard'
+import { WalletSnapshot } from '@/types/database'
 import { GreetingHeader } from './greetingHeader'
 import { WeatherCard } from '@/components/home/weatherCard'
 import { AgendaSection } from '@/components/shared/AgendaSection'
@@ -39,9 +40,10 @@ interface DashboardPageProps {
   initialTasks: TaskWithSubtasks[];
   user: UserSummary;
   wallets: WalletSummary[];
+  historicalSnapshots?: WalletSnapshot[];
 }
 
-export default function DashboardPage({ initialTasks, user, wallets}: DashboardPageProps) {
+export default function DashboardPage({ initialTasks, user, wallets, historicalSnapshots = [] }: DashboardPageProps) {
   useDashboard();
 
   return (
@@ -67,7 +69,7 @@ export default function DashboardPage({ initialTasks, user, wallets}: DashboardP
         <aside className="lg:col-span-5 space-y-8 mt-8 lg:mt-0">
 
         {/* FINANCES / ACCOUNTS SECTION */}
-        <NetWorthOverview wallets={wallets}/>
+        <NetWorthOverview wallets={wallets} historicalSnapshots={historicalSnapshots} />
 
         {/* PROGRESS SECTION */}
         <LifeProgress />

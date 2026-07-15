@@ -61,6 +61,14 @@ export interface Wallet {
     created_at: string;
 }
 
+export interface WalletSnapshot {
+    id: string; // UUID
+    user_id: string; // UUID
+    wallet_id: string; // UUID
+    balance: number;
+    recorded_at: string; // Timestamp
+}
+
 export interface Transaction {
     id: string; // UUID
     user_id: string; // UUID
