@@ -64,7 +64,7 @@ export default function DashboardPage({ initialTasks, user, wallets}: DashboardP
         <AgendaSection initialTasks={initialTasks || []} />
 
         {/* SIDEBAR WIDGETS */}
-        <aside className="lg:col-span-5 space-y-16 mt-8 lg:mt-0">
+        <aside className="lg:col-span-5 space-y-8 mt-8 lg:mt-0">
 
         {/* FINANCES / ACCOUNTS SECTION */}
         <NetWorthOverview wallets={wallets}/>

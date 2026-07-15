@@ -1,5 +1,6 @@
 'use client'
 
+import { useState, useTransition } from 'react'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { AgendaSection } from '@/components/shared/AgendaSection'
@@ -8,6 +9,8 @@ import { CustomCalendar } from '@/components/shared/CustomCalendar'
 import { TaskWithSubtasks } from '@/types/dashboard'
 import { getTodayInTimezone } from '@/utils/timezone'
 import { useRouter } from 'next/navigation'
+
+import { Spinner } from '../ui/spinner'
 
 interface PageProps {
   agendaTitle: string
@@ -19,6 +22,7 @@ interface PageProps {
 
 export function PlannerPage({ agendaTitle, initialTasks, dateObj, datesWithTasks, finalDate }: PageProps) {
   const router = useRouter()
+  const [isPending, startTransition] = useTransition();
   const isToday = finalDate === getTodayInTimezone()
 
   return (
@@ -28,6 +32,7 @@ export function PlannerPage({ agendaTitle, initialTasks, dateObj, datesWithTasks
         <CustomCalendar
           initialDate={dateObj}
           datesWithTasks={datesWithTasks}
+          startTransition={startTransition}
         />
 
           <div className="lg:col-span-4 flex flex-col h-full overflow-hidden">
@@ -35,16 +40,22 @@ export function PlannerPage({ agendaTitle, initialTasks, dateObj, datesWithTasks
               <Label className="text-3xl font-light tracking-tight" >
                  {agendaTitle}
               </Label>
-              {!isToday && (
-                <Button
-                  variant="link"
-                  size="sm"
-                  onClick={() => router.push('/planner')}
-                  className="text-xs uppercase tracking-wider font-semibold text-accent"
-                >
-                  Today
-                </Button>
-              )}
+
+              <div className="flex items-center gap-2">
+                {isPending && <Spinner className="w-4 h-4 text-primary animate-spin" /> }
+
+                {!isToday && (
+                  <Button
+                    variant="link"
+                    size="sm"
+                    onClick={() => startTransition(() => router.push('/planner'))}
+                    className="text-xs uppercase tracking-wider font-semibold text-accent"
+                  >
+                    Today
+                  </Button>
+                )}
+              </div>
+
             </div>
 
             <AgendaSection initialTasks={initialTasks} selectedDateStr={finalDate} showTitle={false} />
