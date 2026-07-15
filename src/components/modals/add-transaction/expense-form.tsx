@@ -21,7 +21,7 @@ interface ExpenseFormProps {
 
 export function ExpenseForm({ onSuccess }: ExpenseFormProps) {
   const form = useForm<ExpenseFormValues>({
-    resolver     : zodResolver(expenseSchema),
+    resolver     : zodResolver(expenseSchema as any),
     defaultValues: { currency: 'peso', amount: '', note: '', category: undefined },
   })
 

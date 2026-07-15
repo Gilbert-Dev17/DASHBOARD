@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/chart"
 
 import { HelpCircle } from "lucide-react"
-import { ICON_MAP} from "@/app/(main)/expenses/page"
+import { ICON_MAP } from "@/components/expenses/expensesPage"
 import type { CategorySummary } from "@/types/expenses"
 
 interface ChartPieDonutTextProps {

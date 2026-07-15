@@ -22,7 +22,9 @@ export const mockWallets = [
   { id: '5', name: 'Bitcoing', balance: 136250.00, type: 'asset', trend: 7.4 },
 ];
 
-export const recentTransactions = [
+import { Transaction } from '@/types/expenses';
+
+export const recentTransactions: Transaction[] = [
   { date: '2026-06-11T14:00:00Z', note: 'Uber to Downtown', amount: 65.00, type: 'expense', category: 'Transport', currency: 'USD', walletName: 'Credit Card' },
   { date: '2026-06-10T09:30:00Z', note: 'Common Ground Coffee', amount: 15.00, type: 'expense', category: 'Foods & Drinks', currency: 'USD', walletName: 'Main Checking' },
   { date: '2026-06-09T18:00:00Z', note: 'Freelance Design Work', amount: 850.00, type: 'income', category: 'Income', currency: 'USD', walletName: 'Main Checking' },
