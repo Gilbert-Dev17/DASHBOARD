@@ -32,7 +32,7 @@ const Navbar = () => {
       <nav className="flex items-center gap-2 px-3 py-1.5 rounded-md bg-background/50 backdrop-blur-xl shadow-md border border-border pointer-events-auto transition-all duration-500">
 
         {navItems.map((item) => {
-          const active = pathname === item.point;
+          const active = pathname.startsWith(item.point);
           const Icon = item.icon;
 
           return (

@@ -36,6 +36,8 @@ export interface Subtask {
     created_at: string;
 }
 
+// * Expenses
+
 export interface ExpenseCategory {
     id: string; // UUID
     user_id: string; // UUID
@@ -45,13 +47,17 @@ export interface ExpenseCategory {
     created_at: string;
 }
 
+export type AssetType = 'Debit' | 'Assets' | 'Stocks' | 'Crypto';
+export type LiabilityType = 'Credit' | 'Loans';
+export type WalletType = AssetType | LiabilityType;
+
 export interface Wallet {
     id: string; // UUID
     user_id: string; // UUID
     name: string;
     balance: number;
     currency: string;
-    type: 'asset' | 'liability';
+    type: WalletType;
     created_at: string;
 }
 
@@ -62,7 +68,7 @@ export interface Transaction {
     category_id: string | null; // UUID
     title: string;
     amount: number;
-    type: 'income' | 'expense';
+    type: 'income' | 'expense' | 'transfer';
     created_for_date: string; // YYYY-MM-DD
     created_at: string;
 }

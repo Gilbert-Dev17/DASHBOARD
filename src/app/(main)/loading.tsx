@@ -14,7 +14,7 @@ export default function Loading() {
         </div>
 
         <p className="text-sm tracking-wide text-muted-foreground/80 font-medium animate-pulse">
-          Loading dashboard...
+          Loading...
         </p>
       </div>
     </PageComponent>
