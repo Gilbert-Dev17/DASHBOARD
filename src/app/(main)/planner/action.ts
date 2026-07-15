@@ -7,7 +7,7 @@ import { supabaseAdmin } from "@/lib/supabase/admin";
 
 async function fetchCachedTasksByDate(userId: string, dateStr: string ){
   'use cache'
-  cacheTag(`planner-tasks-${userId}`)
+  cacheTag(`tasks-${userId}`)
 
   const {data: tasks, error } = await supabaseAdmin
     .from('tasks')
@@ -53,7 +53,7 @@ export async function getTasksByDate(userId: string, dateStr: string){
 
 async function fetchCachedMonthTasksSummary(userId: string, startStr: string, endStr: string){
   'use cache'
-  cacheTag(`planner-summary-${userId}`)
+  cacheTag(`tasks-${userId}`)
 
   const { data, error } = await supabaseAdmin
     .from('tasks')

@@ -101,6 +101,7 @@ export async function submitTaskEdit(payload: EditTaskPayload) {
     }
 
     updateTag(`tasks-${user.id}`)
+    updateTag(`planner-tasks-${user.id}`)
 
     return { success: true, message: 'Task updated successfully!' }
   } catch (error: any) {
