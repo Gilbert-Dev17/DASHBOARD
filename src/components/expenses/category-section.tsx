@@ -1,8 +1,9 @@
-import React from 'react'
+
 import { ChartPieDonutText } from '@/components/shared/CategoryCharts'
 import { AddCategoryModal } from '@/components/modals/add-category/AddCategoryModal'
 import { formatCurrency } from '@/utils/currency'
 import { CategorySummary } from '@/types/expenses'
+import { HelpCircle } from 'lucide-react'
 import { ICON_MAP } from './expensesPage'
 
 interface CategorySectionProps {
@@ -23,7 +24,7 @@ export const CategorySection = ({ categories }: CategorySectionProps) => {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 shrink-0">
         {categories.map((category) => {
-          const Icon = ICON_MAP[category.iconKey] || ICON_MAP['entertainment'];
+          const Icon = category.icon ? (ICON_MAP[category.icon] || HelpCircle) : HelpCircle;
           return (
             <div key={category.name} className="flex items-center gap-4 p-4 rounded-xl border border-dashed bg-card/30 hover:bg-secondary/40 transition-colors group">
               <div className="bg-secondary text-muted-foreground p-3 rounded-full shrink-0 group-hover:text-foreground transition-colors">
@@ -31,7 +32,9 @@ export const CategorySection = ({ categories }: CategorySectionProps) => {
               </div>
               <div className="flex flex-col overflow-hidden">
                 <span className="font-medium text-sm text-foreground/90 truncate">{category.name}</span>
-                <span className="text-xs font-mono text-muted-foreground">{formatCurrency(category.total, 'USD')}</span>
+                <span className="tabular-nums font-mono text-sm leading-tight text-foreground/80 group-hover:text-foreground">
+                  {formatCurrency(category.total || 0, 'PHP')}
+                </span>
               </div>
             </div>
           )

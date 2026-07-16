@@ -1,4 +1,5 @@
 import { Bus } from 'lucide-react';
+import type { Transaction } from '@/types/expenses';
 
 export const summary = {
   balance: 150250.75, // Net Worth
@@ -22,14 +23,12 @@ export const mockWallets = [
   { id: '5', name: 'Bitcoing', balance: 136250.00, type: 'asset', trend: 7.4 },
 ];
 
-import { Transaction } from '@/types/expenses';
-
-export const recentTransactions: Transaction[] = [
+export const recentTransactions = [
   { date: '2026-06-11T14:00:00Z', note: 'Uber to Downtown', amount: 65.00, type: 'expense', category: 'Transport', currency: 'USD', walletName: 'Credit Card' },
   { date: '2026-06-10T09:30:00Z', note: 'Common Ground Coffee', amount: 15.00, type: 'expense', category: 'Foods & Drinks', currency: 'USD', walletName: 'Main Checking' },
   { date: '2026-06-09T18:00:00Z', note: 'Freelance Design Work', amount: 850.00, type: 'income', category: 'Income', currency: 'USD', walletName: 'Main Checking' },
   { date: '2026-06-08T12:00:00Z', note: 'Trader Joes Groceries', amount: 120.00, type: 'expense', category: 'Groceries', currency: 'USD', walletName: 'Credit Card' },
-];
+] as any[];
 
 export const allTransactions = [
   { id: 1, date: '2026-06-11T14:00:00Z', icon: Bus, name: 'Transport #1 : 100 Market St, San Francisco', category: 'TRANSPORT', amount: 105 },

@@ -5,6 +5,7 @@ import type { TaskWithSubtasks, WalletSummary, WalletHistory } from '@/types/das
 import { getTodayInTimezone } from "@/utils/timezone";
 import { createClient } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getUser } from "@/lib/auth/get-user";
 
 async function fetchCachedHomeData(userId: string, today: string){
   'use cache'
@@ -42,8 +43,7 @@ async function fetchCachedHomeData(userId: string, today: string){
 
 
 export async function getHomeData(userId: string) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (!user || user.id !== userId) {
       throw new Error('Unauthorized or invalid user ID');
@@ -71,9 +71,7 @@ async function fetchedCachedWalletData(userId: string){
 }
 
 export async function getWalletData(userId: string) {
-  const supabase = await createClient();
-
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (!user || user.id !== userId) {
       throw new Error('Unauthorized or invalid user ID');
@@ -116,8 +114,7 @@ async function fetchCachedHistoricalSnapshots(userId: string) {
 }
 
 export async function getHistoricalSnapshots(userId: string) {
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (!user || user.id !== userId) {
       throw new Error('Unauthorized or invalid user ID');

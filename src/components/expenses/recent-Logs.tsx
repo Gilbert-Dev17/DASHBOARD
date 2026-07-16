@@ -28,10 +28,10 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
       ) : (
         <Timeline>
           {transactions.map((txn) => {
-            const dateObj = new Date(txn.date);
+            const dateObj = new Date(txn.date || new Date());
             return (
-              <TimelineItem key={txn.date}>
-                <TimelineTime dateTime={txn.date}>
+              <TimelineItem key={txn.id || txn.date}>
+                <TimelineTime dateTime={txn.date || ''}>
                   {dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 </TimelineTime>
 

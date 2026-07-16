@@ -81,10 +81,10 @@ export function AccountStatement({ accountId }: { accountId: string }) {
         ) : (
           <Timeline>
             {accountTransactions.map((txn, index) => {
-              const dateObj = new Date(txn.date);
+              const dateObj = new Date(txn.date || new Date());
               return (
-                <TimelineItem key={`${txn.date}-${index}`}>
-                  <TimelineTime dateTime={txn.date}>
+                <TimelineItem key={`${txn.id || txn.date}-${index}`}>
+                  <TimelineTime dateTime={txn.date || ''}>
                     {dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </TimelineTime>
 

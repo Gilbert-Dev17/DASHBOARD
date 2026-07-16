@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Label, Pie, PieChart } from "recharts"
+import { Label, Pie, PieChart, Cell, Tooltip } from "recharts"
 import {
   ChartContainer,
   ChartTooltip,
@@ -12,6 +12,7 @@ import {
 import { HelpCircle } from "lucide-react"
 import { ICON_MAP } from "@/components/expenses/expensesPage"
 import type { CategorySummary } from "@/types/expenses"
+import { formatCurrency } from "@/utils/currency"
 
 interface ChartPieDonutTextProps {
   categories: CategorySummary[];
@@ -40,7 +41,7 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
     () =>
       categories.map((category, index) => ({
         category: category.name,
-        amount: parseCategoryTotal(category.total),
+        amount: parseCategoryTotal(category.total || 0),
         fill: CHART_COLORS[index % CHART_COLORS.length],
       })),
     [categories]
@@ -53,7 +54,7 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
           acc[category.name] = {
             label: category.name,
             color: CHART_COLORS[index % CHART_COLORS.length],
-            iconKey: category.iconKey,
+            iconKey: category.iconKey || '',
           }
           return acc
         },
@@ -75,27 +76,6 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
           className="mx-auto aspect-square max-h-62.5"
         >
           <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={
-                <ChartTooltipContent
-                    hideLabel
-                    formatter={(value, name) => {
-                        if (typeof name !== "string") return null
-
-                        const config = chartConfig[name]
-                        const IconComponent = ICON_MAP[config.iconKey] || HelpCircle;
-                        // const Icon = config.iconKey
-                        return (
-                        <div className="flex items-center gap-2">
-                            <IconComponent size={14} /> :
-                            <span className="tabular-nums">${Number(value).toLocaleString()}</span>
-                        </div>
-                        )
-                    }}
-                    />
-                }
-            />
             <Pie
                 data={chartData}
                 dataKey="amount"
@@ -104,7 +84,10 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
                 strokeWidth={5}
                 cornerRadius={8}
                 paddingAngle={4}
-                >
+            >
+                {chartData.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} stroke="transparent" />
+                ))}
                 <Label
                     content={({ viewBox }) => {
                     if (viewBox && "cx" in viewBox && "cy" in viewBox) {
@@ -127,14 +110,36 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
                             y={(viewBox.cy || 0) + 16}
                             className="fill-foreground text-2xl font-mono"
                             >
-                            ${totalAmount.toLocaleString()}
+                            {formatCurrency(totalAmount, 'PHP')}
                             </tspan>
                         </text>
                         )
                     }
                     }}
                 />
-                </Pie>
+            </Pie>
+            <Tooltip
+                content={({ active, payload }: any) => {
+                    if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        const Icon = ICON_MAP[data.iconKey] || HelpCircle;
+                        return (
+                        <div className="bg-background/95 border border-border/50 p-3 rounded-lg shadow-xl backdrop-blur-sm flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-2">
+                                <div className="w-6 h-6 rounded-full bg-secondary/30 flex items-center justify-center">
+                                    <Icon size={12} className="text-muted-foreground" />
+                                </div>
+                                <span className="text-xs font-medium text-foreground">{data.category}</span>
+                            </div>
+                            <span className="text-sm font-mono font-bold text-foreground">
+                                {formatCurrency(data.total || 0, 'PHP')}
+                            </span>
+                        </div>
+                        )
+                    }
+                    return null
+                }}
+            />
           </PieChart>
         </ChartContainer>
       </div>

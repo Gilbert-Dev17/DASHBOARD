@@ -8,7 +8,7 @@ export default async function page() {
   const user = await getUser();
 
   if (!user) {
-    redirect('/login');
+    redirect('/logIn');
   }
 
   const [tasks, wallet, snapshots] = await Promise.all([

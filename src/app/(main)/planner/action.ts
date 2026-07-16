@@ -4,6 +4,7 @@ import { cacheTag } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import type { TaskWithSubtasks } from '@/types/dashboard'
 import { supabaseAdmin } from "@/lib/supabase/admin";
+import { getUser } from "@/lib/auth/get-user";
 
 async function fetchCachedTasksByDate(userId: string, dateStr: string ){
   'use cache'
@@ -40,9 +41,7 @@ async function fetchCachedTasksByDate(userId: string, dateStr: string ){
 }
 
 export async function getTasksByDate(userId: string, dateStr: string){
-  const supabase = await createClient();
-
-  const {data: {user}} = await supabase.auth.getUser();
+  const user = await getUser();
 
   if (!user || user.id !== userId){
     throw new Error('Unauthorized or invalid user ID');
@@ -79,9 +78,8 @@ async function fetchCachedMonthTasksSummary(userId: string, startStr: string, en
 }
 
 export async function getMonthTasksSummary(userId: string, startStr: string, endStr: string) {
-  const supabase = await createClient();
 
-  const {data: {user}} = await supabase.auth.getUser()
+  const user = await getUser();
 
   if (!user|| user.id !== userId ){
     throw new Error('Unauthorized or invalid user ID');

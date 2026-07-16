@@ -7,12 +7,11 @@ import {
   Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious,
 } from "@/components/ui/carousel"
 import { formatCurrency } from '@/utils/currency'
-import { summary as mockSummary, categories as mockCategories, recentTransactions as mockTransactions, mockWallets } from '@/lib/mockData'
-import { FinancialSummary, CategorySummary, Transaction } from '@/types/expenses'
+import type { WalletSummary } from '@/types/dashboard'
+import type { WalletSnapshot } from '@/types/database'
 
-
-interface walletProps{
-  wallets: FinancialSummary & { trend?: number };
+interface walletProps {
+  wallets: (WalletSummary & { trend?: number })[];
 }
 
 export const WalletCarousel = ({wallets} : walletProps) => {
@@ -28,9 +27,9 @@ export const WalletCarousel = ({wallets} : walletProps) => {
           </div>
 
           <CarouselContent className="ml-4">
-            {mockWallets.map((wallet) => {
-              const Icon = wallet.type === 'asset' ? WalletIcon : CreditCard;
-              const isLiability = wallet.type === 'liability';
+            {wallets.map((wallet) => {
+              const isLiability = wallet.type === 'Credit' || wallet.type === 'Loans';
+              const Icon = isLiability ? CreditCard : WalletIcon;
 
               return (
                 <CarouselItem key={wallet.id} className="basis-[85%] md:basis-1/2 lg:basis-1/3 xl:basis-1/4 p-1">
@@ -42,20 +41,20 @@ export const WalletCarousel = ({wallets} : walletProps) => {
                       </CardHeader>
                       <CardContent>
                         <div className={`text-2xl tabular-nums font-mono ${isLiability ? "text-destructive/90" : "text-foreground"}`}>
-                          {isLiability ? "-" : ""}{formatCurrency(wallet.balance, wallets.currency)}
+                          {isLiability ? "-" : ""}{formatCurrency(wallet.balance, wallet.currency)}
                         </div>
                         <div className="flex items-center justify-between mt-2">
                           <p className="text-[10px] uppercase tracking-wider text-accent">
                             {isLiability ? "Liability" : "Asset"}
                           </p>
-                          {wallet.trend !== undefined && (
+                          {/* {wallet.trend !== undefined && (
                             <div className={`flex items-center gap-1 text-[10px] font-medium ${
                               wallet.trend >= 0 ? 'text-emerald-500' : 'text-rose-500'
                             }`}>
                               {wallet.trend >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
                               {Math.abs(wallet.trend)}%
                             </div>
-                          )}
+                          )} */}
                         </div>
                       </CardContent>
                     </Card>
