@@ -49,16 +49,16 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
 
   const chartConfig = React.useMemo(
     () =>
-      categories.reduce<Record<string, { label: string; color: string; iconKey: string }>>(
+      categories.reduce<Record<string, { label: string; color: string; icon: React.ComponentType<any> }>>(
         (acc, category, index) => {
           acc[category.name] = {
             label: category.name,
             color: CHART_COLORS[index % CHART_COLORS.length],
-            iconKey: category.iconKey || '',
+            icon: (category.icon ? (ICON_MAP[category.icon] || HelpCircle) : HelpCircle) as React.ComponentType<any>,
           }
           return acc
         },
-        {} as Record<string, { label: string; color: string; iconKey: string }>
+        {} as Record<string, { label: string; color: string; icon: React.ComponentType<any> }>
       ) satisfies ChartConfig,
     [categories]
   )
@@ -122,7 +122,7 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
                 content={({ active, payload }: any) => {
                     if (active && payload && payload.length) {
                         const data = payload[0].payload;
-                        const Icon = ICON_MAP[data.iconKey] || HelpCircle;
+                        const Icon = ICON_MAP[data.icon] || HelpCircle;
                         return (
                         <div className="bg-background/95 border border-border/50 p-3 rounded-lg shadow-xl backdrop-blur-sm flex items-center justify-between gap-4">
                             <div className="flex items-center gap-2">

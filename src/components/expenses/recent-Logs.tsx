@@ -6,10 +6,10 @@ import {
   Timeline, TimelineItem, TimelineTime, TimelineContent
  } from '@/components/ui/timeline'
  import { formatCurrency } from '@/utils/currency'
- import { Transaction } from '@/types/expenses'
+ import { TransactionHistory } from '@/types/expenses'
 
  interface RecentLogsSectionProps {
-   transactions: Transaction[];
+   transactions: TransactionHistory[];
  }
 
 export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
@@ -28,27 +28,27 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
       ) : (
         <Timeline>
           {transactions.map((txn) => {
-            const dateObj = new Date(txn.date || new Date());
+            const dateObj = new Date(txn.created_for_date || new Date());
             return (
-              <TimelineItem key={txn.id || txn.date}>
-                <TimelineTime dateTime={txn.date || ''}>
+              <TimelineItem key={txn.id || txn.created_for_date}>
+                <TimelineTime dateTime={txn.created_for_date || ''}>
                   {dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                 </TimelineTime>
 
                 <TimelineContent>
                   <div className="flex flex-col py-2 px-3 -ml-3 rounded-lg hover:bg-secondary/40 transition-colors">
                     <div className="flex justify-between items-start gap-4">
-                      <span className="font-medium text-sm leading-tight text-foreground/90 group-hover:text-foreground">{txn.note}</span>
+                      <span className="font-medium text-sm leading-tight text-foreground/90 group-hover:text-foreground">{txn.title}</span>
                       <span className={`tabular-nums font-mono shrink-0 ${txn.type === 'income' ? 'text-emerald-500' : 'text-foreground'}`}>
-                        {txn.type === 'income' ? '+' : '-'}{formatCurrency(txn.amount, txn.currency)}
+                        {txn.type === 'income' ? '+' : '-'}{formatCurrency(txn.amount, txn.wallets?.currency || 'PHP')}
                       </span>
                     </div>
                     <span className="text-[10px] uppercase tracking-wider text-muted-foreground/80 mt-1 flex items-center gap-2">
-                      <span>{txn.category}</span>
-                      {txn.walletName && (
+                      <span>{txn.expense_categories?.name || 'Uncategorized'}</span>
+                      {txn.wallets?.name && (
                         <>
                           <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
-                          <span className="text-muted-foreground/60">{txn.walletName}</span>
+                          <span className="text-muted-foreground/60">{txn.wallets?.name}</span>
                         </>
                       )}
                     </span>

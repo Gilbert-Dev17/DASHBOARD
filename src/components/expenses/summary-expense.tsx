@@ -2,53 +2,23 @@
 
 import { ArrowDownLeft, ArrowUpRight, TrendingUp, TrendingDown } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
-import { WalletHistory, WalletSummary } from '@/types/expenses'
+import { WalletHistory, WalletSummary, TransactionHistory } from '@/types/expenses'
 import { formatCurrency } from '@/utils/currency'
+import { calculateFinancialTotals } from '@/utils/financial'
 
 interface SummaryExpenseProps {
   wallets: WalletSummary[];
   historicalSnapshots?: WalletHistory[];
+  transactions: TransactionHistory[];
 }
 
-export const SummaryExpense = ({ wallets, historicalSnapshots = [] }: SummaryExpenseProps) => {
+export const SummaryExpense = ({ wallets, historicalSnapshots = [], transactions = [] }: SummaryExpenseProps) => {
 
-   const safeWallets = wallets || []
+    const { netWorth, trendPercentage, income, expense, currency } = calculateFinancialTotals(wallets, historicalSnapshots, transactions);
 
-    const isAsset = (type?: any) => ['Debit', 'Assets', 'Stocks', 'Crypto'].includes(type as string);
-    const isLiability = (type?: any) => ['Credit', 'Loans'].includes(type as string);
-
-    const assets = safeWallets.filter(w => isAsset(w.type))
-    const liabilities = safeWallets.filter(w => isLiability(w.type))
-
-    const totalAssets = assets.reduce((sum, w) => sum + w.balance, 0)
-    const totalLiabilities = liabilities.reduce((sum, w) => sum + w.balance, 0)
-    const netWorth = totalAssets - totalLiabilities
-
-    // ── Calculate Historical Net Worth ──
-    let historicalAssets = 0;
-    let historicalLiabilities = 0;
-
-    historicalSnapshots.forEach(snap => {
-      const currentWallet = safeWallets.find(w => w.id === snap.wallet_id);
-      if (currentWallet) {
-        if (isAsset(currentWallet.type)) historicalAssets += snap.balance;
-        else if (isLiability(currentWallet.type)) historicalLiabilities += snap.balance;
-      }
-    });
-
-    const historicalNetWorth = historicalAssets - historicalLiabilities;
-
-    // ── Calculate Trend Percentage ──
-    let trendPercentage: number | null = null;
-    if (historicalSnapshots.length > 0 && historicalNetWorth !== 0) {
-      trendPercentage = Number((((netWorth - historicalNetWorth) / Math.abs(historicalNetWorth)) * 100).toFixed(1));
-    } else if (historicalSnapshots.length > 0 && historicalNetWorth === 0 && netWorth > 0) {
-      trendPercentage = 100.0; // Infinite growth from 0 is just treated as +100% usually, or just leave it out
-    }
-
-    const currency = safeWallets.length > 0 ? safeWallets[0].currency : 'USD'
     const [nwDollars, nwCents] = formatCurrency(netWorth, currency).split('.')
-
+    const [incomeDollars, incomeCents] = formatCurrency(income, currency).split('.')
+    const [expenseDollars, expenseCents] = formatCurrency(expense, currency).split('.')
 
   return (
     <section aria-label="Financial Summary" className="flex flex-col xl:flex-row xl:items-center justify-between gap-8 xl:gap-12 mb-8 pb-8 border-b border-dashed border-border/50">
@@ -94,7 +64,7 @@ export const SummaryExpense = ({ wallets, historicalSnapshots = [] }: SummaryExp
                </span>
              </div>
              <div className="text-3xl lg:text-5xl font-mono text-emerald-500 tabular-nums tracking-tight flex items-baseline">
-               {/* +{incomeMain}<span className="text-lg lg:text-2xl opacity-60">.{incomeCents}</span> */}
+               +{incomeDollars}<span className="text-lg lg:text-2xl opacity-60">.{incomeCents || '00'}</span>
              </div>
            </div>
 
@@ -107,7 +77,7 @@ export const SummaryExpense = ({ wallets, historicalSnapshots = [] }: SummaryExp
                </span>
              </div>
              <div className="text-3xl lg:text-5xl font-mono text-rose-500 tabular-nums tracking-tight flex items-baseline">
-               {/* -{expenseMain}<span className="text-lg lg:text-2xl opacity-60">.{expenseCents}</span> */}
+               -{expenseDollars}<span className="text-lg lg:text-2xl opacity-60">.{expenseCents || '00'}</span>
              </div>
            </div>
         </div>

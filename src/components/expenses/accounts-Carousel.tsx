@@ -8,10 +8,9 @@ import {
 } from "@/components/ui/carousel"
 import { formatCurrency } from '@/utils/currency'
 import type { WalletSummary } from '@/types/dashboard'
-import type { WalletSnapshot } from '@/types/database'
 
 interface walletProps {
-  wallets: (WalletSummary & { trend?: number })[];
+  wallets: WalletSummary[];
 }
 
 export const WalletCarousel = ({wallets} : walletProps) => {
@@ -45,16 +44,8 @@ export const WalletCarousel = ({wallets} : walletProps) => {
                         </div>
                         <div className="flex items-center justify-between mt-2">
                           <p className="text-[10px] uppercase tracking-wider text-accent">
-                            {isLiability ? "Liability" : "Asset"}
+                            {wallet.type} - {wallet.currency}
                           </p>
-                          {/* {wallet.trend !== undefined && (
-                            <div className={`flex items-center gap-1 text-[10px] font-medium ${
-                              wallet.trend >= 0 ? 'text-emerald-500' : 'text-rose-500'
-                            }`}>
-                              {wallet.trend >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                              {Math.abs(wallet.trend)}%
-                            </div>
-                          )} */}
                         </div>
                       </CardContent>
                     </Card>

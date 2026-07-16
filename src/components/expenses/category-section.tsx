@@ -2,15 +2,31 @@
 import { ChartPieDonutText } from '@/components/shared/CategoryCharts'
 import { AddCategoryModal } from '@/components/modals/add-category/AddCategoryModal'
 import { formatCurrency } from '@/utils/currency'
-import { CategorySummary } from '@/types/expenses'
+import { TransactionHistory, CategorySummary } from '@/types/expenses'
 import { HelpCircle } from 'lucide-react'
 import { ICON_MAP } from './expensesPage'
 
 interface CategorySectionProps {
-  categories: CategorySummary[];
+  transactions: TransactionHistory[];
 }
 
-export const CategorySection = ({ categories }: CategorySectionProps) => {
+export const CategorySection = ({ transactions }: CategorySectionProps) => {
+  // Aggregate expenses per category
+  const categoryMap = new Map<string, CategorySummary>();
+
+  (transactions || []).forEach(txn => {
+    if (txn.type === 'expense') {
+      const name = txn.expense_categories?.name || 'Uncategorized';
+      const icon = txn.expense_categories?.icon || 'foods-drinks';
+      const color = txn.expense_categories?.color || undefined;
+
+      const existing = categoryMap.get(name) || { name, total: 0, icon, color };
+      existing.total = (existing.total || 0) + Number(txn.amount);
+      categoryMap.set(name, existing);
+    }
+  });
+
+  const categories = Array.from(categoryMap.values()).sort((a, b) => (b.total || 0) - (a.total || 0));
   return (
     <section className="lg:col-span-7 flex flex-col gap-6" aria-labelledby="categories-heading">
       <header className="flex justify-between items-center shrink-0">

@@ -24,7 +24,7 @@ export function AccountStatement({ accountId }: { accountId: string }) {
     );
   }
 
-  const accountTransactions = recentTransactions.filter(txn => txn.walletName === wallet.name);
+  const accountTransactions = recentTransactions.filter((txn: any) => txn.wallets?.name === wallet.name || txn.walletName === wallet.name);
   const isLiability = wallet.type === 'liability';
   const Icon = isLiability ? CreditCard : WalletIcon;
 
@@ -80,24 +80,24 @@ export function AccountStatement({ accountId }: { accountId: string }) {
           </div>
         ) : (
           <Timeline>
-            {accountTransactions.map((txn, index) => {
-              const dateObj = new Date(txn.date || new Date());
+            {accountTransactions.map((txn: any, index) => {
+              const dateObj = new Date(txn.created_for_date || txn.date || new Date());
               return (
-                <TimelineItem key={`${txn.id || txn.date}-${index}`}>
-                  <TimelineTime dateTime={txn.date || ''}>
+                <TimelineItem key={`${txn.id || txn.created_for_date || txn.date}-${index}`}>
+                  <TimelineTime dateTime={txn.created_for_date || txn.date || ''}>
                     {dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </TimelineTime>
 
                   <TimelineContent>
                     <div className="flex flex-col py-3 px-4 -ml-4 rounded-xl hover:bg-secondary/40 transition-colors group">
                       <div className="flex justify-between items-start gap-4">
-                        <span className="font-medium text-[15px] leading-tight text-foreground/90 group-hover:text-foreground">{txn.note}</span>
+                        <span className="font-medium text-[15px] leading-tight text-foreground/90 group-hover:text-foreground">{txn.title || txn.note}</span>
                         <span className={`tabular-nums font-mono text-base shrink-0 ${txn.type === 'income' ? 'text-emerald-500' : 'text-foreground'}`}>
-                          {txn.type === 'income' ? '+' : '-'}{formatCurrency(txn.amount, txn.currency)}
+                          {txn.type === 'income' ? '+' : '-'}{formatCurrency(txn.amount, txn.wallets?.currency || txn.currency || 'PHP')}
                         </span>
                       </div>
                       <div className="text-[10px] uppercase tracking-wider text-muted-foreground/80 mt-1.5 flex items-center gap-2">
-                        <span>{txn.category}</span>
+                        <span>{txn.expense_categories?.name || txn.category}</span>
                       </div>
                     </div>
                   </TimelineContent>
