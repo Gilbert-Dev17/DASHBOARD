@@ -124,6 +124,39 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
       return () => window.removeEventListener('optimistic-task-update', handler)
     }, [])
 
+    //* Listen for optimistic task deletions
+    useEffect(() => {
+      const handler = (e: Event) => {
+        const { taskId } = (e as CustomEvent).detail
+        setTasks(current => current.filter(t => t.id !== taskId))
+      }
+
+      window.addEventListener('optimistic-task-delete', handler)
+      return () => window.removeEventListener('optimistic-task-delete', handler)
+    }, [])
+
+    //* Listen for task restoration (undo delete)
+    useEffect(() => {
+      const handler = (e: Event) => {
+        const { task } = (e as CustomEvent).detail as { task: TaskWithSubtasks }
+        setTasks(current => {
+          // Avoid duplicates if the task is already present
+          if (current.some(t => t.id === task.id)) return current
+
+          const restored = [...current, task]
+          return restored.sort((a, b) => {
+            if (a.time && b.time) return a.time.localeCompare(b.time)
+            if (a.time && !b.time) return -1
+            if (!a.time && b.time) return 1
+            return 0
+          })
+        })
+      }
+
+      window.addEventListener('optimistic-task-restore', handler)
+      return () => window.removeEventListener('optimistic-task-restore', handler)
+    }, [])
+
   const { mutate: handleToggleTask } = useMutation({
     mutationFn: async ({ taskId, isDone, taskName }: { taskId: string, isDone: boolean, taskName: string }) => {
       const result = await toggleTask(taskId, isDone)
