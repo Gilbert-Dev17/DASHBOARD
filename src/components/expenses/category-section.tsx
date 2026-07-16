@@ -17,8 +17,7 @@ export const CategorySection = ({ categories }: CategorySectionProps) => {
         <AddCategoryModal />
       </header>
 
-      <div aria-hidden="true" className="mb-8 bg-card/30 border rounded-xl p-6">
-
+      <div aria-hidden="true" className="bg-card/30 border rounded-xl p-6">
         <ChartPieDonutText categories={categories} />
       </div>
 

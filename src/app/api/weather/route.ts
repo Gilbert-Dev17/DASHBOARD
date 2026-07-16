@@ -2,8 +2,34 @@ import { NextRequest, NextResponse } from 'next/server'
 import { degreesToCompass} from '@/utils/weather-utils'
 import type { WeatherData } from '@/types/weather'
 import {format} from 'date-fns'
+import { cacheLife, cacheTag } from 'next/cache'
 
-// TODO: Consider updating to Google's Weather api call, which is more accurate and has better coverage than OpenWeatherMap. For now, we use OpenWeatherMap because it's free and easy to use. (Google's API requires billing and is more complex to set up.)
+async function getCachedWeatherData(latNum: number, lonNum: number) {
+  'use cache'
+  cacheLife('hours')
+  cacheTag(`weather-${latNum.toFixed(2)}-${lonNum.toFixed(2)}`)
+
+  const apiKey = process.env.OPENWEATHER_API_KEY
+  if (!apiKey) throw new Error('Server misconfigured')
+
+  const [weatherRes, geoRes] = await Promise.all([
+    fetch(
+      `https://api.openweathermap.org/data/2.5/weather?lat=${latNum}&lon=${lonNum}&units=metric&lang=en&appid=${apiKey}`
+    ),
+    fetch(
+      `https://api.openweathermap.org/geo/1.0/reverse?lat=${latNum}&lon=${lonNum}&limit=1&appid=${apiKey}`
+    )
+  ])
+
+  if (!weatherRes.ok) {
+    throw new Error(await weatherRes.text())
+  }
+
+  const raw = await weatherRes.json()
+  const geo = geoRes.ok ? await geoRes.json() : []
+
+  return { raw, geo }
+}
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
@@ -20,30 +46,8 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Invalid coordinates' }, { status: 400 })
   }
 
-  const apiKey = process.env.OPENWEATHER_API_KEY
-  if (!apiKey) {
-    return NextResponse.json({ error: 'Server misconfigured' }, { status: 500 })
-  }
-
   try {
-    const [weatherRes, geoRes] = await Promise.all([
-      fetch(
-        `https://api.openweathermap.org/data/2.5/weather?lat=${latNum}&lon=${lonNum}&units=metric&lang=en&appid=${apiKey}`,
-        { next: { revalidate: 600 } } // cache 10 min server-side
-      ),
-      fetch(
-        `https://api.openweathermap.org/geo/1.0/reverse?lat=${latNum}&lon=${lonNum}&limit=1&appid=${apiKey}`,
-        { next: { revalidate: 3600 } }
-      )
-    ])
-
-    if (!weatherRes.ok) {
-      const body = await weatherRes.text()
-      return NextResponse.json({ error: 'Weather provider error', detail: body }, { status: weatherRes.status })
-    }
-
-    const raw = await weatherRes.json()
-    const geo = geoRes.ok ? await geoRes.json() : []
+    const { raw, geo } = await getCachedWeatherData(latNum, lonNum)
 
     const data: WeatherData = {
       temperature: Math.round(raw.main.temp),

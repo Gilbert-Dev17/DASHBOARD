@@ -52,7 +52,7 @@ export default function DashboardPage({ initialTasks, user, wallets, historicalS
       <header className="mb-16 lg:mb-20">
         <GreetingHeader firstName={user.first_name|| 'User'} tasks={initialTasks || []} />
 
-        <WeatherCard />
+        <WeatherCard tasks={initialTasks || []} />
       </header>
 
       {/* <pre className="bg-muted p-4 rounded text-xs overflow-auto max-h-96">
