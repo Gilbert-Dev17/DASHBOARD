@@ -11,7 +11,7 @@ import { WalletCarousel } from './accounts-Carousel'
 import { SummaryExpense } from './summary-expense'
 import { CategorySection } from './category-section'
 import { RecentLogsSection } from './recent-Logs'
-import { WalletSnapshot } from '@/types/database'
+import { WalletSnapshot, ExpenseCategory } from '@/types/database'
 
 // Map string keys from the database to Lucide React components
 export const ICON_MAP: Record<string, React.ElementType> = {
@@ -28,20 +28,17 @@ interface ExpenseTrackerProps {
   transactions: TransactionHistory[];
   wallets: WalletSummary[]
   historicalSnapshots?: WalletSnapshot[];
+  allCategories: ExpenseCategory[];
 }
 
-export default function ExpenseTrackerPage({
-  wallets,
-  transactions,
-  historicalSnapshots
-}: ExpenseTrackerProps) {
+export default function ExpenseTrackerPage({ wallets, transactions, historicalSnapshots, allCategories }: ExpenseTrackerProps) {
 
   return (
     <PageComponent>
 
-       <pre className="bg-muted p-4 rounded text-xs overflow-auto max-h-96">
+       {/* <pre className="bg-muted p-4 rounded text-xs overflow-auto max-h-96">
         {JSON.stringify(transactions, null, 2)}
-       </pre>
+       </pre> */}
 
       <SummaryExpense
         wallets={wallets}
@@ -55,7 +52,7 @@ export default function ExpenseTrackerPage({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16">
 
         {/* CATEGORIES SECTION */}
-        <CategorySection transactions={transactions} />
+        <CategorySection transactions={transactions} allCategories={allCategories} />
 
         <RecentLogsSection transactions={transactions} />
 

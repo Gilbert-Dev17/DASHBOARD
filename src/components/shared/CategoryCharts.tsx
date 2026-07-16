@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Label, Pie, PieChart, Tooltip } from "recharts"
+import { Label, Pie, PieChart } from "recharts"
 import {
   ChartContainer,
   ChartTooltip,
@@ -43,6 +43,7 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
         category: category.name,
         amount: parseCategoryTotal(category.total || 0),
         fill: CHART_COLORS[index % CHART_COLORS.length],
+        icon: category.icon,
       })),
     [categories]
   )
@@ -129,7 +130,7 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
                                 <span className="text-xs font-medium text-foreground">{data.category}</span>
                             </div>
                             <span className="text-sm font-mono font-bold text-foreground">
-                                {formatCurrency(data.total || 0, 'PHP')}
+                                {formatCurrency(data.amount || 0, 'PHP')}
                             </span>
                         </div>
                         )

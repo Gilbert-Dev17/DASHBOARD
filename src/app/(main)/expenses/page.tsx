@@ -1,5 +1,5 @@
 import ExpenseTrackerPage from '@/components/expenses/expensesPage'
-import { getMonthlyTransactions } from './action'
+import { getMonthlyTransactions, getExpenseCategories } from './action'
 import { getHistoricalSnapshots, getWalletData } from '../home/action'
 import { createClient } from '@/lib/supabase/server'
 import { redirect } from 'next/navigation'
@@ -12,10 +12,11 @@ export default async function page() {
     redirect('/logIn');
   }
 
-  const [ wallets, historicalSnapshots, transactions ] = await Promise.all([
+  const [ wallets, historicalSnapshots, transactions, allCategories ] = await Promise.all([
     getWalletData(user.id),
     getHistoricalSnapshots(user.id),
-    getMonthlyTransactions(user.id)
+    getMonthlyTransactions(user.id),
+    getExpenseCategories(user.id)
   ]);
 
 
@@ -24,6 +25,7 @@ export default async function page() {
       historicalSnapshots={historicalSnapshots}
       transactions={transactions}
       wallets={wallets}
+      allCategories={allCategories}
     />
   )
 }

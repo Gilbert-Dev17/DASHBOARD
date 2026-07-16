@@ -5,32 +5,37 @@ import { formatCurrency } from '@/utils/currency'
 import { TransactionHistory, CategorySummary } from '@/types/expenses'
 import { HelpCircle } from 'lucide-react'
 import { ICON_MAP } from './expensesPage'
+import { ExpenseCategory } from '@/types/database'
 
 interface CategorySectionProps {
   transactions: TransactionHistory[];
+  allCategories?: ExpenseCategory[];
 }
 
-export const CategorySection = ({ transactions }: CategorySectionProps) => {
+export const CategorySection = ({ transactions, allCategories = [] }: CategorySectionProps) => {
 
   const categoryMap = new Map<string, CategorySummary>();
 
+  allCategories.forEach(cat => {
+    categoryMap.set(cat.id, { name: cat.name, icon: cat.icon, color: cat.color, total: 0 });
+  });
+
   (transactions || []).forEach(txn => {
     if (txn.type === 'expense') {
-      const name = txn.expense_categories?.name || 'Uncategorized';
-      const icon = txn.expense_categories?.icon || 'foods-drinks';
-      const color = txn.expense_categories?.color || undefined;
-
-      const existing = categoryMap.get(name) || { name, total: 0, icon, color };
+      const key = txn.category_id ?? 'uncategorized';
+      const existing = categoryMap.get(key) || {
+        name: txn.expense_categories?.name || 'Uncategorized',
+        icon: txn.expense_categories?.icon || 'foods-drinks',
+        color: txn.expense_categories?.color || undefined,
+        total: 0
+      };
       existing.total = (existing.total || 0) + Number(txn.amount);
-      categoryMap.set(name, existing);
+      categoryMap.set(key, existing);
     }
   });
 
-  console.log(transactions)
-
   const categories = Array.from(categoryMap.values()).sort((a, b) => (b.total || 0) - (a.total || 0));
-
-  console.log(categories)
+  const chartCategories = categories.filter(c => (c.total || 0) > 0);
 
   return (
     <section className="lg:col-span-7 flex flex-col gap-6" aria-labelledby="categories-heading">
@@ -40,7 +45,7 @@ export const CategorySection = ({ transactions }: CategorySectionProps) => {
       </header>
 
       <div aria-hidden="true" className="bg-card/30 border rounded-xl p-6">
-        <ChartPieDonutText categories={categories} />
+        <ChartPieDonutText categories={chartCategories} />
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 shrink-0">

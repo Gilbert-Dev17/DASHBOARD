@@ -4,10 +4,11 @@ import { supabaseAdmin } from "@/lib/supabase/admin"
 import { cacheTag, cacheLife } from 'next/cache'
 import type { TransactionHistory } from '@/types/expenses'
 import { getUser } from "@/lib/auth/get-user"
+import type { ExpenseCategory } from "@/types/database"
 
 async function fetchCachedMonthlyTransactions(userId: string, startDate: string, endDate: string){
     'use cache'
-    cacheLife('hours')
+    cacheLife('minutes')
     cacheTag(`transactions-${userId}`)
 
     const {data, error} = await supabaseAdmin
@@ -41,4 +42,28 @@ export async function getMonthlyTransactions(userId: string){
     const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0).toISOString().split('T')[0]
 
     return fetchCachedMonthlyTransactions(userId, startDate, endDate)
+}
+
+async function fetchCachedCategories(userId: string) {
+    'use cache'
+    cacheLife('minutes')
+    cacheTag(`categories-${userId}`)
+
+    const {data, error} = await supabaseAdmin
+        .from('expense_categories')
+        .select('*')
+        .eq('user_id', userId)
+
+    if (error) {
+        console.error("Error fetching categories:", error.message);
+        return []
+    }
+
+    return data as ExpenseCategory[];
+}
+
+export async function getExpenseCategories(userId: string) {
+    const user = await getUser();
+    if (!user || user.id !== userId) throw new Error('Unauthorized');
+    return fetchCachedCategories(userId);
 }
