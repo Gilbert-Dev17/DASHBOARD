@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from "react"
-import { Label, Pie, PieChart, Cell, Tooltip } from "recharts"
+import { Label, Pie, PieChart, Tooltip } from "recharts"
 import {
   ChartContainer,
   ChartTooltip,
@@ -85,9 +85,6 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
                 cornerRadius={8}
                 paddingAngle={4}
             >
-                {chartData.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={CHART_COLORS[index % CHART_COLORS.length]} stroke="transparent" />
-                ))}
                 <Label
                     content={({ viewBox }) => {
                     if (viewBox && "cx" in viewBox && "cy" in viewBox) {
@@ -118,7 +115,7 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
                     }}
                 />
             </Pie>
-            <Tooltip
+            <ChartTooltip
                 content={({ active, payload }: any) => {
                     if (active && payload && payload.length) {
                         const data = payload[0].payload;

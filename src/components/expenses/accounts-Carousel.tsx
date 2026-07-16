@@ -1,7 +1,7 @@
-import React from 'react'
+
 import Link from 'next/link'
 
-import { TrendingUp, TrendingDown, Wallet as WalletIcon, CreditCard, } from 'lucide-react'
+import {  Wallet as WalletIcon, CreditCard, } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious,

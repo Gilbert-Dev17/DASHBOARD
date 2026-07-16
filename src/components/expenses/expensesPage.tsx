@@ -2,10 +2,10 @@
 
 import React from 'react'
 
-import { ArrowDownLeft, ArrowUpRight, DrumstickIcon, ShoppingBag, Tv, Heart, ShoppingBasket, BusFront, School, HelpCircle, Wallet as WalletIcon, CreditCard, TrendingUp, TrendingDown } from 'lucide-react'
+import { DrumstickIcon, ShoppingBag, Tv, Heart, ShoppingBasket, BusFront, School } from 'lucide-react'
 
 import PageComponent from '@/components/shared/PageComponent'
-import { FinancialSummary, TransactionHistory } from '@/types/expenses'
+import { TransactionHistory } from '@/types/expenses'
 import type { WalletSummary } from '@/types/dashboard'
 import { WalletCarousel } from './accounts-Carousel'
 import { SummaryExpense } from './summary-expense'
@@ -25,7 +25,6 @@ export const ICON_MAP: Record<string, React.ElementType> = {
 };
 
 interface ExpenseTrackerProps {
-  summary: FinancialSummary;
   transactions: TransactionHistory[];
   wallets: WalletSummary[]
   historicalSnapshots?: WalletSnapshot[];
@@ -39,18 +38,10 @@ export default function ExpenseTrackerPage({
 
   return (
     <PageComponent>
-      {/* wallets
-       <pre className="bg-muted p-4 rounded text-xs overflow-auto max-h-96">
-        {JSON.stringify(wallets, null, 2)}
-       </pre> */}
-       {/* transactions
+
        <pre className="bg-muted p-4 rounded text-xs overflow-auto max-h-96">
         {JSON.stringify(transactions, null, 2)}
-       </pre> */}
-       {/* history
-       <pre className="bg-muted p-4 rounded text-xs overflow-auto max-h-96">
-        {JSON.stringify(historicalSnapshots, null, 2)}
-       </pre> */}
+       </pre>
 
       <SummaryExpense
         wallets={wallets}
@@ -68,7 +59,7 @@ export default function ExpenseTrackerPage({
 
         <RecentLogsSection transactions={transactions} />
 
-        </div>
+      </div>
     </PageComponent>
   )
 }

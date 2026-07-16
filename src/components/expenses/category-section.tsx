@@ -11,7 +11,7 @@ interface CategorySectionProps {
 }
 
 export const CategorySection = ({ transactions }: CategorySectionProps) => {
-  // Aggregate expenses per category
+
   const categoryMap = new Map<string, CategorySummary>();
 
   (transactions || []).forEach(txn => {
@@ -26,7 +26,12 @@ export const CategorySection = ({ transactions }: CategorySectionProps) => {
     }
   });
 
+  console.log(transactions)
+
   const categories = Array.from(categoryMap.values()).sort((a, b) => (b.total || 0) - (a.total || 0));
+
+  console.log(categories)
+
   return (
     <section className="lg:col-span-7 flex flex-col gap-6" aria-labelledby="categories-heading">
       <header className="flex justify-between items-center shrink-0">
