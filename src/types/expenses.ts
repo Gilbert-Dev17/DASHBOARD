@@ -1,24 +1,9 @@
-export interface Transaction {
-  // id: string | number;
-  date: string;
-  note: string;
-  amount: number;
-  type: 'income' | 'expense';
-  category: string;
-  currency: string;
-  walletName?: string;
-}
+import { ExpenseCategory, Transaction, Wallet, WalletSnapshot  } from "./database";
 
-export interface CategorySummary {
-  // id: string;
-  name: string;
-  total: number;
-  iconKey: string;
-}
+export type TransactionHistory = Transaction;
 
-export interface FinancialSummary {
-  balance: number;
-  income: number;
-  expense: number;
-  currency: string;
-}
+export type CategorySummary = ExpenseCategory;
+
+export type WalletHistory = WalletSnapshot;
+
+export type WalletSummary = Wallet

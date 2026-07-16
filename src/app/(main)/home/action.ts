@@ -82,6 +82,7 @@ export async function getWalletData(userId: string) {
   return fetchedCachedWalletData(userId);
 }
 
+// * Networth call
 async function fetchCachedHistoricalSnapshots(userId: string) {
   'use cache'
   cacheLife('hours');

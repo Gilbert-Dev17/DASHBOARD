@@ -1,10 +1,11 @@
-import React from 'react'
+'use client'
+
 import { ArrowDownLeft, ArrowUpRight, TrendingUp, TrendingDown } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
-import { FinancialSummary } from '@/types/expenses'
+import { WalletSummary } from '@/types/expenses'
 
 interface SummaryExpenseProps {
-  summary: FinancialSummary & { trend?: number };
+  summary: WalletSummary & { trend?: number };
   balanceMain: string;
   balanceCents: string;
   incomeMain: string;
