@@ -50,6 +50,7 @@ export async function GET(req: NextRequest) {
     const { raw, geo } = await getCachedWeatherData(latNum, lonNum)
 
     const data: WeatherData = {
+      weather_id: raw.weather?.[0]?.id,
       temperature: Math.round(raw.main.temp),
       feelsLike: Math.round(raw.main.feels_like),
       condition: raw.weather?.[0]?.description ?? 'Unknown',
@@ -62,7 +63,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (process.env.NODE_ENV === 'development') {
-      console.log('[weather-route] data', data)
+      console.log('[weather-route] data', raw)
     }
 
     try{

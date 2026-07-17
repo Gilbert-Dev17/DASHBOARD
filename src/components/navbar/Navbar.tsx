@@ -4,7 +4,7 @@ import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
-import {Home, CheckSquare, Wallet, Sun, Moon } from 'lucide-react'
+import {Home, CheckSquare, PiggyBank, Sun, Moon } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Label } from '../ui/label'
 import { Separator } from '../ui/separator'
@@ -24,7 +24,7 @@ const Navbar = () => {
   const navItems = [
     {icon: Home, label: 'Home', point: '/home'},
     {icon: CheckSquare, label: 'Planner', point: '/planner'},
-    {icon: Wallet, label: 'Expenses', point: '/expenses'},
+    {icon: PiggyBank, label: 'Bank', point: '/expenses'},
   ]
 
   return (
@@ -87,11 +87,11 @@ const Navbar = () => {
 
         {/* Profile Avatar */}
         <Link href="/profile" className="outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 rounded-md">
-          <button className={`flex items-center gap-2 pl-3 rounded-md border transition-all duration-300 ${
-              pathname === '/profile'
+          <button className={`flex items-center gap-2 pl-3 rounded-md border transition-all duration-300
+          ${ pathname === '/profile'
                 ? 'border-border opacity-100 bg-secondary'
-                : 'border-transparent opacity-80 scale-95 hover:bg-secondary/50 hover:opacity-100'
-            }`}>
+                : 'border-transparent opacity-80 scale-95 hover:bg-secondary/50 hover:opacity-100'}
+            `}>
             <Label className="text-sm font-medium cursor-pointer">
               Gilbert
             </Label>

@@ -6,7 +6,6 @@ import PageComponent from '@/components/shared/PageComponent'
 import { TaskWithSubtasks, UserSummary, WalletSummary } from '@/types/dashboard'
 import { WalletSnapshot } from '@/types/database'
 import { GreetingHeader } from './greetingHeader'
-import { WeatherCard } from '@/components/home/weatherCard'
 import { AgendaSection } from '@/components/shared/AgendaSection'
 import { NetWorthOverview } from './NetWorthOverview'
 
@@ -51,8 +50,6 @@ export default function DashboardPage({ initialTasks, user, wallets, historicalS
       {/* HEADER SECTION */}
       <header className="mb-16 lg:mb-20">
         <GreetingHeader firstName={user.first_name|| 'User'} tasks={initialTasks || []} />
-
-        <WeatherCard tasks={initialTasks || []} />
       </header>
 
       {/* <pre className="bg-muted p-4 rounded text-xs overflow-auto max-h-96">

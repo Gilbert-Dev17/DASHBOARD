@@ -220,7 +220,7 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
 
                 <TimelineContent
                   withCard
-                  className={`max-w-lg cursor-pointer ${task.is_done ? 'opacity-50 grayscale' : ''}`}
+                  className={`w-full cursor-pointer ${task.is_done ? 'opacity-50 grayscale' : ''}`}
                   onClick={() => setEditingTask(task)}
                 >
                   <div className="flex flex-col gap-3">

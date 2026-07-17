@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Home, CheckSquare, Wallet } from 'lucide-react'
+import { Home, CheckSquare, PiggyBank } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 
 const Sidebar = () => {
@@ -11,7 +11,7 @@ const Sidebar = () => {
   const navItems = [
     { icon: Home, label: 'Home', point: '/home' },
     { icon: CheckSquare, label: 'Planner', point: '/planner' },
-    { icon: Wallet, label: 'Expenses', point: '/expenses' }
+    { icon: PiggyBank, label: 'Bank', point: '/expenses' }
   ];
 
   return (

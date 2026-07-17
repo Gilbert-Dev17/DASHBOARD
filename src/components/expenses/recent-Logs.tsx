@@ -39,7 +39,7 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
                   <div className="flex flex-col py-2 px-3 -ml-3 rounded-lg hover:bg-secondary/40 transition-colors">
                     <div className="flex justify-between items-start gap-4">
                       <span className="font-medium text-sm leading-tight text-foreground/90 group-hover:text-foreground">{txn.title}</span>
-                      <span className={`tabular-nums font-mono shrink-0 ${txn.type === 'income' ? 'text-emerald-500' : 'text-foreground'}`}>
+                      <span className={`tabular-nums font-mono shrink-0 ${txn.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}`}>
                         {txn.type === 'income' ? '+' : '-'}{formatCurrency(txn.amount, txn.wallets?.currency || 'PHP')}
                       </span>
                     </div>
