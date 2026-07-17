@@ -63,7 +63,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (process.env.NODE_ENV === 'development') {
-      console.log('[weather-route] data', raw)
+      console.log('[weather-route] data', data)
     }
 
     try{

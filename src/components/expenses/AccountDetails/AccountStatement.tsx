@@ -17,7 +17,7 @@ export function AccountStatement({ accountId }: { accountId: string }) {
       <div className="flex flex-col items-center justify-center min-h-[50vh] text-center">
         <h2 className="text-2xl font-semibold mb-2">Account Not Found</h2>
         <p className="text-muted-foreground mb-6">We couldn't find the account you're looking for.</p>
-        <Link href="/expenses">
+        <Link href="/finance">
           <Button variant="outline">Back to Expenses</Button>
         </Link>
       </div>
@@ -33,7 +33,7 @@ export function AccountStatement({ accountId }: { accountId: string }) {
     <div className="max-w-4xl mx-auto w-full pt-6">
       {/* HEADER */}
       <header className="flex flex-col gap-6 mb-12">
-        <Link href="/expenses" className="w-fit">
+        <Link href="/finance" className="w-fit">
           <Button variant="ghost" size="sm" className="h-8 px-2 text-muted-foreground hover:text-foreground">
             <ArrowLeft size={14} className="mr-2" />
             Back to Expenses

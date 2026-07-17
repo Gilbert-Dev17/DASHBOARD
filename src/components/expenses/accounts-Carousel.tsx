@@ -32,7 +32,7 @@ export const WalletCarousel = ({wallets} : walletProps) => {
 
               return (
                 <CarouselItem key={wallet.id} className="basis-[85%] md:basis-1/2 lg:basis-1/3 xl:basis-1/4 p-1">
-                  <Link href={`/expenses/accounts/${wallet.id}`} className="block h-full cursor-pointer group">
+                  <Link href={`/finance/accounts/${wallet.id}`} className="block h-full cursor-pointer group">
                     <Card className="h-full flex flex-col justify-between hover:bg-secondary/20 group-hover:bg-secondary/40 transition-colors">
                       <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
                         <CardTitle className="text-sm font-medium text-foreground/80">{wallet.name}</CardTitle>

@@ -22,10 +22,10 @@ export const CustomCalendar = ({ initialDate = new Date(), datesWithTasks = [], 
 
     if (startTransition) {
       startTransition(() => {
-        router.push(`/planner?date=${dateStr}`)
+        router.push(`/schedule?date=${dateStr}`)
       })
     } else {
-      router.push(`/planner?date=${dateStr}`)
+      router.push(`/schedule?date=${dateStr}`)
     }
   }
 

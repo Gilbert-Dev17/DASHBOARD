@@ -48,7 +48,7 @@ export function PlannerPage({ agendaTitle, initialTasks, dateObj, datesWithTasks
                   <Button
                     variant="link"
                     size="sm"
-                    onClick={() => startTransition(() => router.push('/planner'))}
+                    onClick={() => startTransition(() => router.push('/schedule'))}
                     className="text-xs uppercase tracking-wider font-semibold text-accent"
                   >
                     Today

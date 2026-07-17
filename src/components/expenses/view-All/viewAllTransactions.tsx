@@ -103,7 +103,7 @@ export function ViewAllTransactions() {
         {/* HEADER */}
         <header className="flex flex-col md:flex-row md:items-end justify-between items-start gap-6 mb-12">
           <div className="flex flex-col gap-2">
-            <Link href="/expenses" className="mb-2">
+            <Link href="/finance" className="mb-2">
               <Button variant="ghost" size="sm" className="h-8 px-2 text-muted-foreground hover:text-foreground">
                 <ArrowLeft size={14} className="mr-2" />
                 Back to Expenses

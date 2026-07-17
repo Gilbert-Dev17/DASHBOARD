@@ -11,12 +11,12 @@ export interface QuickAddRegistry {
 export const quickAddRegistry: QuickAddRegistry[] = [
   {
     id: 'home',
-    match: (pathname) => pathname.startsWith('/home') || pathname.startsWith('/planner') ,
+    match: (pathname) => pathname.startsWith('/home') || pathname.startsWith('/schedule') ,
     Component: QuickAddModal,
   },
   {
     id: 'expenses',
-    match: (pathname) => pathname.startsWith('/expenses'),
+    match: (pathname) => pathname.startsWith('/finance'),
     Component: AddIncomeExpenseModal,
   },
 ];

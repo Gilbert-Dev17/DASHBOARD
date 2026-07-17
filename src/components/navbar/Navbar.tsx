@@ -23,8 +23,8 @@ const Navbar = () => {
 
   const navItems = [
     {icon: Home, label: 'Home', point: '/home'},
-    {icon: CheckSquare, label: 'Planner', point: '/planner'},
-    {icon: PiggyBank, label: 'Bank', point: '/expenses'},
+    {icon: CheckSquare, label: 'Schedule', point: '/schedule'},
+    {icon: PiggyBank, label: 'Finance', point: '/finance'},
   ]
 
   return (

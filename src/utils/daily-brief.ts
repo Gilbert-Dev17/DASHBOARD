@@ -44,17 +44,14 @@ interface DailyBrief {
 function getWeatherComment(condition: string, temp: number) {
   const c = condition.toLowerCase();
 
-  // 1. Extreme Heat (overrides basic conditions)
   if (temp > 35) return 'stay cool and hydrate today';
 
-  // 2. Cold (overrides basic conditions)
   if (temp < 15) {
     if (c.includes('rain')) return 'it is cold and wet, bundle up if you head out';
     if (c.includes('clear') || c.includes('sun')) return 'crisp and clear, but quite chilly';
     return 'dress warmly today';
   }
 
-  // 3. Granular Conditions (Normal Temperatures)
   if (c.includes('thunderstorm') || c.includes('squall') || c.includes('tornado')) {
     return 'wild weather out there, stay safe indoors';
   }

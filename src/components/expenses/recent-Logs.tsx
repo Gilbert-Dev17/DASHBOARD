@@ -18,7 +18,7 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
       <header className="flex flex-row justify-between items-center pb-4 mb-2 shrink-0">
         <h2 id="logs-heading" className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Recent Logs</h2>
         <Button variant="ghost" size="sm" className="text-[10px] uppercase tracking-wider h-8" asChild>
-          <Link href="/expenses/viewAll">View All</Link>
+          <Link href="/finance/viewAll">View All</Link>
         </Button>
       </header>
       {transactions.length === 0 ? (
