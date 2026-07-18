@@ -1,33 +1,43 @@
 import { z } from 'zod'
-import { CURRENCY_KEYS, CATEGORY_KEYS } from './constants'
 
-const amountSchema = z
-  .string()
-  .min(1, 'Amount is required')
-  .refine(
-    (v) => !isNaN(Number(v)) && Number(v) > 0,
-    'Must be a positive number',
-  )
-  .refine(
-    (v) => /^\d+(\.\d{0,2})?$/.test(v),
-    'Max 2 decimal places',
-  )
+// ── Shared base ─────────────────────────────────────────────────────────────────
+const amountField = z.coerce.number({
+  // required_error: "Amount is required",
+  // invalid_type_error: "Amount must be a valid number",
+}).min(0.01, 'Amount must be greater than 0')
+const accountField = z.string().min(1, 'Please select an account')
+const noteField = z.string().optional()
 
-const baseSchema = z.object({
-  currency : z.enum(CURRENCY_KEYS, { message: 'Select a currency' }),
-  amount   : amountSchema,
-  note     : z.string().trim().optional(),
+// ── Expense ─────────────────────────────────────────────────────────────────────
+export const expenseSchema = z.object({
+  amount: amountField,
+  accountId: accountField,
+  categoryId: z.string().min(1, 'Please select a category'),
+  note: noteField,
 })
 
-// ── Expense ────────────────────────────────────────────────────────────────────
-export const expenseSchema = baseSchema.extend({
-  category : z.enum(CATEGORY_KEYS, { message: 'Select a category' })
-})
-
-// ── Income ─────────────────────────────────────────────────────────────────────
-export const incomeSchema = baseSchema.extend({})
-
-export type CurrencyKey       = (typeof CURRENCY_KEYS)[number]
-export type CategoryKey        = (typeof CATEGORY_KEYS)[number]
 export type ExpenseFormValues = z.infer<typeof expenseSchema>
-export type IncomeFormValues  = z.infer<typeof incomeSchema>
+
+// ── Income ──────────────────────────────────────────────────────────────────────
+export const incomeSchema = z.object({
+  amount: amountField,
+  accountId: accountField,
+  source: z.string().min(1, 'Please select a source'),
+  note: noteField,
+})
+
+export type IncomeFormValues = z.infer<typeof incomeSchema>
+
+// ── Transfer ────────────────────────────────────────────────────────────────────
+export const transferSchema = z.object({
+  amount: amountField,
+  fromAccountId: z.string().min(1, 'Please select the source account'),
+  toAccountId: z.string().min(1, 'Please select the destination account'),
+  transferFee: z.number().min(0).optional(),
+  note: noteField,
+}).refine((data) => data.fromAccountId !== data.toAccountId, {
+  message: 'Source and destination must be different accounts',
+  path: ['toAccountId'],
+})
+
+export type TransferFormValues = z.infer<typeof transferSchema>

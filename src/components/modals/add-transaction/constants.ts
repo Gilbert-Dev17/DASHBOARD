@@ -7,7 +7,6 @@ import {
   DollarSign, Euro, PoundSterling, JapaneseYen, PhilippinePeso,
 } from 'lucide-react'
 
-import type { Category, CurrencyOption } from './types'
 
 export const CURRENCY_KEYS = [
   'dollar', 'euro', 'pound', 'yen', 'peso',
@@ -37,7 +36,7 @@ export const CURRENCY_ICON_MAP: Record<string, React.ElementType> = {
   peso   : PhilippinePeso,
 }
 
-export const CATEGORIES: Category[] = [
+export const CATEGORIES = [
   { //id: '1',
      name: 'Foods & Drinks', iconKey: 'foods-drinks' },
   { //id: '2',
@@ -54,7 +53,7 @@ export const CATEGORIES: Category[] = [
      name: 'School',         iconKey: 'school' },
 ]
 
-export const CURRENCIES: CurrencyOption[] = [
+export const CURRENCIES = [
   { name: 'dollar', label: 'USD $', iconKey: 'dollar' },
   { name: 'euro',   label: 'EUR €', iconKey: 'euro' },
   { name: 'pound',  label: 'GBP £', iconKey: 'pound' },

@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { ArrowRight } from 'lucide-react'
 
 import { FieldError, FieldGroup, FieldLabel, FieldSeparator } from "@/components/ui/field"
 import {
@@ -11,37 +12,41 @@ import {
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
-import { expenseSchema, ExpenseFormValues } from './schemas'
-import { useWallets, useExpenseCategories } from '@/hooks/useFinanceData'
+import { transferSchema, TransferFormValues } from './schemas'
+import { useWallets } from '@/hooks/useFinanceData'
 
-export const ExpenseForm = () => {
+export const TransferForm = () => {
   const {
-    handleSubmit, control, reset, formState: { errors },
-  } = useForm<ExpenseFormValues>({
-    resolver: zodResolver(expenseSchema as any),
+    handleSubmit, control, reset, watch, formState: { errors },
+  } = useForm<TransferFormValues>({
+    resolver: zodResolver(transferSchema as any),
     defaultValues: {
       amount: '' as any,
-      accountId: '',
-      categoryId: '',
+      fromAccountId: '',
+      toAccountId: '',
+      transferFee: '' as any,
       note: '',
     }
   })
 
-  const { data: wallets = [], isPending: isWalletsPending } = useWallets()
-  const { data: categories = [], isPending: isCategoriesPending } = useExpenseCategories()
+  const currentFromAccount = watch('fromAccountId')
+  const currentToAccount = watch('toAccountId')
 
-  function onSubmit(data: ExpenseFormValues) {
+  const { data: wallets = [], isPending: isWalletsPending } = useWallets()
+
+  function onSubmit(data: TransferFormValues) {
     try {
-      toast.success('Expense added successfully!')
+      toast.success('Transfer completed!')
       console.log('Form data:', data)
       reset()
     } catch (error) {
-      toast.error('Failed to add expense')
+      toast.error('Failed to complete transfer')
     }
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+
       {/* Amount */}
       <FieldGroup>
         <FieldLabel>Amount</FieldLabel>
@@ -64,17 +69,17 @@ export const ExpenseForm = () => {
         )}
       </FieldGroup>
 
-      {/* Account & Category side-by-side */}
-      <div className="grid grid-cols-2 gap-4">
+      {/* From → To accounts */}
+      <div className="flex flex-row items-end gap-2">
         <FieldGroup>
-          <FieldLabel>Account</FieldLabel>
+          <FieldLabel>From</FieldLabel>
           <Controller
             control={control}
-            name="accountId"
+            name="fromAccountId"
             render={({ field }) => (
               <Select value={field.value || undefined} onValueChange={field.onChange}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select account" />
+                  <SelectValue placeholder="Source" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
@@ -84,7 +89,11 @@ export const ExpenseForm = () => {
                       <SelectItem disabled value="empty">No wallets found</SelectItem>
                     ) : (
                       wallets.map((wallet) => (
-                        <SelectItem key={wallet.id} value={wallet.id}>
+                        <SelectItem
+                          key={wallet.id}
+                          value={wallet.id}
+                          disabled={wallet.id === currentToAccount}
+                        >
                           {wallet.name} - {wallet.currency}
                         </SelectItem>
                       ))
@@ -94,31 +103,39 @@ export const ExpenseForm = () => {
               </Select>
             )}
           />
-          {errors.accountId && (
-            <FieldError>{errors.accountId.message}</FieldError>
+          {errors.fromAccountId && (
+            <FieldError>{errors.fromAccountId.message}</FieldError>
           )}
         </FieldGroup>
 
+        {/* <div className="flex items-center justify-center pb-1">
+          <ArrowRight size={16} className="text-muted-foreground" />
+        </div> */}
+
         <FieldGroup>
-          <FieldLabel>Category</FieldLabel>
+          <FieldLabel>To</FieldLabel>
           <Controller
             control={control}
-            name="categoryId"
+            name="toAccountId"
             render={({ field }) => (
               <Select value={field.value || undefined} onValueChange={field.onChange}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select category" />
+                  <SelectValue placeholder="Destination" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {isCategoriesPending ? (
+                    {isWalletsPending ? (
                       <SelectItem disabled value="loading">Loading...</SelectItem>
-                    ) : categories.length === 0 ? (
-                      <SelectItem disabled value="empty">No categories</SelectItem>
+                    ) : wallets.length === 0 ? (
+                      <SelectItem disabled value="empty">No wallets found</SelectItem>
                     ) : (
-                      categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.name}
+                      wallets.map((wallet) => (
+                        <SelectItem
+                          key={wallet.id}
+                          value={wallet.id}
+                          disabled={wallet.id === currentFromAccount}
+                        >
+                          {wallet.name} - {wallet.currency}
                         </SelectItem>
                       ))
                     )}
@@ -127,13 +144,32 @@ export const ExpenseForm = () => {
               </Select>
             )}
           />
-          {errors.categoryId && (
-            <FieldError>{errors.categoryId.message}</FieldError>
+          {errors.toAccountId && (
+            <FieldError>{errors.toAccountId.message}</FieldError>
           )}
         </FieldGroup>
       </div>
 
       <FieldSeparator />
+
+      {/* Transfer Fee */}
+      <FieldGroup>
+        <FieldLabel>Transfer Fee (optional)</FieldLabel>
+        <Controller
+          control={control}
+          name="transferFee"
+          render={({ field }) => (
+            <Input
+              type="number"
+              placeholder="0.00"
+              step="0.01"
+              {...field}
+              value={field.value ?? ''}
+              className="font-mono"
+            />
+          )}
+        />
+      </FieldGroup>
 
       {/* Note */}
       <FieldGroup>
@@ -144,7 +180,7 @@ export const ExpenseForm = () => {
           render={({ field }) => (
             <Input
               type="text"
-              placeholder="What was this for?"
+              placeholder="What's this transfer for?"
               {...field}
             />
           )}
@@ -152,7 +188,7 @@ export const ExpenseForm = () => {
       </FieldGroup>
 
       <Button type="submit" size="lg" className="w-full">
-        Add Expense
+        Transfer
       </Button>
     </form>
   )

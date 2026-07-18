@@ -36,7 +36,6 @@ export const UpdateTaskModal = ({ task, open, onOpenChange }: UpdateTaskModalPro
   const [newSubtaskText, setNewSubtaskText] = useState('')
   const newSubtaskRef = useRef<HTMLInputElement>(null)
 
-
   const {
     register, handleSubmit, control, setValue, watch, reset, formState: { errors, isDirty },
   } = useForm<EditTaskFormValues>({

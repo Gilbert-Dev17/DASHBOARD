@@ -218,6 +218,7 @@ export const QuickAddModal = () => {
     }
 
     const missing = parsed.filter(t => !t.name || !t.category)
+
     if (missing.length > 0) {
       toast.error('Each task needs a name and @category.')
       return

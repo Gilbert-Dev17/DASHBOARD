@@ -51,8 +51,6 @@ export type AssetType = 'Debit' | 'Assets' | 'Stocks' | 'Crypto';
 export type LiabilityType = 'Credit' | 'Loans';
 export type WalletType = AssetType | LiabilityType;
 
-// add an icon based on the type
-
 export interface Wallet {
     id: string; // UUID
     user_id: string; // UUID
@@ -79,6 +77,7 @@ export interface Transaction {
     title: string;
     amount: number;
     type: 'income' | 'expense' | 'transfer';
+    transferFee: number;
     created_for_date: string; // YYYY-MM-DD
     created_at: string;
 }
