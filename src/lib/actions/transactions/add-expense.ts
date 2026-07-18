@@ -2,6 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { updateTag } from 'next/cache'
+import { getUser } from '@/lib/auth/get-user'
 
 export async function addExpenseAction(data: {
   amount: number
@@ -10,13 +11,10 @@ export async function addExpenseAction(data: {
   note?: string
 }) {
   const supabase = await createClient()
-  const { data: authData, error: authError } = await supabase.auth.getUser()
 
-  if (authError || !authData?.user) {
-    return { success: false, error: 'Unauthorized' }
-  }
+  const user = await getUser();
+  if (!user) return { success: false, message: 'Not authenticated.' }
 
-  const user = authData.user
 
   const { error } = await supabase
     .from('transactions')
@@ -37,9 +35,9 @@ export async function addExpenseAction(data: {
   }
 
   // Revalidate Server Cache
-  updateTag(`wallets-${user.id}`)
-  updateTag(`transactions-${user.id}`)
-  updateTag(`snapshots-${user.id}`)
+  updateTag(`wallets-${user.id}`);
+  updateTag(`categories-${user.id}`)
+
 
   return { success: true }
 }

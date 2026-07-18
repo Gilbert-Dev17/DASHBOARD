@@ -54,30 +54,30 @@ export const SummaryExpense = ({ wallets, historicalSnapshots = [], transactions
         <Separator orientation='vertical' className="hidden xl:block w-px self-stretch bg-border/50 opacity-60" />
 
         {/* Right Side: Income & Expense */}
-        <div className="flex flex-row items-center gap-8 sm:gap-16 w-full xl:w-auto">
+        <div className="flex flex-row flex-wrap items-center gap-8 sm:gap-16 w-full xl:w-auto">
            {/* Income */}
-           <div className="flex flex-col gap-3">
+           <div className="flex flex-col gap-3 min-w-0">
              <div className="flex items-center gap-2">
-               <ArrowDownLeft size={16} className="text-emerald-500" />
+               <ArrowDownLeft size={16} className="text-emerald-500 shrink-0" />
                <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
                  Income
                </span>
              </div>
-             <div className="text-3xl lg:text-5xl font-mono text-emerald-500 tabular-nums tracking-tight flex items-baseline">
-               +{incomeDollars}<span className="text-lg lg:text-2xl opacity-60">.{incomeCents || '00'}</span>
+             <div className="text-3xl lg:text-4xl font-mono text-emerald-500 tabular-nums tracking-tight flex items-baseline flex-wrap">
+               +{incomeDollars}<span className="text-lg lg:text-xl opacity-60">.{incomeCents || '00'}</span>
              </div>
            </div>
 
            {/* Expense */}
-           <div className="flex flex-col gap-3">
+           <div className="flex flex-col gap-3 min-w-0">
              <div className="flex items-center gap-2">
-               <ArrowUpRight size={16} className="text-rose-500" />
+               <ArrowUpRight size={16} className="text-rose-500 shrink-0" />
                <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
                  Expense
                </span>
              </div>
-             <div className="text-3xl lg:text-5xl font-mono text-rose-500 tabular-nums tracking-tight flex items-baseline">
-               -{expenseDollars}<span className="text-lg lg:text-2xl opacity-60">.{expenseCents || '00'}</span>
+             <div className="text-3xl lg:text-4xl font-mono text-rose-500 tabular-nums tracking-tight flex items-baseline flex-wrap">
+               -{expenseDollars}<span className="text-lg lg:text-xl opacity-60">.{expenseCents || '00'}</span>
              </div>
            </div>
         </div>
