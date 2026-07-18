@@ -40,7 +40,7 @@ export const IncomeForm = () => {
 
   function onSubmit(data: IncomeFormValues) {
     try {
-      toast.success('Income added successfully!')
+      toast.success(<span>{data.amount} added to {data.accountId} successfully!</span>)
       console.log('Form data:', data)
       reset()
     } catch (error) {
@@ -73,7 +73,7 @@ export const IncomeForm = () => {
       </FieldGroup>
 
       {/* Account & Source side-by-side */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="flex flex-row gap-4">
         <FieldGroup>
           <FieldLabel>Account</FieldLabel>
           <Controller
@@ -92,7 +92,7 @@ export const IncomeForm = () => {
                       <SelectItem disabled value="empty">No wallets found</SelectItem>
                     ) : (
                       wallets.map((wallet) => (
-                        <SelectItem key={wallet.id} value={wallet.id}>
+                        <SelectItem key={wallet.id} value={wallet.name}>
                           {wallet.name} - {wallet.currency}
                         </SelectItem>
                       ))

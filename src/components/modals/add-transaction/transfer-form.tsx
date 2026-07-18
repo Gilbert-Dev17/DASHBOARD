@@ -154,7 +154,7 @@ export const TransferForm = () => {
 
       {/* Transfer Fee */}
       <FieldGroup>
-        <FieldLabel>Transfer Fee (optional)</FieldLabel>
+        <FieldLabel>Transfer Fee <span className="text-muted-foreground">(optional)</span></FieldLabel>
         <Controller
           control={control}
           name="transferFee"
