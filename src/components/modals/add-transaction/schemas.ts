@@ -30,7 +30,7 @@ export const transferSchema = z.object({
   amount: amountField,
   fromAccountId: z.string().min(1, 'Please select the source'),
   toAccountId: z.string().min(1, 'Please select the destination'),
-  transferFee: z.number().min(0).optional(),
+  transferFee: z.coerce.number().min(0).optional(),
   note: noteField,
 }).refine((data) => data.fromAccountId !== data.toAccountId, {
   message: 'Source and destination must be different accounts',

@@ -9,7 +9,7 @@ import { TASK_CATEGORIES, CATEGORY_LABELS } from '@/lib/constants/tasks'
 import { submitTaskEdit } from '@/lib/actions/edit-task'
 import { TaskWithSubtasks } from '@/types/dashboard'
 import { editTaskSchema, type EditTaskFormValues } from './schemas'
-import { Kbd, KbdGroup } from '@/components/ui/kbd'
+import { Kbd } from '@/components/ui/kbd'
 import {
   Dialog, DialogContent, DialogDescription,
   DialogHeader, DialogTitle, DialogFooter

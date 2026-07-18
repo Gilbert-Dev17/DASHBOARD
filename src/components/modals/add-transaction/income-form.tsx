@@ -8,11 +8,14 @@ import { FieldError, FieldGroup, FieldLabel, FieldSeparator } from "@/components
 import {
   Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
 import { incomeSchema, IncomeFormValues } from './schemas'
 import { useWallets } from '@/hooks/useFinanceData'
+import { addIncomeAction } from '@/lib/actions/transactions'
+import { formatInputAmount } from '@/utils/currency'
 
 const INCOME_SOURCES = [
   { dbId: '1', name: 'Salary' },
@@ -38,14 +41,32 @@ export const IncomeForm = () => {
 
   const { data: wallets = [], isPending: isWalletsPending } = useWallets()
 
-  function onSubmit(data: IncomeFormValues) {
-    try {
-      toast.success(<span>{data.amount} added to {data.accountId} successfully!</span>)
-      console.log('Form data:', data)
+  const queryClient = useQueryClient()
+
+  const { mutate: addIncome, isPending: isSubmitting } = useMutation({
+    mutationFn: addIncomeAction,
+    onSuccess: (result) => {
+      if (!result.success) {
+        toast.error(result.error || 'Failed to add income')
+        return
+      }
+      toast.success('Income logged successfully!')
       reset()
-    } catch (error) {
-      toast.error('Failed to add income')
+      queryClient.invalidateQueries({ queryKey: ['wallets'] })
+      queryClient.invalidateQueries({ queryKey: ['transactions'] })
+    },
+    onError: () => {
+      toast.error('An unexpected error occurred')
     }
+  })
+
+  function onSubmit(data: IncomeFormValues) {
+    addIncome({
+      amount: data.amount,
+      accountId: data.accountId,
+      source: data.source,
+      note: data.note,
+    })
   }
 
   return (
@@ -58,12 +79,22 @@ export const IncomeForm = () => {
           name="amount"
           render={({ field }) => (
             <Input
-              type="number"
+              type="text"
+              inputMode="decimal"
               placeholder="0.00"
-              step="0.01"
               {...field}
-              value={field.value ?? ''}
-              className="text-3xl h-14 text-center font-semibold font-mono"
+              value={field.value ? formatInputAmount(String(field.value)) : ''}
+              onChange={(e) => {
+                const rawValue = e.target.value.replace(/,/g, '')
+                const sanitized = rawValue.replace(/[^0-9.]/g, '')
+                const parts = sanitized.split('.')
+                let finalValue = sanitized
+                if (parts.length > 2) {
+                  finalValue = parts[0] + '.' + parts.slice(1).join('')
+                }
+                field.onChange(finalValue)
+              }}
+              className="text-3xl h-14 text-center font-semibold"
             />
           )}
         />
@@ -80,7 +111,7 @@ export const IncomeForm = () => {
             control={control}
             name="accountId"
             render={({ field }) => (
-              <Select value={field.value || undefined} onValueChange={field.onChange}>
+              <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Deposit to" />
                 </SelectTrigger>
@@ -92,7 +123,7 @@ export const IncomeForm = () => {
                       <SelectItem disabled value="empty">No wallets found</SelectItem>
                     ) : (
                       wallets.map((wallet) => (
-                        <SelectItem key={wallet.id} value={wallet.name}>
+                        <SelectItem key={wallet.id} value={wallet.id}>
                           {wallet.name} - {wallet.currency}
                         </SelectItem>
                       ))
@@ -113,7 +144,7 @@ export const IncomeForm = () => {
             control={control}
             name="source"
             render={({ field }) => (
-              <Select value={field.value || undefined} onValueChange={field.onChange}>
+              <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Income source" />
                 </SelectTrigger>
@@ -153,8 +184,8 @@ export const IncomeForm = () => {
         />
       </FieldGroup>
 
-      <Button type="submit" size="lg" className="w-full">
-        Add Income
+      <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+        {isSubmitting ? 'Adding...' : 'Add Income'}
       </Button>
     </form>
   )
