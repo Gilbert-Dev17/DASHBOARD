@@ -14,7 +14,7 @@ interface IncomeFormProps {
 
 export function IncomeForm({ onSuccess }: IncomeFormProps) {
   const form = useForm<IncomeFormValues>({
-    resolver     : zodResolver(incomeSchema),
+    resolver     : zodResolver(incomeSchema as any),
     defaultValues: { currency: 'peso', amount: '', note: '' },
   })
 

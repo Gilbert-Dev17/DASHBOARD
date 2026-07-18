@@ -2,7 +2,6 @@ import { ReactNode } from 'react'
 
 import Navbar from '@/components/navbar/Navbar'
 import Sidebar from '@/components/navbar/Sidebar'
-import { Suspense } from 'react'
 
 export default function MainLayout({children}: Readonly<{children: ReactNode}>){
 

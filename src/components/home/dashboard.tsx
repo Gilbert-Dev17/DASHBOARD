@@ -3,9 +3,9 @@
 import dynamic from 'next/dynamic'
 
 import PageComponent from '@/components/shared/PageComponent'
-import { TaskWithSubtasks, UserSummary, WalletSummary} from '@/types/dashboard'
+import { TaskWithSubtasks, UserSummary, WalletSummary } from '@/types/dashboard'
+import { WalletSnapshot } from '@/types/database'
 import { GreetingHeader } from './greetingHeader'
-import { WeatherCard } from '@/components/home/weatherCard'
 import { AgendaSection } from '@/components/shared/AgendaSection'
 import { NetWorthOverview } from './NetWorthOverview'
 
@@ -39,9 +39,10 @@ interface DashboardPageProps {
   initialTasks: TaskWithSubtasks[];
   user: UserSummary;
   wallets: WalletSummary[];
+  historicalSnapshots?: WalletSnapshot[];
 }
 
-export default function DashboardPage({ initialTasks, user, wallets}: DashboardPageProps) {
+export default function DashboardPage({ initialTasks, user, wallets, historicalSnapshots = [] }: DashboardPageProps) {
   useDashboard();
 
   return (
@@ -49,8 +50,6 @@ export default function DashboardPage({ initialTasks, user, wallets}: DashboardP
       {/* HEADER SECTION */}
       <header className="mb-16 lg:mb-20">
         <GreetingHeader firstName={user.first_name|| 'User'} tasks={initialTasks || []} />
-
-        <WeatherCard />
       </header>
 
       {/* <pre className="bg-muted p-4 rounded text-xs overflow-auto max-h-96">
@@ -64,10 +63,10 @@ export default function DashboardPage({ initialTasks, user, wallets}: DashboardP
         <AgendaSection initialTasks={initialTasks || []} />
 
         {/* SIDEBAR WIDGETS */}
-        <aside className="lg:col-span-5 space-y-16 mt-8 lg:mt-0">
+        <aside className="lg:col-span-5 space-y-8 mt-8 lg:mt-0">
 
         {/* FINANCES / ACCOUNTS SECTION */}
-        <NetWorthOverview wallets={wallets}/>
+        <NetWorthOverview wallets={wallets} historicalSnapshots={historicalSnapshots} />
 
         {/* PROGRESS SECTION */}
         <LifeProgress />

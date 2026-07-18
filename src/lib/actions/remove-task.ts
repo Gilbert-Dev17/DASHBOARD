@@ -17,7 +17,8 @@ export async function RemoveTask(taskId: string) {
         .eq('id',taskId)
         .eq('user_id', user.id)
 
-      updateTag(`tasks-${user.id}`);
+      updateTag(`tasks-${user.id}`)
+      updateTag(`planner-tasks-${user.id}`)
 
     if (error) {
       console.error('Error deleting task:', error)

@@ -31,8 +31,6 @@ const LOG_FILTERS = [
   { name: 'Year', value: 'year' },
 ];
 
-
-
 function getWeekKey(date: Date) {
   const start = new Date(date);
   start.setDate(date.getDate() - date.getDay());
@@ -43,7 +41,7 @@ function getWeekKey(date: Date) {
   })}`;
 }
 
-export default function TransactionsPage() {
+export function ViewAllTransactions() {
   const [selectedFilter, setSelectedFilter] = useState('day');
 
   const groupedTransactions = useMemo(() => {
@@ -105,7 +103,7 @@ export default function TransactionsPage() {
         {/* HEADER */}
         <header className="flex flex-col md:flex-row md:items-end justify-between items-start gap-6 mb-12">
           <div className="flex flex-col gap-2">
-            <Link href="/expenses" className="mb-2">
+            <Link href="/finance" className="mb-2">
               <Button variant="ghost" size="sm" className="h-8 px-2 text-muted-foreground hover:text-foreground">
                 <ArrowLeft size={14} className="mr-2" />
                 Back to Expenses
@@ -159,7 +157,7 @@ export default function TransactionsPage() {
                     </span>
 
                     <span className="font-semibold tabular-nums text-foreground/90">
-                      {formatCurrency(group.total)}
+                      {formatCurrency(group.total, 'USD')}
                     </span>
                   </div>
                 </AccordionTrigger>
@@ -198,7 +196,7 @@ export default function TransactionsPage() {
                                 {dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                               </TableCell>
                               <TableCell className="text-right tabular-nums font-medium text-foreground/90">
-                                {formatCurrency(transaction.amount)}
+                                {formatCurrency(transaction.amount, 'USD')}
                               </TableCell>
                             </TableRow>
                           );

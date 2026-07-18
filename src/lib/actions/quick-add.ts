@@ -94,7 +94,7 @@ export async function submitQuickAddTasks(tasks: ParsedTask[], targetDate?: stri
     }
 
     updateTag(`tasks-${user.id}`)
-
+    updateTag(`planner-tasks-${user.id}`)
 
     return { success: true, message: 'Tasks successfully added!' }
   } catch (error: any) {

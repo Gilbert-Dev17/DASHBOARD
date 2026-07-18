@@ -23,7 +23,7 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { toast } from 'sonner'
 
-import { DeleteTaskModal } from '../task-deleteModal/DeleteTaskModal'
+import { DeleteTaskButton } from '../task-deleteModal/DeleteTaskButton'
 
 interface UpdateTaskModalProps {
   task: TaskWithSubtasks
@@ -273,9 +273,8 @@ export const UpdateTaskModal = ({ task, open, onOpenChange }: UpdateTaskModalPro
           {/* ── Footer ── */}
           <DialogFooter className="sm:justify-between items-center">
 
-            <DeleteTaskModal
-              taskId={task.id}
-              taskName={task.task_name}
+            <DeleteTaskButton
+              task={task}
               onDeleted={() => onOpenChange(false)}
             />
 
