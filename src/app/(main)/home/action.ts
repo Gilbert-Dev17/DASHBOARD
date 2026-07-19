@@ -3,7 +3,6 @@
 import { cacheTag, cacheLife } from "next/cache";
 import type { TaskWithSubtasks, WalletSummary, WalletHistory } from '@/types/dashboard'
 import { getTodayInTimezone } from "@/utils/timezone";
-import { createClient } from "@/lib/supabase/server";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getUser } from "@/lib/auth/get-user";
 

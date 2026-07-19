@@ -40,7 +40,7 @@ export const TransferForm = () => {
   const { data: wallets = [], isPending: isWalletsPending } = useWallets()
 
   const queryClient = useQueryClient()
-  
+
   const { mutate: addTransfer, isPending: isSubmitting } = useMutation({
     mutationFn: addTransferAction,
     onSuccess: (result) => {

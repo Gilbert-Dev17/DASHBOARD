@@ -18,7 +18,7 @@ import { Controller } from 'react-hook-form'
 import { GalleryVerticalEndIcon } from "lucide-react"
 import { useRouter } from "next/navigation";
 import { loginSchema , type LoginInput } from "@/lib/validations/login"
-import { LogIn } from "@/app/(auth)/logIn/action"
+import { LogIn } from "@/app/(auth)/login/action"
 import { toast } from "sonner";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
