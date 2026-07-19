@@ -26,7 +26,7 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
           No recent logs yet.
         </div>
       ) : (
-        <div className="flex-1 min-h-0 max-h-[650px] pr-4 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="flex-1 min-h-0 max-h-100 pr-4 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
 
         <Timeline>
           {transactions.map((txn) => {
