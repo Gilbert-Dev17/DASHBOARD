@@ -235,11 +235,17 @@ export const QuickAddModal = () => {
       <DialogTrigger asChild>
         <Button
           variant="default"
-          size="icon"
-          className="rounded-md transition-all duration-300 hover:scale-105"
+          className="rounded-md h-12 flex justify-start items-center p-0 transition-all duration-300 overflow-hidden w-12 group-hover:w-36"
           aria-label="Quick add tasks"
         >
-          <Plus size={18} strokeWidth={2.5} aria-hidden />
+          <div className="w-12 h-12 flex items-center justify-center shrink-0">
+            <Plus size={20} strokeWidth={2.5} aria-hidden />
+          </div>
+          <div className="flex items-center overflow-hidden transition-all duration-300 w-0 opacity-0 group-hover:w-full group-hover:opacity-100">
+            <span className="text-sm font-medium whitespace-nowrap">
+              Plan
+            </span>
+          </div>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-2xl">

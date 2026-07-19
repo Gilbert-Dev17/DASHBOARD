@@ -63,7 +63,7 @@
 --secondary: #f4f4f5;
 --secondary-foreground: #09090b;
 --accent: #f4f4f5;
---accent-foreground: #09090b;
+--accent-foreground: #18181b;
 
 /* Text & Muted Colors */
 --muted: #f4f4f5;
@@ -151,7 +151,7 @@
   html {
     @apply font-sans;
   }
-  
+
   /* Remove number input spinners */
   input[type="number"]::-webkit-inner-spin-button,
   input[type="number"]::-webkit-outer-spin-button {

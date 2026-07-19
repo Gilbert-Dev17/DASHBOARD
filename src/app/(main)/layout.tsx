@@ -7,9 +7,9 @@ export default function MainLayout({children}: Readonly<{children: ReactNode}>){
 
     return (
         <section className="min-h-full flex flex-col" suppressHydrationWarning>
-            {/* <Sidebar /> */}
             <Suspense fallback={null}>
-                <Navbar />
+                <Sidebar />
+                {/* <Navbar /> */}
             </Suspense>
             {children}
 

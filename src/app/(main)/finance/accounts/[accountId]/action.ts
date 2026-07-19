@@ -2,9 +2,8 @@
 
 import { supabaseAdmin } from "@/lib/supabase/admin"
 import { getUser } from "@/lib/auth/get-user"
-import { Wallets } from "@/types/expenses"
+import { Wallets, TransactionHistory } from "@/types/expenses"
 import { cacheTag } from "next/cache"
-
 
 async function fetchWalletId(userId: string, accountId: string) {
     'use cache'
@@ -12,7 +11,11 @@ async function fetchWalletId(userId: string, accountId: string) {
 
     const {data, error} = await supabaseAdmin
     .from('wallets')
-    .select('*')
+    .select(`*,
+            transactions(*,
+               expense_categories(name, icon, color)
+            )
+        `)
     .eq('user_id', userId)
     .eq('id', accountId)
     .single()
@@ -22,7 +25,7 @@ async function fetchWalletId(userId: string, accountId: string) {
         throw error;
     }
 
-    return data as Wallets
+    return data as Wallets & { transactions: TransactionHistory[] }
 }
 
 export async function getWalletId(userId: string, accountId: string){

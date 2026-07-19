@@ -6,10 +6,10 @@ import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/utils/currency';
 import { Timeline, TimelineItem, TimelineTime, TimelineContent } from '@/components/ui/timeline';
 import PageComponent from '@/components/shared/PageComponent';
-import { Wallets } from '@/types/expenses';
+import { Wallets, TransactionHistory } from '@/types/expenses';
 
 interface AccountStatementProps {
-  accountData: Wallets | null
+  accountData: (Wallets & { transactions: TransactionHistory[] }) | null
 }
 
 export function AccountStatement({accountData} : AccountStatementProps) {
@@ -54,7 +54,7 @@ export function AccountStatement({accountData} : AccountStatementProps) {
           <div className="flex flex-col md:text-right">
             <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1">Current Balance</span>
             <div className={`text-4xl tabular-nums font-mono tracking-tighter flex md:justify-end items-baseline`}>
-              {formatCurrency(accountData.balance, 'PHP')}
+              {formatCurrency(accountData.balance)}
             </div>
             {/* {wallet.trend !== undefined && (
               <div className={`flex items-center md:justify-end gap-1.5 mt-2 text-[10px] font-medium ${
@@ -72,30 +72,31 @@ export function AccountStatement({accountData} : AccountStatementProps) {
       <section className="bg-card/30 border border-dashed border-border/50 rounded-3xl p-6 md:p-8">
         <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-8">Statement Activity</h2>
 
-        {/* {accountTransactions.length === 0 ? (
+        {!accountData.transactions || accountData.transactions.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-muted-foreground text-sm">
             No recent activity for this account.
           </div>
         ) : (
           <Timeline>
-            {accountTransactions.map((txn: any, index) => {
-              const dateObj = new Date(txn.created_for_date || txn.date || new Date());
+            {accountData.transactions.map((txn: any, index: number) => {
+              const dateObj = new Date(txn.created_for_date || txn.created_at || new Date());
               return (
-                <TimelineItem key={`${txn.id || txn.created_for_date || txn.date}-${index}`}>
-                  <TimelineTime dateTime={txn.created_for_date || txn.date || ''}>
+                <TimelineItem key={`${txn.id}-${index}`}>
+                  <TimelineTime dateTime={txn.created_for_date || txn.created_at || ''}>
                     {dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                   </TimelineTime>
 
                   <TimelineContent>
                     <div className="flex flex-col py-3 px-4 -ml-4 rounded-xl hover:bg-secondary/40 transition-colors group">
                       <div className="flex justify-between items-start gap-4">
-                        <span className="font-medium text-[15px] leading-tight text-foreground/90 group-hover:text-foreground">{txn.title || txn.note}</span>
-                        <span className={`tabular-nums font-mono text-base shrink-0 ${txn.type === 'income' ? 'text-emerald-500' : 'text-foreground'}`}>
-                          {txn.type === 'income' ? '+' : '-'}{formatCurrency(txn.amount, txn.wallets?.currency || txn.currency || 'PHP')}
+                        <span className="font-medium text-[15px] leading-tight text-foreground/90 group-hover:text-foreground">{txn.title}</span>
+                        <span className="tabular-nums font-mono text-base shrink-0 text-foreground">
+                          {txn.type === 'income' ? '+' : '-'}{formatCurrency(txn.amount, accountData.currency)}
                         </span>
                       </div>
                       <div className="text-[10px] uppercase tracking-wider text-muted-foreground/80 mt-1.5 flex items-center gap-2">
-                        <span>{txn.expense_categories?.name || txn.category}</span>
+                        {/* We use category_id for now, unless you joined expense_categories in the query! */}
+                        <span>{txn.expense_categories?.name || 'Categorized Transaction'}</span>
                       </div>
                     </div>
                   </TimelineContent>
@@ -103,7 +104,7 @@ export function AccountStatement({accountData} : AccountStatementProps) {
               )
             })}
           </Timeline>
-        )} */}
+        )}
       </section>
     </div>
     </PageComponent>

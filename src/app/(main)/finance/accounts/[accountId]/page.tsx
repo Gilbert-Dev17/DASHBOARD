@@ -10,6 +10,8 @@ export default async function AccountDetailsPage({ params }: { params: Promise<{
 
   const walletData = await getWalletId(user.id, accountId);
 
+  console.log(walletData)
+
   return (
       <AccountStatement accountData={walletData} />
   );
