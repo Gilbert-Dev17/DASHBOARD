@@ -1,12 +1,12 @@
 
 import Link from 'next/link'
-
 import {  Wallet as WalletIcon, CreditCard, } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious,
 } from "@/components/ui/carousel"
 import { formatCurrency } from '@/utils/currency'
+import { AddWalletModal } from '../modals/add-wallet/AddWalletModal'
 import type { WalletSummary } from '@/types/dashboard'
 
 interface walletProps {
@@ -19,6 +19,7 @@ export const WalletCarousel = ({wallets} : walletProps) => {
         <Carousel className="w-full" opts={{ align: "start", dragFree: true }}>
           <div className="flex items-center justify-between mb-6">
             <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Accounts</h2>
+            <AddWalletModal />
             <div className="flex items-center gap-2">
               <CarouselPrevious className="static transform-none translate-x-0 translate-y-0" />
               <CarouselNext className="static transform-none translate-x-0 translate-y-0" />

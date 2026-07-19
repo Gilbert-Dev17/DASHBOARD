@@ -34,7 +34,7 @@ export const ExpenseForm = () => {
   const { data: categories = [], isPending: isCategoriesPending } = useExpenseCategories()
 
   const queryClient = useQueryClient()
-  
+
   const { mutate: addExpense, isPending: isSubmitting } = useMutation({
     mutationFn: addExpenseAction,
     onSuccess: (result) => {

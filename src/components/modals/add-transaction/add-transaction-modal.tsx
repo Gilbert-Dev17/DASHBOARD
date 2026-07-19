@@ -17,10 +17,8 @@ import { useGlobalShortcut } from '@/hooks/useGlobalShortcut'
 export function AddTransactionModal() {
   const [open, setOpen] = useState(false);
 
-
   const handleTrigger = useCallback(() => setOpen((prev) => !prev), [])
     useGlobalShortcut({ key: 'k', onTrigger: handleTrigger })
-
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>

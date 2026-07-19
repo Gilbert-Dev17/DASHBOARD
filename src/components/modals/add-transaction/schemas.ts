@@ -1,6 +1,5 @@
 import { z } from 'zod'
 
-
 const amountField = z.coerce.number({}).min(0.01, 'Amount must be greater than 0')
 const accountField = z.string().min(1, 'Please select an account')
 const noteField = z.string().optional()
