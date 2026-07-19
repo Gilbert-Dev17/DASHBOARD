@@ -7,7 +7,6 @@ import {
 } from '@/components/ui/dialog'
 import { Field, FieldGroup, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import {
   Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue,
@@ -137,9 +136,9 @@ export const AddWalletModal = () => {
             <div className="grid grid-cols-2 gap-4">
               {/* Wallet Type */}
               <Field>
-                <Label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                <FieldLabel className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                   ACCOUNT TYPE
-                </Label>
+                </FieldLabel>
                 <Controller
                   control={control}
                   name="type"
@@ -166,9 +165,9 @@ export const AddWalletModal = () => {
 
               {/* Currency */}
               <Field>
-                <Label className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                <FieldLabel className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                   CURRENCY
-                </Label>
+                </FieldLabel>
                 <Controller
                   control={control}
                   name="currency"

@@ -10,7 +10,6 @@ import {
 } from '@/components/ui/dialog'
 import { FieldError, FieldGroup, FieldLabel, Field } from "@/components/ui/field"
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
 import { AVAILABLE_ICONS, AVAILABLE_COLORS } from '@/lib/constants/categories'
 import { z } from 'zod'
@@ -128,10 +127,10 @@ export const AddCategoryModal = () => {
             {errors.name && <FieldError>{errors.name.message}</FieldError>}
           </Field>
 
-          <div>
-            <Label className="mb-3 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+          <Field>
+            <FieldLabel className="mb-3 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
               Select Icon
-            </Label>
+            </FieldLabel>
             <Controller
               control={control}
               name="icon"
@@ -157,12 +156,12 @@ export const AddCategoryModal = () => {
               )}
             />
             {errors.icon && <FieldError>{errors.icon.message}</FieldError>}
-          </div>
+          </Field>
 
-          <div>
-            <Label className="mb-3 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+          <Field>
+            <FieldLabel className="mb-3 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
               Select Color
-            </Label>
+            </FieldLabel>
             {/* Tight Color Grid */}
             <Controller
               control={control}
@@ -188,7 +187,7 @@ export const AddCategoryModal = () => {
               )}
             />
             {errors.color && <FieldError>{errors.color.message}</FieldError>}
-          </div>
+          </Field>
         </FieldGroup>
 
         <div className="mt-4 flex justify-end">
