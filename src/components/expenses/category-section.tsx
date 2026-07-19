@@ -48,7 +48,7 @@ export const CategorySection = ({ transactions, allCategories = [] }: CategorySe
         <ChartPieDonutText categories={chartCategories} />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 shrink-0">
+      {/* <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4 shrink-0">
         {categories.map((category) => {
           const Icon = category.icon ? (ICON_MAP[category.icon] || HelpCircle) : HelpCircle;
           return (
@@ -65,7 +65,7 @@ export const CategorySection = ({ transactions, allCategories = [] }: CategorySe
             </div>
           )
         })}
-      </div>
+      </div> */}
     </section>
   )
 }

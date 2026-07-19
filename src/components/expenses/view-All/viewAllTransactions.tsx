@@ -1,13 +1,13 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import Link from 'next/link';
 
-import { ArrowLeft, Filter, Bus } from 'lucide-react';
+import { ArrowLeft, Filter, CreditCard } from 'lucide-react';
 import PageComponent from '@/components/shared/PageComponent';
 import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/utils/currency';
-import { allTransactions as transactions } from '@/lib/mockData';
+import { TransactionHistory } from '@/types/expenses';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
   Accordion,
@@ -41,14 +41,18 @@ function getWeekKey(date: Date) {
   })}`;
 }
 
-export function ViewAllTransactions() {
+interface ViewAllTransactionsProps {
+  transactions: TransactionHistory[];
+}
+
+export function ViewAllTransactions({ transactions }: ViewAllTransactionsProps) {
   const [selectedFilter, setSelectedFilter] = useState('day');
 
   const groupedTransactions = useMemo(() => {
-    const groups: Record<string, typeof transactions> = {};
+    const groups: Record<string, TransactionHistory[]> = {};
 
     transactions.forEach((transaction) => {
-      const date = new Date(transaction.date);
+      const date = new Date(transaction.created_for_date || transaction.created_at);
 
       let key = '';
 
@@ -77,7 +81,7 @@ export function ViewAllTransactions() {
           break;
 
         default:
-          key = transaction.date;
+          key = String(transaction.created_for_date || transaction.created_at);
       }
 
       if (!groups[key]) {
@@ -176,27 +180,26 @@ export function ViewAllTransactions() {
                       </TableHeader>
                       <TableBody>
                         {group.transactions.map((transaction) => {
-                          const Icon = transaction.icon;
-                          const dateObj = new Date(transaction.date);
+                          const dateObj = new Date(transaction.created_for_date || transaction.created_at);
 
                           return (
                             <TableRow key={transaction.id} className="group/row border-b-border/50 transition-colors hover:bg-secondary/20">
                               <TableCell>
                                 <div className="bg-secondary/60 text-muted-foreground group-hover/row:bg-background group-hover/row:shadow-sm group-hover/row:text-foreground p-2 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 w-8 h-8">
-                                  <Icon size={14} />
+                                  <CreditCard size={14} />
                                 </div>
                               </TableCell>
                               <TableCell className="font-medium text-sm text-foreground/90">
-                                {transaction.name}
+                                {transaction.title}
                               </TableCell>
                               <TableCell className="text-xs uppercase tracking-wider text-muted-foreground">
-                                {transaction.category}
+                                {transaction.expense_categories?.name || 'Uncategorized'}
                               </TableCell>
                               <TableCell className="text-xs font-mono text-muted-foreground">
                                 {dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                               </TableCell>
                               <TableCell className="text-right tabular-nums font-medium text-foreground/90">
-                                {formatCurrency(transaction.amount, 'USD')}
+                                {formatCurrency(transaction.amount, transaction.wallets?.currency || 'USD')}
                               </TableCell>
                             </TableRow>
                           );

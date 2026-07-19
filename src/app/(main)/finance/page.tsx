@@ -8,8 +8,8 @@ export default async function page() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  if (!user) {
-    redirect('/logIn');
+  if (!user || !user.id) {
+    redirect('/login');
   }
 
   const [ wallets, historicalSnapshots, transactions, allCategories ] = await Promise.all([

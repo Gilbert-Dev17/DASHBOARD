@@ -4,14 +4,13 @@ import { useState, useEffect, Suspense } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useTheme } from 'next-themes'
-import {Home, CheckSquare, PiggyBank, Sun, Moon } from 'lucide-react'
+import { Home, CheckSquare, PiggyBank, Sun, Moon } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Label } from '../ui/label'
 import { Separator } from '../ui/separator'
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { getActiveQuickAdds } from './quick-add-registry'
-
 
 const Navbar = () => {
   const pathname = usePathname();

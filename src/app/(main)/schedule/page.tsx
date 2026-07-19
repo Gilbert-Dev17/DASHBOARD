@@ -15,8 +15,8 @@ export default async function page(props: pageProps) {
 
   const user = await getUser()
 
-  if (!user) {
-    redirect('/logIn')
+  if (!user || !user.id) {
+    redirect('/login');
   }
 
   const selectedDateStr = await searchParams.date || getTodayInTimezone()

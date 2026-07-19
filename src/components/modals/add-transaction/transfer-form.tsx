@@ -3,48 +3,53 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { ArrowRight } from 'lucide-react'
 
 import { FieldError, FieldGroup, FieldLabel, FieldSeparator } from "@/components/ui/field"
 import {
   Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select"
+
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 
-import { expenseSchema, ExpenseFormValues } from './schemas'
-import { useWallets, useExpenseCategories } from '@/hooks/useFinanceData'
-import { addExpenseAction } from '@/lib/actions/transactions'
+import { transferSchema, TransferFormValues } from './schemas'
+import { useWallets } from '@/hooks/useFinanceData'
+import { addTransferAction } from '@/lib/actions/transactions'
 import { formatInputAmount } from '@/utils/currency'
 
-export const ExpenseForm = () => {
+
+export const TransferForm = () => {
   const {
-    handleSubmit, control, reset, formState: { errors },
-  } = useForm<ExpenseFormValues>({
-    resolver: zodResolver(expenseSchema as any),
+    handleSubmit, control, reset, watch, formState: { errors },
+  } = useForm<TransferFormValues>({
+    resolver: zodResolver(transferSchema as any),
     defaultValues: {
       amount: '' as any,
-      accountId: '',
-      categoryId: '',
+      fromAccountId: '',
+      toAccountId: '',
+      transferFee: '' as any,
       note: '',
     }
   })
 
+  const currentFromAccount = watch('fromAccountId')
+  const currentToAccount = watch('toAccountId')
+
   const { data: wallets = [], isPending: isWalletsPending } = useWallets()
-  const { data: categories = [], isPending: isCategoriesPending } = useExpenseCategories()
 
   const queryClient = useQueryClient()
 
-  const { mutate: addExpense, isPending: isSubmitting } = useMutation({
-    mutationFn: addExpenseAction,
+  const { mutate: addTransfer, isPending: isSubmitting } = useMutation({
+    mutationFn: addTransferAction,
     onSuccess: (result) => {
       if (!result.success) {
-        toast.error(result.error || 'Failed to add expense')
+        toast.error(result.error || 'Failed to complete transfer')
         return
       }
-      toast.success('Expense logged successfully!')
+      toast.success('Transfer completed!')
       reset()
-      // Refresh all related data on the client
       queryClient.invalidateQueries({ queryKey: ['wallets'] })
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
     },
@@ -53,17 +58,19 @@ export const ExpenseForm = () => {
     }
   })
 
-  function onSubmit(data: ExpenseFormValues) {
-    addExpense({
+  function onSubmit(data: TransferFormValues) {
+    addTransfer({
       amount: data.amount,
-      accountId: data.accountId,
-      categoryId: data.categoryId,
+      fromAccountId: data.fromAccountId,
+      toAccountId: data.toAccountId,
+      transferFee: data.transferFee,
       note: data.note,
     })
   }
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+
       {/* Amount */}
       <FieldGroup>
         <FieldLabel>Amount</FieldLabel>
@@ -96,17 +103,17 @@ export const ExpenseForm = () => {
         )}
       </FieldGroup>
 
-      {/* Account & Category side-by-side */}
-      <div className="grid grid-cols-2 gap-4">
+      {/* From → To accounts */}
+      <div className="flex flex-row items-end gap-2">
         <FieldGroup>
-          <FieldLabel>Account</FieldLabel>
+          <FieldLabel>From</FieldLabel>
           <Controller
             control={control}
-            name="accountId"
+            name="fromAccountId"
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select account" />
+                  <SelectValue placeholder="Source" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
@@ -116,7 +123,11 @@ export const ExpenseForm = () => {
                       <SelectItem disabled value="empty">No wallets found</SelectItem>
                     ) : (
                       wallets.map((wallet) => (
-                        <SelectItem key={wallet.id} value={wallet.id}>
+                        <SelectItem
+                          key={wallet.id}
+                          value={wallet.id}
+                          disabled={wallet.id === currentToAccount}
+                        >
                           {wallet.name} - {wallet.currency}
                         </SelectItem>
                       ))
@@ -126,31 +137,39 @@ export const ExpenseForm = () => {
               </Select>
             )}
           />
-          {errors.accountId && (
-            <FieldError>{errors.accountId.message}</FieldError>
+          {errors.fromAccountId && (
+            <FieldError>{errors.fromAccountId.message}</FieldError>
           )}
         </FieldGroup>
 
+        {/* <div className="flex items-center justify-center pb-1">
+          <ArrowRight size={16} className="text-muted-foreground" />
+        </div> */}
+
         <FieldGroup>
-          <FieldLabel>Category</FieldLabel>
+          <FieldLabel>To</FieldLabel>
           <Controller
             control={control}
-            name="categoryId"
+            name="toAccountId"
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select category" />
+                  <SelectValue placeholder="Destination" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {isCategoriesPending ? (
+                    {isWalletsPending ? (
                       <SelectItem disabled value="loading">Loading...</SelectItem>
-                    ) : categories.length === 0 ? (
-                      <SelectItem disabled value="empty">No categories</SelectItem>
+                    ) : wallets.length === 0 ? (
+                      <SelectItem disabled value="empty">No wallets found</SelectItem>
                     ) : (
-                      categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.name}
+                      wallets.map((wallet) => (
+                        <SelectItem
+                          key={wallet.id}
+                          value={wallet.id}
+                          disabled={wallet.id === currentFromAccount}
+                        >
+                          {wallet.name} - {wallet.currency}
                         </SelectItem>
                       ))
                     )}
@@ -159,13 +178,42 @@ export const ExpenseForm = () => {
               </Select>
             )}
           />
-          {errors.categoryId && (
-            <FieldError>{errors.categoryId.message}</FieldError>
+          {errors.toAccountId && (
+            <FieldError>{errors.toAccountId.message}</FieldError>
           )}
         </FieldGroup>
       </div>
 
       <FieldSeparator />
+
+      {/* Transfer Fee */}
+      <FieldGroup>
+        <FieldLabel>Transfer Fee <span className="text-muted-foreground">(optional)</span></FieldLabel>
+        <Controller
+          control={control}
+          name="transferFee"
+          render={({ field }) => (
+            <Input
+              type="text"
+              inputMode="decimal"
+              placeholder="0.00"
+              {...field}
+              value={field.value ? formatInputAmount(String(field.value)) : ''}
+              onChange={(e) => {
+                const rawValue = e.target.value.replace(/,/g, '')
+                const sanitized = rawValue.replace(/[^0-9.]/g, '')
+                const parts = sanitized.split('.')
+                let finalValue = sanitized
+                if (parts.length > 2) {
+                  finalValue = parts[0] + '.' + parts.slice(1).join('')
+                }
+                field.onChange(finalValue)
+              }}
+              className="font-mono"
+            />
+          )}
+        />
+      </FieldGroup>
 
       {/* Note */}
       <FieldGroup>
@@ -176,7 +224,7 @@ export const ExpenseForm = () => {
           render={({ field }) => (
             <Input
               type="text"
-              placeholder="What was this for?"
+              placeholder="What's this transfer for?"
               {...field}
             />
           )}
@@ -184,7 +232,7 @@ export const ExpenseForm = () => {
       </FieldGroup>
 
       <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
-        {isSubmitting ? 'Adding...' : 'Add Expense'}
+        {isSubmitting ? 'Transferring...' : 'Transfer'}
       </Button>
     </form>
   )

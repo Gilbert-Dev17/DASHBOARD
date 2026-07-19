@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useRef, useEffect, type KeyboardEvent } from 'react'
-import { useForm, useFieldArray } from 'react-hook-form'
+import { useForm, useFieldArray, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { X, Plus } from 'lucide-react'
@@ -9,7 +9,7 @@ import { TASK_CATEGORIES, CATEGORY_LABELS } from '@/lib/constants/tasks'
 import { submitTaskEdit } from '@/lib/actions/edit-task'
 import { TaskWithSubtasks } from '@/types/dashboard'
 import { editTaskSchema, type EditTaskFormValues } from './schemas'
-import { Kbd, KbdGroup } from '@/components/ui/kbd'
+import { Kbd } from '@/components/ui/kbd'
 import {
   Dialog, DialogContent, DialogDescription,
   DialogHeader, DialogTitle, DialogFooter
@@ -20,7 +20,7 @@ import {
 import { Spinner } from '@/components/ui/spinner'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
+import { Field, FieldLabel, FieldGroup, FieldError } from '@/components/ui/field'
 import { toast } from 'sonner'
 
 import { DeleteTaskButton } from '../task-deleteModal/DeleteTaskButton'
@@ -35,7 +35,6 @@ export const UpdateTaskModal = ({ task, open, onOpenChange }: UpdateTaskModalPro
   const [deletedSubtaskIds, setDeletedSubtaskIds] = useState<string[]>([])
   const [newSubtaskText, setNewSubtaskText] = useState('')
   const newSubtaskRef = useRef<HTMLInputElement>(null)
-
 
   const {
     register, handleSubmit, control, setValue, watch, reset, formState: { errors, isDirty },
@@ -53,8 +52,6 @@ export const UpdateTaskModal = ({ task, open, onOpenChange }: UpdateTaskModalPro
     control,
     name: 'subtasks',
   })
-
-  const category = watch('category')
 
   // Reset form when task prop changes (different task clicked)
   useEffect(() => {
@@ -164,111 +161,139 @@ export const UpdateTaskModal = ({ task, open, onOpenChange }: UpdateTaskModalPro
         >
 
           {/* Task Name */}
-          <div className="flex flex-col gap-2">
-            <Label htmlFor="edit-task-name" className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              Task Name
-            </Label>
-            <Input
-              id="edit-task-name"
-              {...register('task_name')}
-              placeholder="Enter task name"
-              autoFocus
-            />
-            {errors.task_name && (
-              <p className="text-xs text-destructive">{errors.task_name.message}</p>
-            )}
-          </div>
+          <FieldGroup>
+            <Field>
+              <FieldLabel htmlFor="edit-task-name" className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                Task Name
+              </FieldLabel>
+              <Controller
+                name="task_name"
+                control={control}
+                render={({ field }) => (
+                  <Input
+                    {...field}
+                    id="edit-task-name"
+                    placeholder="Enter task name"
+                    autoFocus
+                  />
+                )}
+              />
+              <FieldError errors={[errors.task_name]} />
+            </Field>
+          </FieldGroup>
 
           {/* Time & Category Row */}
           <div className="grid grid-cols-2 gap-4">
             {/* Time */}
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="edit-task-time" className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                Time
-              </Label>
-              <Input
-                id="edit-task-time"
-                type="time"
-                {...register('time')}
-              />
-            </div>
+            <FieldGroup>
+              <Field>
+                <FieldLabel htmlFor="edit-task-time" className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  Time
+                </FieldLabel>
+                <Controller
+                  name="time"
+                  control={control}
+                  render={({ field }) => (
+                    <Input
+                      {...field}
+                      id="edit-task-time"
+                      type="time"
+                    />
+                  )}
+                />
+              </Field>
+            </FieldGroup>
 
             {/* Category */}
-            <div className="flex flex-col gap-2">
-              <Label className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                Category
-              </Label>
-              <Select value={category} onValueChange={(val) => setValue('category', val as EditTaskFormValues['category'], { shouldValidate: true })}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  {TASK_CATEGORIES.map(cat => (
-                    <SelectItem key={cat} value={cat}>
-                      {CATEGORY_LABELS[cat]}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {errors.category && (
-                <p className="text-xs text-destructive">{errors.category.message}</p>
-              )}
-            </div>
+            <FieldGroup>
+              <Field>
+                <FieldLabel className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  Category
+                </FieldLabel>
+                <Controller
+                  name="category"
+                  control={control}
+                  render={({ field }) => (
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Select category" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {TASK_CATEGORIES.map(cat => (
+                          <SelectItem key={cat} value={cat}>
+                            {CATEGORY_LABELS[cat]}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  )}
+                />
+                <FieldError errors={[errors.category]} />
+              </Field>
+            </FieldGroup>
           </div>
 
           {/* Subtasks */}
-          <div className="flex flex-col gap-2">
-            <Label className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-              Subtasks
-            </Label>
+          <FieldGroup>
+            <Field>
+              <FieldLabel className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                Subtasks
+              </FieldLabel>
 
-            {fields.length > 0 && (
-              <ul className="flex flex-col gap-2 border-l-2 border-muted pl-3 ml-1">
-                {fields.map((field, i) => (
-                  <li key={field.id} className="flex items-center gap-2 group">
-                    <Input
-                      {...register(`subtasks.${i}.name`)}
-                      className="h-8 text-sm"
-                      placeholder="Subtask name"
-                    />
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-7 w-7 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
-                      onClick={() => removeSubtask(i)}
-                      aria-label={`Remove subtask`}
-                    >
-                      <X size={14} />
-                    </Button>
-                  </li>
-                ))}
-              </ul>
-            )}
+              {fields.length > 0 && (
+                <ul className="flex flex-col gap-2 border-l-2 border-muted pl-3 ml-1">
+                  {fields.map((field, i) => (
+                    <li key={field.id} className="flex items-center gap-2 group">
+                      <Controller
+                        name={`subtasks.${i}.name`}
+                        control={control}
+                        render={({ field: subtaskField }) => (
+                          <Input
+                            {...subtaskField}
+                            className="h-8 text-sm"
+                            placeholder="Subtask name"
+                          />
+                        )}
+                      />
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="h-7 w-7 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity text-muted-foreground hover:text-destructive"
+                        onClick={() => removeSubtask(i)}
+                        aria-label={`Remove subtask`}
+                      >
+                        <X size={14} />
+                      </Button>
+                    </li>
+                  ))}
+                </ul>
+              )}
 
-            {/* Add New Subtask */}
-            <div className="flex items-center gap-2 mt-1">
-              <Input
-                ref={newSubtaskRef}
-                value={newSubtaskText}
-                onChange={e => setNewSubtaskText(e.target.value)}
-                onKeyDown={handleNewSubtaskKeyDown}
-                placeholder="Add a subtask..."
-                className="h-8 text-sm"
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="h-7 w-7 shrink-0"
-                onClick={addSubtask}
-                disabled={!newSubtaskText.trim()}
-                aria-label="Add subtask"
-              >
-                <Plus size={14} />
-              </Button>
-            </div>
-          </div>
+              {/* Add New Subtask */}
+              <div className="flex items-center gap-2 mt-1">
+                <Input
+                  ref={newSubtaskRef}
+                  value={newSubtaskText}
+                  onChange={e => setNewSubtaskText(e.target.value)}
+                  onKeyDown={handleNewSubtaskKeyDown}
+                  placeholder="Add a subtask..."
+                  className="h-8 text-sm"
+                />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  className="h-7 w-7 shrink-0"
+                  onClick={addSubtask}
+                  disabled={!newSubtaskText.trim()}
+                  aria-label="Add subtask"
+                >
+                  <Plus size={14} />
+                </Button>
+              </div>
+            </Field>
+          </FieldGroup>
 
           {/* ── Footer ── */}
           <DialogFooter className="sm:justify-between items-center">

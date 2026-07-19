@@ -106,7 +106,7 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
                             <tspan
                             x={viewBox.cx}
                             y={(viewBox.cy || 0) + 16}
-                            className="fill-foreground text-2xl font-mono"
+                            className="fill-foreground text-lg font-mono"
                             >
                             {formatCurrency(totalAmount, 'PHP')}
                             </tspan>
