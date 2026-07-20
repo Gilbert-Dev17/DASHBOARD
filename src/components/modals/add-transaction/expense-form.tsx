@@ -117,7 +117,7 @@ export const ExpenseForm = () => {
                     ) : (
                       wallets.map((wallet) => (
                         <SelectItem key={wallet.id} value={wallet.id}>
-                          {wallet.name} - {wallet.currency}
+                          {wallet.name} &bull; {wallet.type} - {wallet.currency}
                         </SelectItem>
                       ))
                     )}

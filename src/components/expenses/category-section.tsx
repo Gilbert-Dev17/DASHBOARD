@@ -3,6 +3,7 @@ import { ChartPieDonutText } from '@/components/shared/CategoryCharts'
 import { AddCategoryModal } from '@/components/modals/add-category/AddCategoryModal'
 import { TransactionHistory, CategorySummary } from '@/types/expenses'
 import { ExpenseCategory } from '@/types/database'
+import { formatCurrency } from '@/utils/currency'
 
 interface CategorySectionProps {
   transactions: TransactionHistory[];
@@ -47,9 +48,29 @@ export const CategorySection = ({ transactions, allCategories = [] }: CategorySe
           <AddCategoryModal />
         </div>
       ) : (
-        <div aria-hidden="true" className="bg-card/30 border rounded-xl p-6">
-          <ChartPieDonutText categories={chartCategories} />
-        </div>
+        <>
+          <div aria-hidden="true" className="bg-card/30 border rounded-xl p-6">
+            <ChartPieDonutText categories={chartCategories} />
+          </div>
+
+          <table className="sr-only">
+            <caption>Category Breakdown</caption>
+            <thead>
+              <tr>
+                <th scope="col">Category</th>
+                <th scope="col">Amount</th>
+              </tr>
+            </thead>
+            <tbody>
+              {chartCategories.map((cat) => (
+                <tr key={cat.name}>
+                  <td>{cat.name}</td>
+                  <td>{formatCurrency(cat.total || 0, 'PHP')}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </>
       )}
     </section>
   )
