@@ -38,7 +38,7 @@ export function WalletCard({ wallet }: WalletCardProps) {
         <div className="flex items-start justify-between px-5">
           <div className="min-w-0">
             <p className="truncate text-sm font-medium text-foreground/90">{wallet.name}</p>
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground/70">
+            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
               {wallet.type} &bull; {wallet.currency}
             </p>
           </div>

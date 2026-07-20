@@ -1,0 +1,45 @@
+# Finance Dashboard - Architecture & UI/UX Summary
+
+## Overview
+This is a premium, modern Web Application for personal finance management. The system is designed to look like a high-end fintech product, prioritizing aesthetics, tactile micro-interactions, and a robust, optimistic UI.
+
+## Technology Stack
+- **Framework**: Next.js (App Router)
+- **Styling**: Tailwind CSS, Vanilla CSS for variables
+- **UI Components**: Shadcn UI (Radix primitives)
+- **Icons**: Lucide React
+- **Forms & Validation**: React Hook Form, Zod
+- **State Management & Caching**: 
+  - `@tanstack/react-query` for client-side state/mutations
+  - Next.js Server Actions (`use server`) for backend logic
+  - Next.js Cache Tags (`updateTag`) for server cache invalidation
+- **Database**: Supabase (PostgreSQL)
+
+## UI/UX Design Philosophy (The "Wow" Factor)
+1. **Glassmorphism & Depth**: Heavy use of `backdrop-blur`, semi-transparent backgrounds (`bg-card/60`), and subtle overlapping elements to create depth.
+2. **Dynamic Theming**: 
+   - Wallets and categories have specific HEX colors and Lucide icons stored in the database.
+   - UI elements (borders, shadows, icons, hovering rails) dynamically inject these HEX colors via CSS variables (`--wallet-accent`, `--wallet-hover-border`) using utility functions like `withAlpha`.
+3. **Micro-interactions**: 
+   - Cards float up on hover (`-translate-y-0.5`) with transitioning border colors and drop shadows.
+   - Modals (like `AddWalletModal` and `EditWalletModal`) feature "Live Preview" cards that update in real-time as the user types or selects options.
+4. **Data Visualization**:
+   - Complex data (like Account Statements and Recent Logs) are rendered using a sleek `Timeline` component to emphasize chronological flow.
+   - Client-side pagination (via Shadcn `Pagination`) kicks in at exactly 30 items to prevent UI clutter.
+
+## Current Key Features & Flows
+- **Wallets/Accounts**: 
+  - Users can view accounts in a horizontally scrolling Carousel.
+  - Accounts can be added, edited, or deleted via Modals. Edit modals rely on `isDirty` from React Hook Form to keep submit buttons disabled until changes are made.
+  - Deleting an account utilizes Shadcn's `AlertDialog` (with `AlertDialogMedia` for a centered floating icon) to prevent accidental data loss.
+- **Transactions**:
+  - Income, Expenses, and Transfers are handled via dedicated forms. 
+  - Forms dynamically disable submit buttons if required fields (like `amount`) are empty.
+  - Amounts are handled intelligently (e.g., subtracting absolute values for expenses) to ensure UI math and formatting never result in "double negatives" (like `--$100`).
+
+## Notes for Future UI/UX Improvements
+When suggesting new features or UI enhancements, please adhere to:
+- Do not use generic colors; continue using the dynamic HEX injection system.
+- Maintain the use of Server Actions over traditional API routes.
+- Any new complex data views should incorporate Shadcn components and avoid overwhelming the user with unpaginated lists.
+- Keep the dark-mode native, premium aesthetic intact.

@@ -3,8 +3,9 @@
 import Link from 'next/link';
 import { ArrowLeft, Wallet as WalletIcon, CreditCard, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { formatCurrency } from '@/utils/currency';
-import { useState } from 'react';
+import { formatCurrency, formatSignedCurrency } from '@/utils/currency';
+import { useState, useEffect } from 'react';
+import { withAlpha } from '@/utils/color';
 import { Timeline, TimelineItem, TimelineTime, TimelineContent } from '@/components/ui/timeline';
 import {
   Pagination,
@@ -38,6 +39,12 @@ export function AccountStatement({accountData} : AccountStatementProps) {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
 
+  useEffect(() => {
+    if (accountData?.id) {
+      setPage(1);
+    }
+  }, [accountData?.id]);
+
   if (!accountData || !accountData.id) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] text-center">
@@ -52,7 +59,7 @@ export function AccountStatement({accountData} : AccountStatementProps) {
 
   const isLiability = accountData.type === 'Credit' || accountData.type === 'Loans';
   const iconObj = AVAILABLE_ICONS.find(i => i.name === accountData.icon);
-  const DynamicIcon = (iconObj?.icon || (isLiability ? CreditCard : WalletIcon)) as any;
+  const DynamicIcon = (iconObj?.icon || (isLiability ? CreditCard : WalletIcon)) as React.ElementType;
   const color = accountData.color || (isLiability ? '#ef4444' : '#888888');
 
   const transactions = accountData.transactions || [];
@@ -96,7 +103,7 @@ export function AccountStatement({accountData} : AccountStatementProps) {
           <div className="flex items-center gap-4">
             <div
               className="p-4 rounded-2xl border border-border/50 shadow-sm transition-colors duration-300"
-              style={{ backgroundColor: `${color}15`, color: color }}
+              style={{ backgroundColor: withAlpha(color, 0.15), color: color }}
             >
               <DynamicIcon size={32} />
             </div>
@@ -128,7 +135,7 @@ export function AccountStatement({accountData} : AccountStatementProps) {
         ) : (
           <>
             <Timeline>
-              {paginatedTransactions.map((txn: any, index: number) => {
+              {paginatedTransactions.map((txn: TransactionHistory, index: number) => {
                 const dateObj = new Date(txn.created_for_date || txn.created_at || new Date());
                 return (
                   <TimelineItem key={`${txn.id}-${index}`}>
@@ -140,8 +147,8 @@ export function AccountStatement({accountData} : AccountStatementProps) {
                       <div className="flex flex-col py-3 px-4 -ml-4 rounded-xl hover:bg-secondary/40 transition-colors group">
                         <div className="flex justify-between items-start gap-4">
                           <span className="font-medium text-[15px] leading-tight text-foreground/90 group-hover:text-foreground">{txn.title}</span>
-                          <span className="tabular-nums font-mono text-base shrink-0 text-foreground">
-                            {txn.type === 'income' ? '+' : '-'}{formatCurrency(Math.abs(Number(txn.amount)), accountData.currency)}
+                          <span className={`tabular-nums font-mono text-base shrink-0 ${Number(txn.amount) > 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                            {formatSignedCurrency(Number(txn.amount), accountData.currency, true)}
                           </span>
                         </div>
                         <div className="text-[10px] uppercase tracking-wider text-muted-foreground/80 mt-1.5 flex items-center gap-2">
@@ -159,14 +166,18 @@ export function AccountStatement({accountData} : AccountStatementProps) {
                 <Pagination>
                   <PaginationContent>
                     <PaginationItem>
-                      <PaginationPrevious
-                        href="#"
+                      <button
                         onClick={(e) => {
                           e.preventDefault();
                           setPage((p) => Math.max(1, p - 1));
                         }}
-                        className={page === 1 ? "pointer-events-none opacity-50" : ""}
-                      />
+                        disabled={page === 1}
+                        className={`inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 gap-1 pl-2.5 ${page === 1 ? "pointer-events-none opacity-50" : ""}`}
+                        aria-label="Go to previous page"
+                      >
+                        <ArrowLeft className="h-4 w-4" />
+                        <span>Previous</span>
+                      </button>
                     </PaginationItem>
 
                     <PaginationItem>
@@ -176,14 +187,18 @@ export function AccountStatement({accountData} : AccountStatementProps) {
                     </PaginationItem>
 
                     <PaginationItem>
-                      <PaginationNext
-                        href="#"
+                      <button
                         onClick={(e) => {
                           e.preventDefault();
                           setPage((p) => Math.min(totalPages, p + 1));
                         }}
-                        className={page === totalPages ? "pointer-events-none opacity-50" : ""}
-                      />
+                        disabled={page === totalPages}
+                        className={`inline-flex items-center justify-center whitespace-nowrap rounded-md text-sm font-medium ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 hover:bg-accent hover:text-accent-foreground h-10 px-4 py-2 gap-1 pr-2.5 ${page === totalPages ? "pointer-events-none opacity-50" : ""}`}
+                        aria-label="Go to next page"
+                      >
+                        <span>Next</span>
+                        <ArrowLeft className="h-4 w-4 rotate-180" />
+                      </button>
                     </PaginationItem>
                   </PaginationContent>
                 </Pagination>

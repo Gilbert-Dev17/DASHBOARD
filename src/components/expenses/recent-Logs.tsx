@@ -5,7 +5,7 @@ import { Button } from '../ui/button'
 import {
   Timeline, TimelineItem, TimelineTime, TimelineContent
  } from '@/components/ui/timeline'
- import { formatCurrency } from '@/utils/currency'
+ import { formatSignedCurrency } from '@/utils/currency'
  import { TransactionHistory } from '@/types/expenses'
 
  interface RecentLogsSectionProps {
@@ -41,8 +41,8 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
                   <div className="flex flex-col py-2 px-3 -ml-3 rounded-lg hover:bg-secondary/40 transition-colors">
                     <div className="flex justify-between items-start gap-4">
                       <span className="font-medium text-sm leading-tight text-foreground/90 group-hover:text-foreground">{txn.title}</span>
-                      <span className={`tabular-nums font-mono shrink-0 ${txn.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}`}>
-                        {txn.type === 'income' ? '+' : '-'}{formatCurrency(Math.abs(Number(txn.amount)), txn.wallets?.currency)}
+                      <span className={`tabular-nums font-mono shrink-0 ${Number(txn.amount) > 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
+                        {formatSignedCurrency(Number(txn.amount), txn.wallets?.currency, true)}
                       </span>
                     </div>
                     <span className="text-[10px] uppercase tracking-wider text-muted-foreground/80 mt-1 flex items-center gap-2">
@@ -50,7 +50,7 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
                       {txn.wallets?.name && (
                         <>
                           <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />
-                          <span className="text-muted-foreground/60">{txn.wallets?.name}</span>
+                          <span className="text-muted-foreground">{txn.wallets?.name}</span>
                         </>
                       )}
                     </span>

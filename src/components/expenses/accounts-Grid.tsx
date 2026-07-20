@@ -2,15 +2,8 @@ import { Wallet as WalletIcon } from 'lucide-react';
 import { AddWalletModal } from '../modals/add-wallet/AddWalletModal';
 import { WalletCard } from './wallet-Card';
 import type { WalletSummary } from '@/types/dashboard';
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-} from "@/components/ui/carousel"
 
-interface WalletCarouselProps {
+interface WalletGridProps {
   wallets: WalletSummary[];
   isLoading?: boolean;
 }
@@ -24,15 +17,9 @@ function WalletCardSkeleton() {
   );
 }
 
-export function WalletCarousel({ wallets, isLoading = false }: WalletCarouselProps) {
+export function WalletGrid({ wallets, isLoading = false }: WalletGridProps) {
   return (
-    <section aria-label="Your Wallets">
-      <Carousel
-        opts={{
-          align: "start",
-        }}
-        className="w-full relative"
-      >
+    <section aria-label="Your Accounts">
         <div className="mb-6 flex items-center justify-between">
           <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
             Accounts
@@ -43,33 +30,23 @@ export function WalletCarousel({ wallets, isLoading = false }: WalletCarouselPro
         </div>
 
         {isLoading ? (
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
-            {Array.from({ length: 3 }).map((_, i) => (
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {Array.from({ length: 4 }).map((_, i) => (
               <WalletCardSkeleton key={`skeleton-${i}`} />
             ))}
           </div>
         ) : wallets.length === 0 ? (
           <div className="flex w-full flex-col items-center justify-center rounded-xl border border-dashed py-16 bg-card/30">
-            <WalletIcon className="mb-3 h-8 w-8 text-muted-foreground/50" aria-hidden="true" />
+            <WalletIcon className="mb-3 h-8 w-8 text-muted-foreground" aria-hidden="true" />
             <p className="mb-4 text-sm text-muted-foreground">No accounts found.</p>
           </div>
         ) : (
-          <CarouselContent className="-ml-4">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {wallets.map((wallet) => (
-              <CarouselItem key={wallet.id} >
-                {/* <div className="h-35.5"> */}
-                  <WalletCard wallet={wallet} />
-                {/* </div> */}
-              </CarouselItem>
+              <WalletCard key={wallet.id} wallet={wallet} />
             ))}
-          </CarouselContent>
+          </div>
         )}
-
-         <div className="flex justify-end gap-1 pt-5">
-          <CarouselPrevious variant="outline" className="relative inset-auto translate-y-0 h-8 w-8 bg-card/50" />
-          <CarouselNext variant="outline" className="relative inset-auto translate-y-0 h-8 w-8 bg-card/50" />
-        </div>
-      </Carousel>
     </section>
   );
 }
