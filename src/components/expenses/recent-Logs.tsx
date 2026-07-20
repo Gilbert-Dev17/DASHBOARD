@@ -14,7 +14,7 @@ import {
 
 export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
   return (
-    <section className="lg:col-span-5 flex flex-col" aria-labelledby="logs-heading">
+    <section className="flex flex-col h-full" aria-labelledby="logs-heading">
       <header className="flex flex-row justify-between items-center pb-4 mb-2 shrink-0">
         <h2 id="logs-heading" className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Recent Logs</h2>
         <Button variant="ghost" size="sm" className="text-[10px] uppercase tracking-wider h-8" asChild>
@@ -42,11 +42,11 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
                     <div className="flex justify-between items-start gap-4">
                       <span className="font-medium text-sm leading-tight text-foreground/90 group-hover:text-foreground">{txn.title}</span>
                       <span className={`tabular-nums font-mono shrink-0 ${txn.type === 'income' ? 'text-emerald-500' : 'text-rose-500'}`}>
-                        {txn.type === 'income' ? '+' : '-'}{formatCurrency(txn.amount, txn.wallets?.currency || 'PHP')}
+                        {txn.type === 'income' ? '+' : '-'}{formatCurrency(Math.abs(Number(txn.amount)), txn.wallets?.currency)}
                       </span>
                     </div>
                     <span className="text-[10px] uppercase tracking-wider text-muted-foreground/80 mt-1 flex items-center gap-2">
-                      <span>{txn.expense_categories?.name || 'Uncategorized'}</span>
+                      <span>{txn.expense_categories?.name || txn.type}</span>
                       {txn.wallets?.name && (
                         <>
                           <span className="w-1 h-1 rounded-full bg-muted-foreground/40" />

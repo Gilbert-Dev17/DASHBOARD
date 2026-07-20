@@ -1,9 +1,8 @@
 'use client'
 
-import React, { useState } from 'react'
-import { Plus, Wallet as WalletIcon } from 'lucide-react'
+import { Edit, Wallet as WalletIcon } from 'lucide-react'
 import {
-   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
+   Dialog, DialogContent, DialogHeader, DialogTitle,
 } from '@/components/ui/dialog'
 import { Field, FieldGroup, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
@@ -16,8 +15,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Controller, useForm } from 'react-hook-form'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
-import { addWalletAction } from '@/lib/actions/transactions'
-import { WalletType } from '@/types/database'
+import { updateWalletAction } from '@/lib/actions/transactions'
+import { WalletType, Wallet } from '@/types/database'
 import { WALLET_TYPES, WALLET_STYLES, AVAILABLE_CURRENCIES } from '@/lib/constants/currencies'
 import { formatInputAmount } from '@/utils/currency'
 
@@ -30,17 +29,22 @@ const walletSchema = z.object({
 
 type WalletFormValues = z.infer<typeof walletSchema>
 
-export const AddWalletModal = () => {
-  const [isOpen, setIsOpen] = useState(false)
+interface EditWalletModalProps {
+  wallet: Wallet;
+  isOpen: boolean;
+  setIsOpen: (open: boolean) => void;
+}
+
+export const EditWalletModal = ({ wallet, isOpen, setIsOpen }: EditWalletModalProps) => {
   const queryClient = useQueryClient()
 
-  const { register, handleSubmit, control, watch, reset, formState: { errors } } = useForm<WalletFormValues>({
+  const { register, handleSubmit, control, watch, formState: { errors, isDirty } } = useForm<WalletFormValues>({
     resolver: zodResolver(walletSchema as any),
     defaultValues: {
-      name: '',
-      balance: 0,
-      currency: 'PHP',
-      type: 'Debit',
+      name: wallet.name || '',
+      balance: wallet.balance || 0,
+      currency: wallet.currency || 'PHP',
+      type: wallet.type as any || 'Debit',
     }
   })
 
@@ -48,16 +52,26 @@ export const AddWalletModal = () => {
   const currentName = watch('name')
   const styleInfo = WALLET_STYLES[currentType] || WALLET_STYLES.Debit
 
-  const { mutate: addWallet, isPending } = useMutation({
-    mutationFn: addWalletAction,
+  const { mutate: updateWallet, isPending } = useMutation({
+    mutationFn: (data: WalletFormValues) => {
+      const style = WALLET_STYLES[data.type as WalletType];
+      return updateWalletAction(wallet.id, {
+        name: data.name,
+        balance: data.balance,
+        currency: data.currency,
+        type: data.type as WalletType,
+        icon: style.iconName,
+        color: style.color
+      })
+    },
     onSuccess: (result) => {
       if (!result.success) {
-        toast.error(result.error || 'Failed to add wallet')
+        toast.error(result.error || 'Failed to update wallet')
         return
       }
-      toast.success('Wallet created successfully!')
-      reset()
+      toast.success('Wallet updated successfully!')
       queryClient.invalidateQueries({ queryKey: ['wallets'] })
+      queryClient.invalidateQueries({ queryKey: ['wallet', wallet.id] })
       setIsOpen(false)
     },
     onError: () => {
@@ -66,32 +80,17 @@ export const AddWalletModal = () => {
   })
 
   const onSubmit = (data: WalletFormValues) => {
-    const style = WALLET_STYLES[data.type as WalletType];
-    addWallet({
-      name: data.name,
-      balance: data.balance,
-      currency: data.currency,
-      type: data.type as WalletType,
-      icon: style.iconName,
-      color: style.color
-    })
+    updateWallet(data)
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="ghost" className="flex items-center gap-2">
-          <Plus size={16} />
-          Add Wallet
-        </Button>
-      </DialogTrigger>
-
       <DialogContent className="sm:max-w-md">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader className="py-2">
             <DialogTitle className="flex items-center gap-2">
-              <WalletIcon className="h-5 w-5 text-primary" />
-              New Wallet
+              <Edit className="h-5 w-5 text-primary" />
+              Edit Account
             </DialogTitle>
           </DialogHeader>
 
@@ -151,8 +150,8 @@ export const AddWalletModal = () => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          {WALLET_TYPES.map((wallet) => (
-                          <SelectItem key={wallet.value} value={wallet.value} >{wallet.label}</SelectItem>
+                          {WALLET_TYPES.map((walletType) => (
+                          <SelectItem key={walletType.value} value={walletType.value} >{walletType.label}</SelectItem>
                           ))}
                         </SelectGroup>
                       </SelectContent>
@@ -197,7 +196,7 @@ export const AddWalletModal = () => {
                 htmlFor="wallet-balance"
                 className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground"
               >
-                {currentType === 'Credit' || currentType === 'Loans' ? 'CURRENT BALANCE (OWED)' : 'INITIAL BALANCE'}
+                {currentType === 'Credit' || currentType === 'Loans' ? 'CURRENT BALANCE (OWED)' : 'CURRENT BALANCE'}
               </FieldLabel>
               <Controller
                 control={control}
@@ -233,9 +232,9 @@ export const AddWalletModal = () => {
               type="submit"
               size="lg"
               className="w-full font-semibold shadow-sm"
-              disabled={isPending}
+              disabled={isPending || !isDirty}
             >
-              {isPending ? 'Adding...' : 'Add Wallet'}
+              {isPending ? 'Saving...' : 'Save Changes'}
             </Button>
           </div>
         </form>

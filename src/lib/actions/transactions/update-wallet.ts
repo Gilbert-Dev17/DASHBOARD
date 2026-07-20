@@ -5,14 +5,17 @@ import { updateTag } from 'next/cache'
 import { getUser } from '@/lib/auth/get-user'
 import { WalletType } from '@/types/database'
 
-export async function addWalletAction(data: {
-  name: string
-  balance: number
-  currency: string
-  type: WalletType
-  icon: string
-  color: string
-}) {
+export async function updateWalletAction(
+  id: string,
+  data: {
+    name?: string
+    balance?: number
+    currency?: string
+    type?: WalletType
+    icon?: string
+    color?: string
+  }
+) {
   const supabase = await createClient()
 
   const user = await getUser();
@@ -20,18 +23,12 @@ export async function addWalletAction(data: {
 
   const { error } = await supabase
     .from('wallets')
-    .insert({
-      user_id: user.id,
-      name: data.name,
-      balance: data.balance,
-      currency: data.currency,
-      type: data.type,
-      icon: data.icon,
-      color: data.color
-    })
+    .update(data)
+    .eq('id', id)
+    .eq('user_id', user.id)
 
   if (error) {
-    console.error('Error inserting wallet:', error)
+    console.error('Error updating wallet:', error)
     return { success: false, error: error.message }
   }
 

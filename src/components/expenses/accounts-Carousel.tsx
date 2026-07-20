@@ -1,61 +1,75 @@
-
-import Link from 'next/link'
-import {  Wallet as WalletIcon, CreditCard, } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Wallet as WalletIcon } from 'lucide-react';
+import { AddWalletModal } from '../modals/add-wallet/AddWalletModal';
+import { WalletCard } from './wallet-Card';
+import type { WalletSummary } from '@/types/dashboard';
 import {
-  Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious,
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
 } from "@/components/ui/carousel"
-import { formatCurrency } from '@/utils/currency'
-import { AddWalletModal } from '../modals/add-wallet/AddWalletModal'
-import type { WalletSummary } from '@/types/dashboard'
 
-interface walletProps {
+interface WalletCarouselProps {
   wallets: WalletSummary[];
+  isLoading?: boolean;
 }
 
-export const WalletCarousel = ({wallets} : walletProps) => {
+function WalletCardSkeleton() {
   return (
-    <section aria-label="Your Wallets" className="mb-16">
-        <Carousel className="w-full" opts={{ align: "start", dragFree: true }}>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Accounts</h2>
+    <div
+      className="h-[132px] rounded-xl border border-border/50 bg-card/30 animate-pulse"
+      aria-hidden="true"
+    />
+  );
+}
+
+export function WalletCarousel({ wallets, isLoading = false }: WalletCarouselProps) {
+  return (
+    <section aria-label="Your Wallets">
+      <Carousel
+        opts={{
+          align: "start",
+        }}
+        className="w-full relative"
+      >
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            Accounts
+          </h2>
+          <div className="flex items-center gap-2">
             <AddWalletModal />
-            <div className="flex items-center gap-2">
-              <CarouselPrevious className="static transform-none translate-x-0 translate-y-0" />
-              <CarouselNext className="static transform-none translate-x-0 translate-y-0" />
-            </div>
           </div>
+        </div>
 
-          <CarouselContent className="ml-4">
-            {wallets.map((wallet) => {
-              const isLiability = wallet.type === 'Credit' || wallet.type === 'Loans';
-              const Icon = isLiability ? CreditCard : WalletIcon;
-
-              return (
-                <CarouselItem key={wallet.id} className="basis-[85%] md:basis-1/2 lg:basis-1/3 xl:basis-1/4 p-1">
-                  <Link href={`/finance/accounts/${wallet.id}`} className="block h-full cursor-pointer group">
-                    <Card className="h-full flex flex-col justify-between hover:bg-secondary/20 group-hover:bg-secondary/40 transition-colors">
-                      <CardHeader className="flex flex-row items-center justify-between pb-2 space-y-0">
-                        <CardTitle className="text-sm font-medium text-foreground/80">{wallet.name}</CardTitle>
-                        <Icon size={16} className={isLiability ? "text-destructive/70" : "text-muted-foreground"} />
-                      </CardHeader>
-                      <CardContent>
-                        <div className={`text-2xl tabular-nums font-mono ${isLiability ? "text-destructive/90" : "text-foreground"}`}>
-                          {isLiability ? "-" : ""}{formatCurrency(wallet.balance, wallet.currency)}
-                        </div>
-                        <div className="flex items-center justify-between mt-2">
-                          <p className="text-[10px] uppercase tracking-wider text-accent">
-                            {wallet.type} - {wallet.currency}
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  </Link>
-                </CarouselItem>
-              )
-            })}
+        {isLoading ? (
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <WalletCardSkeleton key={`skeleton-${i}`} />
+            ))}
+          </div>
+        ) : wallets.length === 0 ? (
+          <div className="flex w-full flex-col items-center justify-center rounded-xl border border-dashed py-16 bg-card/30">
+            <WalletIcon className="mb-3 h-8 w-8 text-muted-foreground/50" aria-hidden="true" />
+            <p className="mb-4 text-sm text-muted-foreground">No accounts found.</p>
+          </div>
+        ) : (
+          <CarouselContent className="-ml-4">
+            {wallets.map((wallet) => (
+              <CarouselItem key={wallet.id} >
+                {/* <div className="h-35.5"> */}
+                  <WalletCard wallet={wallet} />
+                {/* </div> */}
+              </CarouselItem>
+            ))}
           </CarouselContent>
-        </Carousel>
-      </section>
-  )
+        )}
+
+         <div className="flex justify-end gap-1 pt-5">
+          <CarouselPrevious variant="outline" className="relative inset-auto translate-y-0 h-8 w-8 bg-card/50" />
+          <CarouselNext variant="outline" className="relative inset-auto translate-y-0 h-8 w-8 bg-card/50" />
+        </div>
+      </Carousel>
+    </section>
+  );
 }

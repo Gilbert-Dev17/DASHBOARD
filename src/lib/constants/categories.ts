@@ -33,10 +33,16 @@ import {
   Scissors,
   Baby,
   PawPrint,
+  Landmark,
+  TrendingUp,
+  Bitcoin,
   LucideIcon
 } from 'lucide-react'
 
 export const AVAILABLE_ICONS: { name: string; icon: LucideIcon }[] = [
+  { name: 'Landmark', icon: Landmark },
+  { name: 'TrendingUp', icon: TrendingUp },
+  { name: 'Bitcoin', icon: Bitcoin },
   { name: 'Receipt', icon: Receipt },
   { name: 'Target', icon: Target },
   { name: 'CreditCard', icon: CreditCard },

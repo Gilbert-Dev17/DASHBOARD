@@ -22,7 +22,7 @@ async function fetchCachedMonthlyTransactions(userId: string, startDate: string,
     .gte('created_for_date', startDate)
     .lte('created_for_date', endDate)
     .order('created_for_date', { ascending: false })
-
+    .order('created_at', { ascending: false })
 
     if (error) {
         console.error("Error fetching Transaction:", error.message);

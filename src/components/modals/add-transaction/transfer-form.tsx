@@ -3,7 +3,6 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
-import { ArrowRight } from 'lucide-react'
 
 import { FieldError, FieldGroup, FieldLabel, FieldSeparator } from "@/components/ui/field"
 import {
@@ -128,7 +127,7 @@ export const TransferForm = () => {
                           value={wallet.id}
                           disabled={wallet.id === currentToAccount}
                         >
-                          {wallet.name} - {wallet.currency}
+                          {wallet.name} &bull; {wallet.type} - {wallet.currency}
                         </SelectItem>
                       ))
                     )}
@@ -141,10 +140,6 @@ export const TransferForm = () => {
             <FieldError>{errors.fromAccountId.message}</FieldError>
           )}
         </FieldGroup>
-
-        {/* <div className="flex items-center justify-center pb-1">
-          <ArrowRight size={16} className="text-muted-foreground" />
-        </div> */}
 
         <FieldGroup>
           <FieldLabel>To</FieldLabel>
@@ -169,7 +164,7 @@ export const TransferForm = () => {
                           value={wallet.id}
                           disabled={wallet.id === currentFromAccount}
                         >
-                          {wallet.name} - {wallet.currency}
+                          {wallet.name} &bull; {wallet.type} - {wallet.currency}
                         </SelectItem>
                       ))
                     )}
@@ -231,7 +226,7 @@ export const TransferForm = () => {
         />
       </FieldGroup>
 
-      <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+      <Button type="submit" size="lg" className="w-full" disabled={!watch('amount') || !watch('fromAccountId') || !watch('toAccountId') || isSubmitting}>
         {isSubmitting ? 'Transferring...' : 'Transfer'}
       </Button>
     </form>

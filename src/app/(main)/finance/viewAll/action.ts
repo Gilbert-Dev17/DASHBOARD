@@ -18,7 +18,7 @@ async function fetchTransactions(userId: string) {
     `)
     .eq('user_id', userId)
     .order('created_for_date', { ascending: false })
-
+    .order('created_at', { ascending: false })
     if (error) {
         console.error("Error fetching Transaction:", error.message);
         return []

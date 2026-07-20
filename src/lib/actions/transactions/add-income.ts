@@ -1,7 +1,7 @@
 'use server'
 
 import { createClient } from '@/lib/supabase/server'
-import { revalidateTag, updateTag } from 'next/cache'
+import { updateTag } from 'next/cache'
 import { getUser } from '@/lib/auth/get-user'
 
 export async function addIncomeAction(data: {
@@ -35,6 +35,7 @@ export async function addIncomeAction(data: {
 
   updateTag(`wallets-${user.id}`);
   updateTag(`categories-${user.id}`)
+  updateTag(`transactions-${user.id}`)
 
   return { success: true }
 }
