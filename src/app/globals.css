@@ -49,96 +49,96 @@
 }
 
 :root {
-/* Dashboard Light Theme */
---background: #F4F4F4;
---foreground: #121212;
+/* Dashboard Light Theme (Monochrome Reset) */
+--background: #FFFFFF;
+--foreground: #09090b;
 --card: #FFFFFF;
---card-foreground: #121212;
+--card-foreground: #09090b;
 --popover: #FFFFFF;
---popover-foreground: #121212;
+--popover-foreground: #09090b;
 
-/* Primary & Accents (Defaults to Sage Beige) */
---primary: #C5BFAE;
---primary-foreground: #121212;
---secondary: rgba(0, 0, 0, 0.05);
---secondary-foreground: #121212;
---accent: #C5BFAE;
---accent-foreground: #121212;
+/* Primary & Accents (Strict Black & White) */
+--primary: #09090b;
+--primary-foreground: #fafafa;
+--secondary: #f4f4f5;
+--secondary-foreground: #09090b;
+--accent: #f4f4f5;
+--accent-foreground: #18181b;
 
 /* Text & Muted Colors */
---muted: rgba(0, 0, 0, 0.04);
---muted-foreground: #666666;
+--muted: #f4f4f5;
+--muted-foreground: #71717a;
 --destructive: #ef4444;
 
 /* Borders & Inputs */
---border: rgba(0, 0, 0, 0.08);
---input: rgba(0, 0, 0, 0.1);
---ring: #C5BFAE;
+--border: #e4e4e7;
+--input: #e4e4e7;
+--ring: #09090b;
 
-/* Chart Colors (Matching Emerald/Red dashboard graphs) /
---chart-1: #10b981; / Income Green /
---chart-2: #ef4444; / Expense Red */
---chart-3: #f59e0b;
---chart-4: #3b82f6;
---chart-5: #8b5cf6;
+/* Chart Colors */
+--chart-1: #18181b;
+--chart-2: #3f3f46;
+--chart-3: #71717a;
+--chart-4: #a1a1aa;
+--chart-5: #d4d4d8;
 
-/* Radii (Matching the very rounded aesthetic) */
---radius: 0.625rem;
+/* Radii (Sharpened for structure) */
+--radius: 0.25rem;
 
 /* Sidebar Details */
 --sidebar: #FFFFFF;
---sidebar-foreground: #121212;
---sidebar-primary: #C5BFAE;
---sidebar-primary-foreground: #121212;
---sidebar-accent: rgba(0, 0, 0, 0.05);
---sidebar-accent-foreground: #121212;
---sidebar-border: rgba(0, 0, 0, 0.08);
---sidebar-ring: #C5BFAE;
+--sidebar-foreground: #09090b;
+--sidebar-primary: #09090b;
+--sidebar-primary-foreground: #fafafa;
+--sidebar-accent: #f4f4f5;
+--sidebar-accent-foreground: #09090b;
+--sidebar-border: #e4e4e7;
+--sidebar-ring: #09090b;
 }
 
 .dark {
-/* Dashboard Dark Theme */
---background: #121212;
---foreground: #E0E0E0;
---card: rgba(255, 255, 255, 0.03);
---card-foreground: #E0E0E0;
---popover: #1A1A1A;
---popover-foreground: #E0E0E0;
+/* Dashboard Dark Theme (Monochrome Reset) */
+--background: #09090b;
+--foreground: #fafafa;
+--card: #09090b;
+--card-foreground: #fafafa;
+--popover: #09090b;
+--popover-foreground: #fafafa;
 
-/* Primary & Accents (Defaults to Sage Beige) */
---primary: #C5BFAE;
---primary-foreground: #121212;
---secondary: rgba(255, 255, 255, 0.05);
---secondary-foreground: #E0E0E0;
---accent: #C5BFAE;
---accent-foreground: #121212;
+/* Primary & Accents (Strict Black & White) */
+--primary: #fafafa;
+--primary-foreground: #09090b;
+--secondary: #27272a;
+--secondary-foreground: #fafafa;
+--accent: #27272a;
+--accent-foreground: #fafafa;
 
 /* Text & Muted Colors */
---muted: rgba(255, 255, 255, 0.06);
---muted-foreground: #888888;
+--muted: #27272a;
+--muted-foreground: #a1a1aa;
 --destructive: #ef4444;
 
 /* Borders & Inputs */
---border: rgba(255, 255, 255, 0.08);
---input: rgba(255, 255, 255, 0.15);
---ring: #C5BFAE;
+--border: #27272a;
+--input: #27272a;
+--ring: #fafafa;
 
-/* Chart Colors (Matching Emerald/Red dashboard graphs) /
---chart-1: #10b981; / Income Green /
---chart-2: #ef4444; / Expense Red */
---chart-3: #f59e0b;
---chart-4: #3b82f6;
---chart-5: #8b5cf6;
+/* Chart Colors */
+--chart-1: #fafafa;
+--chart-2: #d4d4d8;
+--chart-3: #a1a1aa;
+--chart-4: #71717a;
+--chart-5: #3f3f46;
 
 /* Sidebar Details */
---sidebar: #1A1A1A;
---sidebar-foreground: #E0E0E0;
---sidebar-primary: #C5BFAE;
---sidebar-primary-foreground: #121212;
---sidebar-accent: rgba(255, 255, 255, 0.05);
---sidebar-accent-foreground: #E0E0E0;
---sidebar-border: rgba(255, 255, 255, 0.08);
---sidebar-ring: #C5BFAE;
+--sidebar: #09090b;
+--sidebar-foreground: #fafafa;
+--sidebar-primary: #fafafa;
+--sidebar-primary-foreground: #09090b;
+--sidebar-accent: #27272a;
+--sidebar-accent-foreground: #fafafa;
+--sidebar-border: #27272a;
+--sidebar-ring: #fafafa;
 }
 
 @layer base {
@@ -150,5 +150,16 @@
   }
   html {
     @apply font-sans;
+  }
+
+  /* Remove number input spinners */
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type="number"] {
+    -moz-appearance: textfield;
+    appearance: textfield;
   }
 }

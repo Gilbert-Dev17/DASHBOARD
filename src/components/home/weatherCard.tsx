@@ -1,12 +1,14 @@
 'use client'
 
-import { CloudSun, Droplets, Wind, Sun, Moon, MapPin, RefreshCw } from 'lucide-react'
+import { CloudSun, Droplets, Wind, Sun, Moon, MapPin, RefreshCw, CheckCircle2, Clock } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { useGeolocation } from '@/hooks/geoLocation'
 import type { WeatherData, Coordinates } from '@/types/weather'
-import { Separator } from '../ui/separator'
-import { Stat, WeatherCardSkeleton } from './weatherCardSkeleton'
-import {toast} from 'sonner'
+import type { TaskWithSubtasks } from '@/types/dashboard'
+import { Badge } from '../ui/badge'
+import { WeatherCardSkeleton } from './weatherCardSkeleton'
+import { toast } from 'sonner'
+import { generateDailyBrief } from '@/utils/daily-brief'
 
 async function fetchWeather(lat: number, lon: number, signal: AbortSignal): Promise<WeatherData> {
   const res = await fetch(`/api/weather?lat=${lat}&lon=${lon}`, { signal })
@@ -18,10 +20,16 @@ function hasCoords(c: Coordinates | 0 | null): c is Coordinates {
   return c !== 0 && c !== null
 }
 
-export function WeatherCard() {
+export function WeatherCard({ tasks = [] }: { tasks?: TaskWithSubtasks[] }) {
   const { coords: rawCoords, status: permissionStatus, errorMessage, requestLocation } = useGeolocation()
 
   const coords = hasCoords( rawCoords )? rawCoords : null;
+
+  // Extract actionable facts for the chips
+  const brief = generateDailyBrief(tasks);
+  const freeTimeMatch = brief.message.match(/free after (.*?)\./i);
+  const freeTime = freeTimeMatch ? freeTimeMatch[1] : 'Schedule open';
+  const pendingTasks = tasks.filter(t => !t.is_done).length;
 
   const { data: weather, isPending, isFetching, error, refetch, } = useQuery<WeatherData, Error>({
     queryKey: ['weather', coords?.lat, coords?.lon],
@@ -38,7 +46,7 @@ export function WeatherCard() {
     <section
       aria-label="Current weather at your location"
       aria-live="polite"
-      className="mt-16 p-6 lg:p-8 rounded-md border relative overflow-hidden flex flex-col md:flex-row gap-8 justify-between md:items-center shadow-sm bg-secondary/50 transition-colors duration-500"
+      className="mt-4 lg:mt-6 relative"
     >
 
       {permissionStatus === 'denied' && (
@@ -90,42 +98,40 @@ export function WeatherCard() {
         </div>
       )}
 
-      {/* {weather && <WeatherCardSkeleton/>} */}
-
       {weather && (
-        <>
-          <div className="flex items-center gap-6 relative z-10">
-            <div className="absolute -right-195 -top-10 w-40 h-40 rounded-full mix-blend-overlay opacity-15 blur-3xl transition-colors duration-500 bg-accent" />
-            <div className="w-16 h-16 rounded-full flex items-center justify-center shrink-0 transition-colors duration-500 bg-secondary">
-              <CloudSun size={32} aria-hidden="true" className="text-accent" />
-            </div>
-            <div>
-              <div className="text-5xl font-light tracking-tighter mb-1">
-                {weather.temperature}&deg;C
-              </div>
-              <p className="text-sm font-medium">
-                {weather.location}
-                <span className="mx-2" aria-hidden="true">•</span>
-                {weather.condition}
-                <span className="mx-2" aria-hidden="true">•</span>
-                Feels Like {weather.feelsLike}&deg;C
-              </p>
-            </div>
-          </div>
+        <div className="relative z-10 w-full max-w-5xl">
+          <div className="absolute -right-20 -top-20 w-64 h-64 rounded-full mix-blend-overlay opacity-10 blur-[80px] transition-colors duration-500 bg-accent pointer-events-none" />
 
-          <div className="flex flex-wrap gap-6 relative z-10">
-            <Stat icon={<Droplets size={14} aria-hidden="true" />} label="Humidity" value={`${weather.humidity}%`} />
-            <Separator orientation="vertical" />
-            <Stat
-              icon={<Wind size={14} aria-hidden="true" />}
-              label="Wind"
-              value={`${weather.windSpeed} km/h ${weather.windDirection}`}
-            />
-            <Separator orientation="vertical" />
-            <Stat icon={<Sun size={14} aria-hidden="true" />} label="Sunrise" value={weather.sunRise} />
-            <Stat icon={<Moon size={14} aria-hidden="true" />} label="Sunset" value={weather.sunSet} />
+          <p className="text-2xl md:text-3xl lg:text-4xl leading-snug tracking-tight font-light text-muted-foreground/90 text-pretty">
+            Currently <span className="font-medium text-accent">{weather.temperature}&deg;C</span> in {weather.location} with {' '}
+            <span className="font-medium text-accent inline-flex items-center gap-2 mx-1">
+              <CloudSun size={32} className="text-accent" />
+              {weather.condition.toLowerCase()}
+            </span>.
+            Feels like <span className="font-medium text-accent">{weather.feelsLike}&deg;C</span> with <span className="text-accent font-medium">{weather.humidity}% humidity</span> and <span className="text-accent font-medium">{weather.windSpeed} km/h</span> winds.
+            Sunset is at <span className="text-accent font-medium">{weather.sunSet}</span>.
+          </p>
+
+          {/* ── SCANNABLE CHIPS ── */}
+          <div className="flex flex-wrap items-center gap-3 md:gap-4 mt-2">
+
+            <Badge variant={'secondary'}>
+              <CheckCircle2 size={16} className="text-accent" />
+              {pendingTasks === 0 ? 'No tasks left' : `${pendingTasks} Tasks today`}
+            </Badge>
+
+            <Badge variant={'secondary'}>
+              <CheckCircle2 size={16} className="text-accent" />
+              {pendingTasks === 0 ? 'Free all day' : `Free after ${freeTime}`}
+            </Badge>
+
+            <Badge variant={'secondary'}>
+              <CloudSun size={16} className="text-accent" />
+              {weather.temperature}&deg;C {weather.location}
+            </Badge>
+
           </div>
-        </>
+        </div>
       )}
     </section>
   )

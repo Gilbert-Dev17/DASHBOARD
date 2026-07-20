@@ -28,6 +28,8 @@ export function useGlobalShortcut({
     if (!enabled) return
 
     function handleKeyDown(event: KeyboardEvent) {
+      if (!event.key || !key) return
+      
       const isModifierPressed = event.metaKey || event.ctrlKey
       const isTargetKey = event.key.toLowerCase() === key.toLowerCase()
 

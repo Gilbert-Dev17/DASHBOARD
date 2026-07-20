@@ -6,6 +6,9 @@ import { updateTag } from "next/cache";
 export async function toggleTask(taskId: string, isDone: boolean) {
     const supabase = await createClient();
 
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, message: 'Not authenticated.' }
+
     const { data, error, status, statusText } = await supabase
         .from("tasks")
         .update({ is_done: isDone })
@@ -37,17 +40,18 @@ export async function toggleTask(taskId: string, isDone: boolean) {
         console.error(subtaskError);
         return { success: false, message: "Task updated, but failed to update subtasks" };
     }
-    const { data: { user } } = await supabase.auth.getUser();
 
-    if (user) {
-        updateTag(`tasks-${user.id}`);
-    }
+    updateTag(`tasks-${user.id}`);
+    updateTag(`planner-tasks=${user.id}`)
 
     return { success: true, message: "Task is Finished" };
 }
 
 export async function toggleSubTask(subtaskId: string, isDone: boolean) {
     const supabase = await createClient()
+
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { success: false, message: 'Not authenticated.' }
 
     const { error } = await supabase
         .from('subtasks')
@@ -58,11 +62,9 @@ export async function toggleSubTask(subtaskId: string, isDone: boolean) {
         console.error(error);
         return { success: false, message: error.message };
     }
-    const { data: { user } } = await supabase.auth.getUser();
 
-    if (user) {
-        updateTag(`tasks-${user.id}`);
-    }
+    updateTag(`tasks-${user.id}`)
+    updateTag(`planner-tasks-${user.id}`)
 
     return { success: true, message: "Task is Finished" };
 }

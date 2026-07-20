@@ -1,5 +1,6 @@
 'use client'
 
+import { TransitionStartFunction } from 'react'
 import { useRouter } from 'next/navigation'
 import { format, parseISO } from 'date-fns'
 import { Card } from '@/components/ui/card'
@@ -8,15 +9,24 @@ import { Calendar } from '@/components/ui/calendar'
 interface CustomCalendarProps {
   initialDate?: Date;
   datesWithTasks?: { date: string; count: number }[];
+  startTransition?: TransitionStartFunction;
 }
 
-export const CustomCalendar = ({ initialDate = new Date(), datesWithTasks = [] }: CustomCalendarProps) => {
+export const CustomCalendar = ({ initialDate = new Date(), datesWithTasks = [], startTransition }: CustomCalendarProps) => {
   const router = useRouter()
 
   const handleSelect = (date: Date | undefined) => {
     if (!date) return
+
     const dateStr = format(date, 'yyyy-MM-dd')
-    router.push(`/planner?date=${dateStr}`)
+
+    if (startTransition) {
+      startTransition(() => {
+        router.push(`/schedule?date=${dateStr}`)
+      })
+    } else {
+      router.push(`/schedule?date=${dateStr}`)
+    }
   }
 
   const task1Dates = datesWithTasks.filter(d => d.count > 0 && d.count < 10).map(d => parseISO(d.date))

@@ -8,8 +8,8 @@ import { profileStats as stats } from '@/lib/mockData'
 export default async function ProfilePage() {
   const user = await getUser()
 
-  if (!user) {
-    redirect('/login')
+  if (!user || !user.id) {
+    redirect('/login');
   }
 
   const initials = user.first_name

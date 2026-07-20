@@ -4,6 +4,7 @@ export interface Coordinates {
 }
 
 export interface WeatherData {
+  weather_id: number;
   temperature: number;
   feelsLike: number;
   condition: string;

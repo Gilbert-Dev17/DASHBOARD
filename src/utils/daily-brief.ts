@@ -35,11 +35,52 @@ const ENDINGS = [
   "Have a fantastic day ahead."
 ]
 
+import type { WeatherData } from '@/types/weather'
+
 interface DailyBrief {
   message: string
 }
 
-export function generateDailyBrief(tasks: TaskWithSubtasks[]): DailyBrief {
+function getWeatherComment(condition: string, temp: number) {
+  const c = condition.toLowerCase();
+
+  if (temp > 35) return 'stay cool and hydrate today';
+
+  if (temp < 15) {
+    if (c.includes('rain')) return 'it is cold and wet, bundle up if you head out';
+    if (c.includes('clear') || c.includes('sun')) return 'crisp and clear, but quite chilly';
+    return 'dress warmly today';
+  }
+
+  if (c.includes('thunderstorm') || c.includes('squall') || c.includes('tornado')) {
+    return 'wild weather out there, stay safe indoors';
+  }
+  if (c.includes('heavy rain') || c.includes('extreme rain')) {
+    return 'pouring outside, definitely a desk day';
+  }
+  if (c.includes('rain') || c.includes('drizzle')) {
+    return 'bring an umbrella if you step out';
+  }
+  if (c.includes('fog') || c.includes('mist') || c.includes('haze') || c.includes('smoke') || c.includes('dust') || c.includes('sand')) {
+    return 'low visibility out there, take it easy on the roads';
+  }
+  if (c.includes('few clouds') || c.includes('scattered clouds')) {
+    return 'nice weather for a quick break outside';
+  }
+  if (c.includes('broken clouds') || c.includes('overcast')) {
+    return 'a bit gloomy, but a good day to focus';
+  }
+  if (c.includes('clear') || c.includes('sun')) {
+    return temp > 30 ? 'sun is blazing today' : 'beautiful day to catch some sun';
+  }
+  if (c.includes('snow') || c.includes('sleet')) {
+    return 'stay warm out there';
+  }
+
+  return 'dress comfortably';
+}
+
+export function generateDailyBrief(tasks: TaskWithSubtasks[], weather?: WeatherData | null): DailyBrief {
   if (!tasks || tasks.length === 0) {
     const isWeekend = new Date().getDay() === 0 || new Date().getDay() === 6;
     if (isWeekend) {
@@ -180,11 +221,16 @@ export function generateDailyBrief(tasks: TaskWithSubtasks[]): DailyBrief {
   }
 
   // Combine all parts
+  let weatherMessage = "";
+  if (weather) {
+    weatherMessage = ` It's **${weather.temperature}°C and ${weather.condition.toLowerCase()}** — ${getWeatherComment(weather.condition, weather.temperature)}.`;
+  }
+
   if (completedCount > 0 && completedCount === tasks.length) {
-    return { message: `${tasksSummary} Enjoy the rest of your day!` };
+    return { message: `${tasksSummary}${weatherMessage} Enjoy the rest of your day!`.replace(/\s+/g, ' ').trim() };
   }
 
   return {
-    message: `${tasksSummary} ${themeMessage} ${freeTimeMessage} ${randomEnding}`
+    message: `${tasksSummary}${weatherMessage} ${themeMessage} ${freeTimeMessage} ${randomEnding}`.replace(/\s+/g, ' ').trim()
   }
 }

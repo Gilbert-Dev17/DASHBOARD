@@ -10,8 +10,20 @@ import {
 } from "@/components/ui/chart"
 
 import { HelpCircle } from "lucide-react"
-import { ICON_MAP} from "@/app/(main)/expenses/page"
 import type { CategorySummary } from "@/types/expenses"
+import { formatCurrency } from "@/utils/currency"
+
+import {DrumstickIcon, ShoppingBag, Tv, Heart, ShoppingBasket, BusFront, School} from 'lucide-react'
+
+const ICON_MAP: Record<string, React.ElementType> = {
+  'foods-drinks': DrumstickIcon,
+  'shopping': ShoppingBag,
+  'entertainment': Tv,
+  'date': Heart,
+  'groceries': ShoppingBasket,
+  'transport': BusFront,
+  'school': School,
+};
 
 interface ChartPieDonutTextProps {
   categories: CategorySummary[];
@@ -40,24 +52,25 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
     () =>
       categories.map((category, index) => ({
         category: category.name,
-        amount: parseCategoryTotal(category.total),
+        amount: parseCategoryTotal(category.total || 0),
         fill: CHART_COLORS[index % CHART_COLORS.length],
+        icon: category.icon,
       })),
     [categories]
   )
 
   const chartConfig = React.useMemo(
     () =>
-      categories.reduce<Record<string, { label: string; color: string; iconKey: string }>>(
+      categories.reduce<Record<string, { label: string; color: string; icon: React.ComponentType<any> }>>(
         (acc, category, index) => {
           acc[category.name] = {
             label: category.name,
             color: CHART_COLORS[index % CHART_COLORS.length],
-            iconKey: category.iconKey,
+            icon: (category.icon ? (ICON_MAP[category.icon] || HelpCircle) : HelpCircle) as React.ComponentType<any>,
           }
           return acc
         },
-        {} as Record<string, { label: string; color: string; iconKey: string }>
+        {} as Record<string, { label: string; color: string; icon: React.ComponentType<any> }>
       ) satisfies ChartConfig,
     [categories]
   )
@@ -75,27 +88,6 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
           className="mx-auto aspect-square max-h-62.5"
         >
           <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={
-                <ChartTooltipContent
-                    hideLabel
-                    formatter={(value, name) => {
-                        if (typeof name !== "string") return null
-
-                        const config = chartConfig[name]
-                        const IconComponent = ICON_MAP[config.iconKey] || HelpCircle;
-                        // const Icon = config.iconKey
-                        return (
-                        <div className="flex items-center gap-2">
-                            <IconComponent size={14} /> :
-                            <span className="tabular-nums">${Number(value).toLocaleString()}</span>
-                        </div>
-                        )
-                    }}
-                    />
-                }
-            />
             <Pie
                 data={chartData}
                 dataKey="amount"
@@ -104,7 +96,7 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
                 strokeWidth={5}
                 cornerRadius={8}
                 paddingAngle={4}
-                >
+            >
                 <Label
                     content={({ viewBox }) => {
                     if (viewBox && "cx" in viewBox && "cy" in viewBox) {
@@ -125,16 +117,38 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
                             <tspan
                             x={viewBox.cx}
                             y={(viewBox.cy || 0) + 16}
-                            className="fill-foreground text-2xl font-mono"
+                            className="fill-foreground text-lg font-mono"
                             >
-                            ${totalAmount.toLocaleString()}
+                            {formatCurrency(totalAmount, 'PHP')}
                             </tspan>
                         </text>
                         )
                     }
                     }}
                 />
-                </Pie>
+            </Pie>
+            <ChartTooltip
+                content={({ active, payload }: any) => {
+                    if (active && payload && payload.length) {
+                        const data = payload[0].payload;
+                        const Icon = ICON_MAP[data.icon] || HelpCircle;
+                        return (
+                        <div className="bg-background/95 border border-border/50 p-3 rounded-lg shadow-xl backdrop-blur-sm flex items-center justify-between gap-4">
+                            <div className="flex items-center gap-2">
+                                <div className="w-6 h-6 rounded-full bg-secondary/30 flex items-center justify-center">
+                                    <Icon size={12} className="text-muted-foreground" />
+                                </div>
+                                <span className="text-xs font-medium text-foreground">{data.category}</span>
+                            </div>
+                            <span className="text-sm font-mono font-bold text-foreground">
+                                {formatCurrency(data.amount || 0, 'PHP')}
+                            </span>
+                        </div>
+                        )
+                    }
+                    return null
+                }}
+            />
           </PieChart>
         </ChartContainer>
       </div>

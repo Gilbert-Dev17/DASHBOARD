@@ -1,0 +1,209 @@
+'use client';
+
+import Link from 'next/link';
+import { ArrowLeft, Wallet as WalletIcon, CreditCard, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { formatCurrency } from '@/utils/currency';
+import { useState } from 'react';
+import { Timeline, TimelineItem, TimelineTime, TimelineContent } from '@/components/ui/timeline';
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from '@/components/ui/pagination';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+  DropdownMenuSeparator,
+} from '@/components/ui/dropdown-menu';
+import { EditWalletModal } from '@/components/modals/edit-wallet/EditWalletModal';
+import { DeleteWalletModal } from '@/components/modals/delete-wallet/DeleteWalletModal';
+import PageComponent from '@/components/shared/PageComponent';
+import { Wallets, TransactionHistory } from '@/types/expenses';
+
+interface AccountStatementProps {
+  accountData: (Wallets & { transactions: TransactionHistory[] }) | null
+}
+
+import { AVAILABLE_ICONS } from '@/lib/constants/categories';
+
+export function AccountStatement({accountData} : AccountStatementProps) {
+
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 30;
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+
+  if (!accountData || !accountData.id) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[50vh] text-center">
+        <h2 className="text-2xl font-semibold mb-2">Account Not Found</h2>
+        <p className="text-muted-foreground mb-6">We couldn't find the account you're looking for.</p>
+        <Link href="/finance">
+          <Button variant="outline">Back to Expenses</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  const isLiability = accountData.type === 'Credit' || accountData.type === 'Loans';
+  const iconObj = AVAILABLE_ICONS.find(i => i.name === accountData.icon);
+  const DynamicIcon = (iconObj?.icon || (isLiability ? CreditCard : WalletIcon)) as any;
+  const color = accountData.color || (isLiability ? '#ef4444' : '#888888');
+
+  const transactions = accountData.transactions || [];
+  const totalPages = Math.ceil(transactions.length / itemsPerPage);
+  const paginatedTransactions = transactions.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+
+  return (
+    <PageComponent>
+    <div className=" mx-auto w-full pt-6">
+      {/* HEADER */}
+      <header className="flex flex-col gap-6 mb-12">
+        <div className="flex justify-between items-center w-full">
+          <Link href="/finance" className="w-fit">
+            <Button variant="ghost" size="sm" className="h-8 px-2 text-muted-foreground hover:text-foreground">
+              <ArrowLeft size={14} className="mr-2" />
+              Back to Expenses
+            </Button>
+          </Link>
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
+                <MoreHorizontal size={16} />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className='w-full'>
+              <DropdownMenuItem onClick={() => setIsEditModalOpen(true)} className="cursor-pointer">
+                <Edit className="mr-2 h-4 w-4" />
+                Edit Account
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => setIsDeleteModalOpen(true)} className="text-rose-500 focus:text-rose-500 cursor-pointer">
+                <Trash2 className="mr-2 h-4 w-4" />
+                Delete Account
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
+
+        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+          <div className="flex items-center gap-4">
+            <div
+              className="p-4 rounded-2xl border border-border/50 shadow-sm transition-colors duration-300"
+              style={{ backgroundColor: `${color}15`, color: color }}
+            >
+              <DynamicIcon size={32} />
+            </div>
+            <div>
+              <h1 className="text-3xl font-light tracking-tight">{accountData.name}</h1>
+              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+                {accountData.type}
+              </span>
+            </div>
+          </div>
+
+          <div className="flex flex-col md:text-right">
+            <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1">Current Balance</span>
+            <div className={`text-4xl tabular-nums font-mono tracking-tighter flex md:justify-end items-baseline`}>
+              {formatCurrency(accountData.balance, accountData.currency)}
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* TRANSACTIONS SECTION */}
+      <section className="bg-card/30 border border-dashed border-border/50 rounded-3xl p-6 md:p-8">
+        <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-8">Statement Activity</h2>
+
+        {transactions.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-16 text-muted-foreground text-sm">
+            No recent activity for this account.
+          </div>
+        ) : (
+          <>
+            <Timeline>
+              {paginatedTransactions.map((txn: any, index: number) => {
+                const dateObj = new Date(txn.created_for_date || txn.created_at || new Date());
+                return (
+                  <TimelineItem key={`${txn.id}-${index}`}>
+                    <TimelineTime dateTime={txn.created_for_date || txn.created_at || ''}>
+                      {dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                    </TimelineTime>
+
+                    <TimelineContent>
+                      <div className="flex flex-col py-3 px-4 -ml-4 rounded-xl hover:bg-secondary/40 transition-colors group">
+                        <div className="flex justify-between items-start gap-4">
+                          <span className="font-medium text-[15px] leading-tight text-foreground/90 group-hover:text-foreground">{txn.title}</span>
+                          <span className="tabular-nums font-mono text-base shrink-0 text-foreground">
+                            {txn.type === 'income' ? '+' : '-'}{formatCurrency(Math.abs(Number(txn.amount)), accountData.currency)}
+                          </span>
+                        </div>
+                        <div className="text-[10px] uppercase tracking-wider text-muted-foreground/80 mt-1.5 flex items-center gap-2">
+                          <span>{txn.expense_categories?.name || txn.type}</span>
+                        </div>
+                      </div>
+                    </TimelineContent>
+                  </TimelineItem>
+                )
+              })}
+            </Timeline>
+
+            {totalPages > 1 && (
+              <div className="mt-12">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationPrevious
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setPage((p) => Math.max(1, p - 1));
+                        }}
+                        className={page === 1 ? "pointer-events-none opacity-50" : ""}
+                      />
+                    </PaginationItem>
+
+                    <PaginationItem>
+                      <span className="text-sm text-muted-foreground px-4">
+                        Page {page} of {totalPages}
+                      </span>
+                    </PaginationItem>
+
+                    <PaginationItem>
+                      <PaginationNext
+                        href="#"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          setPage((p) => Math.min(totalPages, p + 1));
+                        }}
+                        className={page === totalPages ? "pointer-events-none opacity-50" : ""}
+                      />
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
+              </div>
+            )}
+          </>
+        )}
+      </section>
+
+      <EditWalletModal
+        wallet={accountData}
+        isOpen={isEditModalOpen}
+        setIsOpen={setIsEditModalOpen}
+      />
+      <DeleteWalletModal
+        walletId={accountData.id}
+        isOpen={isDeleteModalOpen}
+        setIsOpen={setIsDeleteModalOpen}
+      />
+    </div>
+    </PageComponent>
+  );
+}
