@@ -10,9 +10,20 @@ import {
 } from "@/components/ui/chart"
 
 import { HelpCircle } from "lucide-react"
-import { ICON_MAP } from "@/components/expenses/expensesPage"
 import type { CategorySummary } from "@/types/expenses"
 import { formatCurrency } from "@/utils/currency"
+
+import {DrumstickIcon, ShoppingBag, Tv, Heart, ShoppingBasket, BusFront, School} from 'lucide-react'
+
+const ICON_MAP: Record<string, React.ElementType> = {
+  'foods-drinks': DrumstickIcon,
+  'shopping': ShoppingBag,
+  'entertainment': Tv,
+  'date': Heart,
+  'groceries': ShoppingBasket,
+  'transport': BusFront,
+  'school': School,
+};
 
 interface ChartPieDonutTextProps {
   categories: CategorySummary[];

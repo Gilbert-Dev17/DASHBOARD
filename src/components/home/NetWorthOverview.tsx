@@ -1,9 +1,10 @@
 'use client'
 
-import { TrendingUp, TrendingDown } from 'lucide-react'
+import { TrendingUp, TrendingDown, Wallet } from 'lucide-react'
 import { WalletSummary, WalletHistory } from '@/types/dashboard'
 import { formatCurrency } from '@/utils/currency'
 import { calculateFinancialTotals } from '@/utils/financial'
+import { AVAILABLE_ICONS } from '@/lib/constants/categories'
 
 interface NetWorthProps {
   wallets: WalletSummary[];
@@ -17,7 +18,7 @@ export const NetWorthOverview = ({ wallets, historicalSnapshots = [] }: NetWorth
   const [nwDollars, nwCents] = formatCurrency(netWorth, currency).split('.')
 
   return (
-    <section aria-labelledby="finances-heading" className="w-full flex flex-col gap-6">
+    <section aria-labelledby="finances-heading" className="w-full flex flex-col gap-10">
       {/* ── Net Worth Main Display ── */}
       <div className="flex flex-col gap-4">
         <div className="flex items-center gap-4 mb-2">

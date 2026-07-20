@@ -17,18 +17,9 @@ import { useWallets } from '@/hooks/useFinanceData'
 import { addIncomeAction } from '@/lib/actions/transactions'
 import { formatInputAmount } from '@/utils/currency'
 
-const INCOME_SOURCES = [
-  { dbId: '1', name: 'Salary' },
-  { dbId: '2', name: 'Freelance' },
-  { dbId: '3', name: 'Investment' },
-  { dbId: '4', name: 'Refund' },
-  { dbId: '5', name: 'Gift' },
-  { dbId: '6', name: 'Other' },
-]
-
 export const IncomeForm = () => {
   const {
-    handleSubmit, control, reset, formState: { errors },
+    handleSubmit, control, watch, reset, formState: { errors },
   } = useForm<IncomeFormValues>({
     resolver: zodResolver(incomeSchema as any),
     defaultValues: {
@@ -104,7 +95,6 @@ export const IncomeForm = () => {
       </FieldGroup>
 
       {/* Account & Source side-by-side */}
-      <div className="flex flex-row gap-4">
         <FieldGroup>
           <FieldLabel>Account</FieldLabel>
           <Controller
@@ -124,7 +114,7 @@ export const IncomeForm = () => {
                     ) : (
                       wallets.map((wallet) => (
                         <SelectItem key={wallet.id} value={wallet.id}>
-                          {wallet.name} - {wallet.currency}
+                          {wallet.name} &bull; {wallet.type} - {wallet.currency}
                         </SelectItem>
                       ))
                     )}
@@ -137,34 +127,6 @@ export const IncomeForm = () => {
             <FieldError>{errors.accountId.message}</FieldError>
           )}
         </FieldGroup>
-
-        <FieldGroup>
-          <FieldLabel>Source</FieldLabel>
-          <Controller
-            control={control}
-            name="source"
-            render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Income source" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {INCOME_SOURCES.map((src) => (
-                      <SelectItem key={src.dbId} value={src.dbId}>
-                        {src.name}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            )}
-          />
-          {errors.source && (
-            <FieldError>{errors.source.message}</FieldError>
-          )}
-        </FieldGroup>
-      </div>
 
       <FieldSeparator />
 
@@ -184,7 +146,7 @@ export const IncomeForm = () => {
         />
       </FieldGroup>
 
-      <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+      <Button type="submit" size="lg" className="w-full" disabled={!watch('amount') || !watch('accountId') || isSubmitting}>
         {isSubmitting ? 'Adding...' : 'Add Income'}
       </Button>
     </form>

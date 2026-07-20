@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import Link from 'next/link';
 
 import { ArrowLeft, Filter, CreditCard } from 'lucide-react';
@@ -23,6 +23,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination"
 
 const LOG_FILTERS = [
   { name: 'Day', value: 'day' },
@@ -47,6 +55,12 @@ interface ViewAllTransactionsProps {
 
 export function ViewAllTransactions({ transactions }: ViewAllTransactionsProps) {
   const [selectedFilter, setSelectedFilter] = useState('day');
+  const [page, setPage] = useState(1);
+  const itemsPerPage = 30;
+
+  useEffect(() => {
+    setPage(1);
+  }, [selectedFilter]);
 
   const groupedTransactions = useMemo(() => {
     const groups: Record<string, TransactionHistory[]> = {};
@@ -101,6 +115,9 @@ export function ViewAllTransactions({ transactions }: ViewAllTransactionsProps) 
     }));
   }, [selectedFilter]);
 
+  const totalPages = Math.ceil(groupedTransactions.length / itemsPerPage);
+  const paginatedGroups = groupedTransactions.slice((page - 1) * itemsPerPage, page * itemsPerPage);
+
   return (
     <PageComponent>
       <section className='mt-5'>
@@ -142,75 +159,121 @@ export function ViewAllTransactions({ transactions }: ViewAllTransactionsProps) 
 
         {/* ACCORDION TABLES */}
         <section className="mt-6" aria-label="Transaction History">
-          <Accordion
-            type="single"
-            collapsible
-            defaultValue={groupedTransactions[0]?.label} // Auto-open the first one
-            className="space-y-4"
-          >
-            {groupedTransactions.map((group) => (
-              <AccordionItem
-                key={group.label}
-                value={group.label}
-                className="border border-dashed bg-card/30 rounded-xl px-2 overflow-hidden"
+          {transactions.length === 0 ? (
+            <div className="w-full flex flex-col items-center justify-center py-24 border border-dashed rounded-xl bg-card/30">
+              <CreditCard className="h-10 w-10 text-muted-foreground/30 mb-4" />
+              <p className="text-base font-medium text-foreground/80 mb-1">No transactions found</p>
+              <p className="text-sm text-muted-foreground">You haven't logged any expenses or income yet.</p>
+            </div>
+          ) : (
+            <>
+              <Accordion
+                type="single"
+                collapsible
+                defaultValue={paginatedGroups[0]?.label}
+                className="space-y-4"
               >
-                <AccordionTrigger className="hover:no-underline px-4 py-5 group transition-colors">
-                  <div className="flex w-full items-center justify-between pr-4">
-                    <span className="text-sm font-semibold uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors">
-                      {group.label}
-                    </span>
+                {paginatedGroups.map((group) => (
+                  <AccordionItem
+                    key={group.label}
+                    value={group.label}
+                    className="border border-dashed bg-card/30 rounded-xl px-2 overflow-hidden"
+                  >
+                    <AccordionTrigger className="hover:no-underline px-4 py-5 group transition-colors">
+                      <div className="flex w-full items-center justify-between pr-4">
+                        <span className="text-sm font-semibold uppercase tracking-widest text-muted-foreground group-hover:text-foreground transition-colors">
+                          {group.label}
+                        </span>
 
-                    <span className="font-semibold tabular-nums text-foreground/90">
-                      {formatCurrency(group.total, 'USD')}
-                    </span>
-                  </div>
-                </AccordionTrigger>
+                        <span className="font-semibold tabular-nums text-foreground/90">
+                          {formatCurrency(group.total, 'USD')}
+                        </span>
+                      </div>
+                    </AccordionTrigger>
 
-                <AccordionContent className="pb-4 px-1">
-                  <div className="rounded-md border border-border/50 bg-background/50 overflow-hidden">
-                    <Table>
-                      <TableHeader className="bg-muted/30">
-                        <TableRow className="hover:bg-transparent">
-                          <TableHead className="w-[50px]"></TableHead>
-                          <TableHead className="text-[10px] uppercase tracking-widest font-semibold">Description</TableHead>
-                          <TableHead className="text-[10px] uppercase tracking-widest font-semibold">Category</TableHead>
-                          <TableHead className="text-[10px] uppercase tracking-widest font-semibold">Date</TableHead>
-                          <TableHead className="text-[10px] uppercase tracking-widest font-semibold text-right">Amount</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {group.transactions.map((transaction) => {
-                          const dateObj = new Date(transaction.created_for_date || transaction.created_at);
-
-                          return (
-                            <TableRow key={transaction.id} className="group/row border-b-border/50 transition-colors hover:bg-secondary/20">
-                              <TableCell>
-                                <div className="bg-secondary/60 text-muted-foreground group-hover/row:bg-background group-hover/row:shadow-sm group-hover/row:text-foreground p-2 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 w-8 h-8">
-                                  <CreditCard size={14} />
-                                </div>
-                              </TableCell>
-                              <TableCell className="font-medium text-sm text-foreground/90">
-                                {transaction.title}
-                              </TableCell>
-                              <TableCell className="text-xs uppercase tracking-wider text-muted-foreground">
-                                {transaction.expense_categories?.name || 'Uncategorized'}
-                              </TableCell>
-                              <TableCell className="text-xs font-mono text-muted-foreground">
-                                {dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
-                              </TableCell>
-                              <TableCell className="text-right tabular-nums font-medium text-foreground/90">
-                                {formatCurrency(transaction.amount, transaction.wallets?.currency || 'USD')}
-                              </TableCell>
+                    <AccordionContent className="pb-4 px-1">
+                      <div className="rounded-md border border-border/50 bg-background/50 overflow-hidden">
+                        <Table>
+                          <TableHeader className="bg-muted/30">
+                            <TableRow className="hover:bg-transparent">
+                              <TableHead className="w-12.5"></TableHead>
+                              <TableHead className="text-[10px] uppercase tracking-widest font-semibold">Description</TableHead>
+                              <TableHead className="text-[10px] uppercase tracking-widest font-semibold">Category</TableHead>
+                              <TableHead className="text-[10px] uppercase tracking-widest font-semibold">Date</TableHead>
+                              <TableHead className="text-[10px] uppercase tracking-widest font-semibold text-right">Amount</TableHead>
                             </TableRow>
-                          );
-                        })}
-                      </TableBody>
-                    </Table>
-                  </div>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+                          </TableHeader>
+                          <TableBody>
+                            {group.transactions.map((transaction) => {
+                              const dateObj = new Date(transaction.created_for_date || transaction.created_at);
+
+                              return (
+                                <TableRow key={transaction.id} className="group/row border-b-border/50 transition-colors hover:bg-secondary/20">
+                                  <TableCell>
+                                    <div className="bg-secondary/60 text-muted-foreground group-hover/row:bg-background group-hover/row:shadow-sm group-hover/row:text-foreground p-2 rounded-full flex items-center justify-center shrink-0 transition-all duration-300 w-8 h-8">
+                                      <CreditCard size={14} />
+                                    </div>
+                                  </TableCell>
+                                  <TableCell className="font-medium text-sm text-foreground/90">
+                                    {transaction.title}
+                                  </TableCell>
+                                  <TableCell className="text-xs uppercase tracking-wider text-muted-foreground">
+                                    {transaction.expense_categories?.name || transaction.type}
+                                  </TableCell>
+                                  <TableCell className="text-xs font-mono text-muted-foreground">
+                                    {dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                                  </TableCell>
+                                  <TableCell className="text-right tabular-nums font-medium text-foreground/90">
+                                    {formatCurrency(transaction.amount, transaction.wallets?.currency || 'USD')}
+                                  </TableCell>
+                                </TableRow>
+                              );
+                            })}
+                          </TableBody>
+                        </Table>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
+
+              {totalPages > 1 && (
+                <div className="mt-8">
+                  <Pagination>
+                    <PaginationContent>
+                      <PaginationItem>
+                        <PaginationPrevious 
+                          href="#" 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setPage((p) => Math.max(1, p - 1));
+                          }}
+                          className={page === 1 ? "pointer-events-none opacity-50" : ""}
+                        />
+                      </PaginationItem>
+                      
+                      <PaginationItem>
+                        <span className="text-sm text-muted-foreground px-4">
+                          Page {page} of {totalPages}
+                        </span>
+                      </PaginationItem>
+
+                      <PaginationItem>
+                        <PaginationNext 
+                          href="#" 
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setPage((p) => Math.min(totalPages, p + 1));
+                          }}
+                          className={page === totalPages ? "pointer-events-none opacity-50" : ""}
+                        />
+                      </PaginationItem>
+                    </PaginationContent>
+                  </Pagination>
+                </div>
+              )}
+            </>
+          )}
         </section>
       </section>
 

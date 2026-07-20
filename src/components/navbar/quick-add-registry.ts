@@ -10,7 +10,7 @@ export interface QuickAddRegistry {
 
 export const quickAddRegistry: QuickAddRegistry[] = [
   {
-    id: 'home',
+    id: 'plan',
     match: (pathname) => pathname.startsWith('/home') || pathname.startsWith('/schedule') ,
     Component: QuickAddModal,
   },

@@ -12,7 +12,7 @@ export function useWallets() {
       const { data, error } = await supabase
         .from('wallets')
         .select('*')
-        .order('name')
+        .order('created_at', { ascending: true })
       
       if (error) throw error
       // Assuming Supabase returns an array that matches WalletSummary
@@ -30,7 +30,7 @@ export function useExpenseCategories() {
       const { data, error } = await supabase
         .from('expense_categories')
         .select('*')
-        .order('name')
+        .order('created_at', { ascending: true })
       
       if (error) throw error
       return data as ExpenseCategory[]

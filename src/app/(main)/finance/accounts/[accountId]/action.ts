@@ -18,11 +18,19 @@ async function fetchWalletId(userId: string, accountId: string) {
         `)
     .eq('user_id', userId)
     .eq('id', accountId)
+    .order('created_at', {ascending: false})
     .single()
 
     if (error) {
         console.error("Error fetching walletId:", error.message)
         throw error;
+    }
+
+    if (data && data.transactions) {
+        // Sort transactions descending (newest first)
+        data.transactions.sort((a: any, b: any) =>
+            new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+        );
     }
 
     return data as Wallets & { transactions: TransactionHistory[] }

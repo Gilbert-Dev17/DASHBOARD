@@ -19,7 +19,7 @@ import { formatInputAmount } from '@/utils/currency'
 
 export const ExpenseForm = () => {
   const {
-    handleSubmit, control, reset, formState: { errors },
+    handleSubmit, control, watch, reset, formState: { errors },
   } = useForm<ExpenseFormValues>({
     resolver: zodResolver(expenseSchema as any),
     defaultValues: {
@@ -183,7 +183,7 @@ export const ExpenseForm = () => {
         />
       </FieldGroup>
 
-      <Button type="submit" size="lg" className="w-full" disabled={isSubmitting}>
+      <Button type="submit" size="lg" className="w-full" disabled={!watch('amount') || !watch('accountId') || !watch('categoryId') || isSubmitting}>
         {isSubmitting ? 'Adding...' : 'Add Expense'}
       </Button>
     </form>

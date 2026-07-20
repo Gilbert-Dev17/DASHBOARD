@@ -58,6 +58,8 @@ export interface Wallet {
     balance: number;
     currency: string;
     type: WalletType;
+    icon?: string;
+    color?: string;
     created_at: string;
 }
 
