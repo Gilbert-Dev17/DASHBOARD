@@ -2,6 +2,7 @@
 
 export interface User {
     id: string; // UUID from auth.users
+    name?: string;
     first_name: string;
     last_name: string;
     email: string;

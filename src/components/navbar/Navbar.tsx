@@ -12,7 +12,13 @@ import { Separator } from '../ui/separator'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { getActiveQuickAdds } from './quick-add-registry'
 
-const Navbar = () => {
+import type { UserSummary } from '@/types/dashboard'
+
+interface NavbarProps {
+  user?: UserSummary | null;
+}
+
+const Navbar = ({ user }: NavbarProps) => {
   const pathname = usePathname();
   const activeQuickAdds = getActiveQuickAdds(pathname);
   const { resolvedTheme, setTheme } = useTheme();
@@ -25,6 +31,12 @@ const Navbar = () => {
     {icon: CheckSquare, label: 'Schedule', point: '/schedule'},
     {icon: PiggyBank, label: 'Finance', point: '/finance'},
   ]
+
+  const initials = user?.first_name
+    ? user.first_name.charAt(0).toUpperCase()
+    : user?.email?.charAt(0).toUpperCase() || 'U';
+
+  const displayName = user?.first_name || user?.name?.split(' ')[0] || 'User';
 
   return (
     <header className="hidden lg:flex sticky top-0 z-40 w-full justify-end pt-4 pr-8 pointer-events-none">
@@ -92,12 +104,12 @@ const Navbar = () => {
                 : 'border-transparent opacity-80 scale-95 hover:bg-secondary/50 hover:opacity-100'}
             `}>
             <Label className="text-sm font-medium cursor-pointer">
-              Gilbert
+              {displayName}
             </Label>
 
             <Avatar className="h-8 w-8">
-              <AvatarImage alt="Profile" className="object-cover rounded-none" />
-              <AvatarFallback className="text-xs">PR</AvatarFallback>
+              <AvatarImage src={user?.avatar_url || undefined} alt="Profile" className="object-cover rounded-none" />
+              <AvatarFallback className="text-xs">{initials}</AvatarFallback>
             </Avatar>
           </button>
         </Link>

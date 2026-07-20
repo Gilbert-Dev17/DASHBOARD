@@ -113,7 +113,7 @@ export const ExpenseForm = () => {
                     {isWalletsPending ? (
                       <SelectItem disabled value="loading">Loading...</SelectItem>
                     ) : wallets.length === 0 ? (
-                      <SelectItem disabled value="empty">No wallets found</SelectItem>
+                      <SelectItem value="empty">No wallets found</SelectItem>
                     ) : (
                       wallets.map((wallet) => (
                         <SelectItem key={wallet.id} value={wallet.id}>
@@ -146,7 +146,7 @@ export const ExpenseForm = () => {
                     {isCategoriesPending ? (
                       <SelectItem disabled value="loading">Loading...</SelectItem>
                     ) : categories.length === 0 ? (
-                      <SelectItem disabled value="empty">No categories</SelectItem>
+                      <SelectItem value="empty">No categories</SelectItem>
                     ) : (
                       categories.map((category) => (
                         <SelectItem key={category.id} value={category.id}>

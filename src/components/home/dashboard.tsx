@@ -43,32 +43,28 @@ interface DashboardPageProps {
 }
 
 export default function DashboardPage({ initialTasks, user, wallets, historicalSnapshots = [] }: DashboardPageProps) {
+
+  const displayName = user?.first_name || user?.name?.split(' ')[0] || 'User';
   useDashboard();
 
   return (
     <PageComponent>
-      {/* HEADER SECTION */}
       <header className="mb-16 lg:mb-20">
-        <GreetingHeader firstName={user.first_name|| 'User'} tasks={initialTasks || []} />
+        <GreetingHeader firstName={displayName} tasks={initialTasks || []} />
       </header>
 
       {/* <pre className="bg-muted p-4 rounded text-xs overflow-auto max-h-96">
         {JSON.stringify(initialTasks, null, 2)}
        </pre> */}
 
-      {/* MAIN GRID */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
 
-        {/* AGENDA SECTION */}
         <AgendaSection initialTasks={initialTasks || []} />
 
-        {/* SIDEBAR WIDGETS */}
         <aside className="lg:col-span-5 space-y-8 mt-8 lg:mt-0">
 
-        {/* FINANCES / ACCOUNTS SECTION */}
         <NetWorthOverview wallets={wallets} historicalSnapshots={historicalSnapshots} />
 
-        {/* PROGRESS SECTION */}
         <LifeProgress />
 
         </aside>
