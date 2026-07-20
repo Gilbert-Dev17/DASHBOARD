@@ -16,15 +16,12 @@ interface walletProps {
 export const WalletCarousel = ({wallets} : walletProps) => {
   return (
     <section aria-label="Your Wallets" className="mb-16">
-        <Carousel className="w-full" opts={{ align: "start", dragFree: true }}>
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Accounts</h2>
-            <AddWalletModal />
-            <div className="flex items-center gap-2">
-              <CarouselPrevious className="static transform-none translate-x-0 translate-y-0" />
-              <CarouselNext className="static transform-none translate-x-0 translate-y-0" />
-            </div>
-          </div>
+      <div className="mb-6 flex items-center justify-between">
+        <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+          Accounts
+        </h2>
+        <AddWalletModal />
+      </div>
 
           <CarouselContent className="ml-4">
             {wallets.map((wallet) => {
