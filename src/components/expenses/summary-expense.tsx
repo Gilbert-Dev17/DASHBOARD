@@ -1,10 +1,15 @@
-'use client'
+'use client';
 
-import { ArrowDownLeft, ArrowUpRight, TrendingUp, TrendingDown } from 'lucide-react'
-import { Separator } from '@/components/ui/separator'
-import { WalletHistory, WalletSummary, TransactionHistory } from '@/types/expenses'
-import { formatCurrency, formatSignedCurrency } from '@/utils/currency'
-import { calculateFinancialTotals } from '@/utils/financial'
+import React, { useMemo } from 'react';
+import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { WalletHistory, WalletSummary, TransactionHistory } from '@/types/expenses';
+import { formatCurrency, formatSignedCurrency } from '@/utils/currency';
+import { calculateFinancialTotals } from '@/utils/financial';
+import { Card, CardTitle, CardContent, CardHeader } from '../ui/card';
+import { Badge } from '../ui/badge';
+import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
+import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
+import { buildNetWorthTrend, getTrendDirection, TREND_COLORS } from '@/lib/finance/net-worth-trend';
 
 interface SummaryExpenseProps {
   wallets: WalletSummary[];
@@ -12,83 +17,135 @@ interface SummaryExpenseProps {
   transactions: TransactionHistory[];
 }
 
-export const SummaryExpense = ({ wallets, historicalSnapshots = [], transactions = [] }: SummaryExpenseProps) => {
+export const SummaryExpense = ({
+  wallets,
+  historicalSnapshots = [],
+  transactions = [],
+}: SummaryExpenseProps) => {
+  const totalsByCurrency = calculateFinancialTotals(wallets, historicalSnapshots, transactions);
+  const currencyBlocks = Object.values(totalsByCurrency);
 
-    const totalsByCurrency = calculateFinancialTotals(wallets, historicalSnapshots, transactions);
-    const currencyBlocks = Object.values(totalsByCurrency);
+  const trendsByCurrency = useMemo(() => {
+    const map: Record<string, ReturnType<typeof buildNetWorthTrend>> = {};
+    currencyBlocks.forEach((totals) => {
+      map[totals.currency] = buildNetWorthTrend(
+        wallets,
+        historicalSnapshots,
+        totals.currency,
+        totals.netWorth
+      );
+    });
+    return map;
+  }, [wallets, historicalSnapshots, currencyBlocks]);
 
   return (
-    <div className="flex flex-col gap-8 mb-8 pb-8 border-b border-dashed border-border/50">
-      {currencyBlocks.map((totals, index) => {
-        const { netWorth, trendPercentage, income, expense, currency } = totals;
-        const [nwDollars, nwCents] = formatSignedCurrency(netWorth, currency).split('.')
-        const [incomeDollars, incomeCents] = formatCurrency(income, currency).split('.')
-        const [expenseDollars, expenseCents] = formatCurrency(expense, currency).split('.')
+    <React.Fragment>
+      {currencyBlocks.map((totals) => {
+        const { netWorth, trendPercentage, currency } = totals;
+        const [nwDollars, nwCents] = formatSignedCurrency(netWorth, currency).split('.');
+        const isNegative = netWorth < 0;
+
+        const direction = getTrendDirection(trendPercentage);
+        const trendColor = TREND_COLORS[direction];
+        const chartData = trendsByCurrency[currency] ?? [];
+        const hasEnoughHistory = chartData.length >= 2;
+
+        const chartConfig = {
+          value: { label: 'Net Worth', color: trendColor },
+        } satisfies ChartConfig;
 
         return (
-          <section key={currency} aria-label={`Financial Summary for ${currency}`} className="flex flex-col xl:flex-row xl:items-center justify-between gap-8 xl:gap-12">
-            {/* Left Side: Net Worth */}
-           <div className="flex flex-col gap-4">
-            <div className="flex items-center gap-4 mb-2">
-              <h2 id={`finances-heading-${currency}`} className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground">
-                Net Worth ({currency})
-              </h2>
-              {trendPercentage !== null && (
-                <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-medium ${
-                  trendPercentage >= 0 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'
-                }`}>
-                  {trendPercentage >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                  {trendPercentage > 0 ? '+' : ''}{trendPercentage}%
+          <section
+            key={currency}
+            aria-label={`Financial Summary for ${currency}`}
+            className="flex flex-col xl:flex-row xl:items-center justify-between gap-8 xl:gap-12"
+          >
+            <Card className="w-full">
+              <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                <div className="flex flex-col gap-4">
+                <div>
+                  <CardTitle
+                    id={`finances-heading-${currency}`}
+                    className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground"
+                  >
+                    <div className="flex flex-row items-center gap-4">
+                      Net Worth ({currency})
+                      {trendPercentage !== null && (
+                        <Badge
+                          className="flex items-center px-3 py-1 rounded-full text-[10px] font-medium"
+                          style={{ backgroundColor: `${trendColor}1A`, color: trendColor }}
+                        >
+                          {direction === 'up' && <TrendingUp size={12} />}
+                          {direction === 'down' && <TrendingDown size={12} />}
+                          {direction === 'flat' && <Minus size={12} />}
+                          {trendPercentage > 0 ? '+' : ''}
+                          {trendPercentage}%
+                        </Badge>
+                      )}
+                    </div>
+                  </CardTitle>
                 </div>
-              )}
-            </div>
-            <div className="text-5xl md:text-6xl font-mono text-accent tracking-tighter tabular-nums flex items-baseline gap-1">
-              {nwDollars}
-              {nwCents && <span className="text-2xl md:text-3xl text-muted-foreground">.{nwCents}</span>}
-            </div>
-            <p className="text-xs lg:text-sm text-muted-foreground font-medium max-w-sm">
-              {trendPercentage === null
-                ? "Waiting for 30 days of data to calculate your first trend."
-                : trendPercentage >= 0
-                  ? `Up ${trendPercentage}% from last month's snapshots.`
-                  : `Down ${Math.abs(trendPercentage)}% from last month's snapshots.`}
-            </p>
-          </div>
 
-            {/* Vertical Separator */}
-            <Separator orientation='vertical' className="hidden xl:block w-px self-stretch bg-border/50 opacity-60" />
+                  <div
+                    className={`text-5xl md:text-6xl font-mono tracking-tighter tabular-nums flex items-baseline gap-1 ${
+                      isNegative ? 'text-rose-400' : 'text-accent'
+                    }`}
+                  >
+                    {nwDollars}
+                    {nwCents && <span className="text-2xl md:text-3xl text-muted-foreground">.{nwCents}</span>}
+                  </div>
 
-            {/* Right Side: Income & Expense */}
-            <div className="flex flex-row flex-wrap items-center gap-8 sm:gap-16 w-full xl:w-auto">
-               {/* Income */}
-               <div className="flex flex-col gap-3 min-w-0">
-                 <div className="flex items-center gap-2">
-                   <ArrowDownLeft size={16} className="text-emerald-500 shrink-0" />
-                   <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
-                     Income
-                   </span>
-                 </div>
-                 <div className="text-3xl lg:text-4xl font-mono text-emerald-500 tabular-nums tracking-tight flex items-baseline flex-wrap">
-                   +{incomeDollars}<span className="text-lg lg:text-xl opacity-60">.{incomeCents || '00'}</span>
-                 </div>
-               </div>
+                  <p className="text-xs lg:text-sm text-muted-foreground font-medium max-w-sm">
+                    {trendPercentage === null
+                      ? 'Waiting for 30 days of data to calculate your first trend.'
+                      : direction === 'flat'
+                        ? "No change from last month's snapshots."
+                        : direction === 'up'
+                          ? `Up ${trendPercentage}% from last month's snapshots.`
+                          : `Down ${Math.abs(trendPercentage)}% from last month's snapshots.`}
+                  </p>
+                </div>
 
-               {/* Expense */}
-               <div className="flex flex-col gap-3 min-w-0">
-                 <div className="flex items-center gap-2">
-                   <ArrowUpRight size={16} className="text-rose-500 shrink-0" />
-                   <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">
-                     Expense
-                   </span>
-                 </div>
-                 <div className="text-3xl lg:text-4xl font-mono text-rose-500 tabular-nums tracking-tight flex items-baseline flex-wrap">
-                   -{expenseDollars}<span className="text-lg lg:text-xl opacity-60">.{expenseCents || '00'}</span>
-                 </div>
-               </div>
-            </div>
+                <div className="w-full h-24 lg:h-32">
+                  {hasEnoughHistory ? (
+                    <ChartContainer config={chartConfig} className="w-full h-full">
+                      <LineChart
+                        accessibilityLayer
+                        data={chartData}
+                        margin={{ left: 12, right: 12, top: 12, bottom: 12 }}
+                      >
+                        <CartesianGrid vertical={false} opacity={0.3} />
+                        <XAxis
+                          dataKey="label"
+                          tickLine={false}
+                          axisLine={false}
+                          tickMargin={8}
+                          fontSize={10}
+                        />
+                        <YAxis hide domain={['auto', 'auto']} />
+                        <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+                        <Line
+                          dataKey="value"
+                          type="step"
+                          stroke={trendColor}
+                          strokeWidth={3}
+                          dot={{ r: 4, strokeWidth: 2, fill: 'var(--background)' }}
+                          activeDot={{ r: 6 }}
+                          isAnimationActive={false}
+                        />
+                      </LineChart>
+                    </ChartContainer>
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center rounded-md border border-dashed border-border/50 text-[10px] uppercase tracking-wider text-muted-foreground/60">
+                      Trend appears after your next snapshot
+                    </div>
+                  )}
+                </div>
+              </CardContent>
+            </Card>
           </section>
-        )
+        );
       })}
-    </div>
-  )
-}
+    </React.Fragment>
+  );
+};

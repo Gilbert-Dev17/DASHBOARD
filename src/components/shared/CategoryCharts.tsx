@@ -78,35 +78,6 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
                 cornerRadius={8}
                 paddingAngle={4}
             >
-                <Label
-                    content={({ viewBox }) => {
-                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                        return (
-                        <text
-                            x={viewBox.cx}
-                            y={viewBox.cy}
-                            textAnchor="middle"
-                            dominantBaseline="middle"
-                        >
-                            <tspan
-                            x={viewBox.cx}
-                            y={(viewBox.cy || 0) - 12}
-                            className="fill-muted-foreground text-sm tracking-widest uppercase"
-                            >
-                            Total
-                            </tspan>
-                            <tspan
-                            x={viewBox.cx}
-                            y={(viewBox.cy || 0) + 16}
-                            className="fill-foreground text-lg font-mono"
-                            >
-                            {formatCurrency(totalAmount, 'PHP')}
-                            </tspan>
-                        </text>
-                        )
-                    }
-                    }}
-                />
             </Pie>
             <ChartTooltip
                 content={({ active, payload }: any) => {

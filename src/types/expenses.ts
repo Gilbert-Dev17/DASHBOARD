@@ -15,4 +15,7 @@ export type CategorySummary = Pick<ExpenseCategory, 'name' | 'color' | 'icon'> &
   total?: number;
 };
 
+export type CategoryWithTotal = ExpenseCategory & { total_expense: number, currency: string }
+
+
 export type { Transaction };

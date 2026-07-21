@@ -10,26 +10,13 @@ import { formatCurrency } from '@/utils/currency';
 import { TransactionHistory } from '@/types/expenses';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
+  Accordion, AccordionContent, AccordionItem, AccordionTrigger,
 } from '@/components/ui/accordion';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
 import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationLink,
-  PaginationNext,
-  PaginationPrevious,
+  Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious,
 } from "@/components/ui/pagination"
 
 const LOG_FILTERS = [
@@ -186,7 +173,7 @@ export function ViewAllTransactions({ transactions }: ViewAllTransactionsProps) 
                         </span>
 
                         <span className="font-semibold tabular-nums text-foreground/90">
-                          {formatCurrency(group.total, 'USD')}
+                          {formatCurrency(group.total, group.transactions[0]?.wallets?.currency)}
                         </span>
                       </div>
                     </AccordionTrigger>
@@ -199,6 +186,7 @@ export function ViewAllTransactions({ transactions }: ViewAllTransactionsProps) 
                               <TableHead className="w-12.5"></TableHead>
                               <TableHead className="text-[10px] uppercase tracking-widest font-semibold">Description</TableHead>
                               <TableHead className="text-[10px] uppercase tracking-widest font-semibold">Category</TableHead>
+                              <TableHead className="text-[10px] uppercase tracking-widest font-semibold">Type</TableHead>
                               <TableHead className="text-[10px] uppercase tracking-widest font-semibold">Date</TableHead>
                               <TableHead className="text-[10px] uppercase tracking-widest font-semibold text-right">Amount</TableHead>
                             </TableRow>
@@ -218,13 +206,16 @@ export function ViewAllTransactions({ transactions }: ViewAllTransactionsProps) 
                                     {transaction.title}
                                   </TableCell>
                                   <TableCell className="text-xs uppercase tracking-wider text-muted-foreground">
-                                    {transaction.expense_categories?.name || transaction.type}
+                                    {transaction.expense_categories?.name}
+                                  </TableCell>
+                                  <TableCell className="text-xs uppercase tracking-wider text-muted-foreground">
+                                    {transaction.type}
                                   </TableCell>
                                   <TableCell className="text-xs font-mono text-muted-foreground">
                                     {dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                                   </TableCell>
                                   <TableCell className="text-right tabular-nums font-medium text-foreground/90">
-                                    {formatCurrency(transaction.amount, transaction.wallets?.currency || 'USD')}
+                                    {formatCurrency(transaction.amount, transaction.wallets?.currency)}
                                   </TableCell>
                                 </TableRow>
                               );
@@ -242,8 +233,8 @@ export function ViewAllTransactions({ transactions }: ViewAllTransactionsProps) 
                   <Pagination>
                     <PaginationContent>
                       <PaginationItem>
-                        <PaginationPrevious 
-                          href="#" 
+                        <PaginationPrevious
+                          href="#"
                           onClick={(e) => {
                             e.preventDefault();
                             setPage((p) => Math.max(1, p - 1));
@@ -251,7 +242,7 @@ export function ViewAllTransactions({ transactions }: ViewAllTransactionsProps) 
                           className={page === 1 ? "pointer-events-none opacity-50" : ""}
                         />
                       </PaginationItem>
-                      
+
                       <PaginationItem>
                         <span className="text-sm text-muted-foreground px-4">
                           Page {page} of {totalPages}
@@ -259,8 +250,8 @@ export function ViewAllTransactions({ transactions }: ViewAllTransactionsProps) 
                       </PaginationItem>
 
                       <PaginationItem>
-                        <PaginationNext 
-                          href="#" 
+                        <PaginationNext
+                          href="#"
                           onClick={(e) => {
                             e.preventDefault();
                             setPage((p) => Math.min(totalPages, p + 1));

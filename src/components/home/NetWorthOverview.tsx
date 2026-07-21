@@ -5,6 +5,7 @@ import { WalletSummary, WalletHistory } from '@/types/dashboard'
 import { formatCurrency, formatSignedCurrency } from '@/utils/currency'
 import { calculateFinancialTotals } from '@/utils/financial'
 import { AVAILABLE_ICONS } from '@/lib/constants/categories'
+import { Badge } from '../ui/badge'
 
 interface NetWorthProps {
   wallets: WalletSummary[];
@@ -29,12 +30,13 @@ export const NetWorthOverview = ({ wallets, historicalSnapshots = [] }: NetWorth
                 Net Worth ({currency})
               </h2>
               {trendPercentage !== null && (
-                <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-medium ${
+                <Badge
+                  className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-medium ${
                   trendPercentage >= 0 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'
                 }`}>
                   {trendPercentage >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
                   {trendPercentage > 0 ? '+' : ''}{trendPercentage}%
-                </div>
+                </Badge>
               )}
             </div>
             <div className="text-5xl md:text-6xl font-mono text-accent tracking-tighter tabular-nums flex items-baseline gap-1">
