@@ -1,10 +1,36 @@
+import { TransactionType } from "@/types/database";
+
+interface SignableTransaction {
+  amount: number; // always stored as a positive magnitude
+  transaction_type: TransactionType;
+  wallet_id: string;
+  to_wallet_id: string | null;
+}
+
+export const getSignedAmount = (
+  txn: SignableTransaction,
+  perspectiveWalletId: string
+): number => {
+  const magnitude = Math.abs(txn.amount);
+
+  switch (txn.transaction_type) {
+    case 'income':
+      return magnitude;
+    case 'expense':
+      return -magnitude;
+    case 'transfer':
+      return txn.wallet_id === perspectiveWalletId ? -magnitude : magnitude;
+    default:
+      return magnitude;
+  }
+};
+
 const LOCALE_MAP: Record<string, string> = {
   PHP: 'en-PH',
   USD: 'en-US',
   EUR: 'en-IE',
   GBP: 'en-GB',
   JPY: 'ja-JP',
-  // Fallback to en-US for others, or could use undefined for browser default
 }
 
 export const formatCurrency = (amount: number, currencyCode: string = 'PHP'): string => {

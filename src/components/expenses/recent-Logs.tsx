@@ -1,11 +1,9 @@
-import React from 'react'
-
 import Link from 'next/link'
 import { Button } from '../ui/button'
 import {
   Timeline, TimelineItem, TimelineTime, TimelineContent
  } from '@/components/ui/timeline'
- import { formatSignedCurrency } from '@/utils/currency'
+ import { formatSignedCurrency, getSignedAmount } from '@/utils/currency'
  import { TransactionHistory } from '@/types/expenses'
 
  interface RecentLogsSectionProps {
@@ -31,6 +29,19 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
         <Timeline>
           {transactions.map((txn) => {
             const dateObj = new Date(txn.created_for_date || new Date());
+            const signedAmount = getSignedAmount({
+              amount: Number(txn.amount),
+              transaction_type: txn.type,
+              wallet_id: txn.wallet_id,
+              to_wallet_id: (txn as any).to_wallet_id || null
+            }, txn.wallet_id)
+
+            const isPositive = signedAmount > 0;
+            const isTransfer = txn.type === 'transfer';
+
+            const colorClass = isTransfer ? 'text-muted-foreground' : isPositive
+            ? 'text-emerald-500' : 'text-rose-500';
+
             return (
               <TimelineItem key={txn.id || txn.created_for_date}>
                 <TimelineTime dateTime={txn.created_for_date || ''}>
@@ -41,8 +52,8 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
                   <div className="flex flex-col py-2 px-3 -ml-3 rounded-lg hover:bg-secondary/40 transition-colors">
                     <div className="flex justify-between items-start gap-4">
                       <span className="font-medium text-sm leading-tight text-foreground/90 group-hover:text-foreground">{txn.title}</span>
-                      <span className={`tabular-nums font-mono shrink-0 ${Number(txn.amount) > 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
-                        {formatSignedCurrency(Number(txn.amount), txn.wallets?.currency, true)}
+                      <span className={`tabular-nums font-mono shrink-0 ${colorClass}`}>
+                        {formatSignedCurrency(signedAmount, txn.wallets?.currency, !isTransfer)}
                       </span>
                     </div>
                     <span className="text-[10px] uppercase tracking-wider text-muted-foreground/80 mt-1 flex items-center gap-2">

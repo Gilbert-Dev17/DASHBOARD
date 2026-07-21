@@ -72,6 +72,8 @@ export interface WalletSnapshot {
     recorded_at: string; // Timestamp
 }
 
+export type TransactionType = 'income' | 'expense' | 'transfer';
+
 export interface Transaction {
     id: string; // UUID
     user_id: string; // UUID
@@ -79,7 +81,7 @@ export interface Transaction {
     category_id: string | null; // UUID
     title: string;
     amount: number;
-    type: 'income' | 'expense' | 'transfer';
+    type: TransactionType;
     transferFee: number;
     created_for_date: string; // YYYY-MM-DD
     created_at: string;
