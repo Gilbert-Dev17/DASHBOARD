@@ -4,6 +4,7 @@ import { AddCategoryModal } from '@/components/modals/add-category/AddCategoryMo
 import { TransactionHistory, CategorySummary } from '@/types/expenses'
 import { ExpenseCategory } from '@/types/database'
 import { formatCurrency } from '@/utils/currency'
+import { Badge } from '@/components/ui/badge'
 
 interface CategorySectionProps {
   transactions: TransactionHistory[];
@@ -44,7 +45,11 @@ export const CategorySection = ({ transactions, allCategories = [] }: CategorySe
 
       {chartCategories.length === 0 ? (
         <div className="bg-card/30 border rounded-xl p-6 flex flex-col items-center justify-center py-16 text-center">
-          <p className="text-sm text-muted-foreground mb-4">No current categories or expenses.</p>
+          <p className="text-sm text-muted-foreground mb-4">
+            {allCategories.length > 0
+              ? "No expenses yet for your categories."
+              : "No current categories or expenses."}
+          </p>
           <AddCategoryModal />
         </div>
       ) : (
@@ -71,6 +76,30 @@ export const CategorySection = ({ transactions, allCategories = [] }: CategorySe
             </tbody>
           </table>
         </>
+      )}
+
+   {/* Available Categories Section */}
+      {allCategories.length > 0 && (
+        <div className="mt-2 flex flex-col gap-3">
+          <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            Available Categories
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {allCategories.map(cat => (
+              <Badge
+                key={cat.id}
+                variant="outline"
+                className="gap-2 rounded-full bg-card/50 px-3 py-1.5 text-xs font-medium shadow-sm"
+              >
+                <div
+                  className="h-2 w-2 rounded-full"
+                  style={{ backgroundColor: cat.color || 'var(--muted)' }}
+                />
+                <span className="text-foreground/90">{cat.name}</span>
+              </Badge>
+            ))}
+          </div>
+        </div>
       )}
     </section>
   )

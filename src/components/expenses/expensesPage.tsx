@@ -39,7 +39,7 @@ export default function ExpenseTrackerPage({ wallets, transactions, historicalSn
           <CategorySection transactions={transactions} allCategories={allCategories} />
         </div>
 
-        <div className="lg:col-span-4 h-600 lg:h-auto">
+        <div className="lg:col-span-4">
           <RecentLogsSection transactions={transactions} />
         </div>
       </div>

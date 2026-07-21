@@ -35,30 +35,3 @@ export function useExpenseCategories() {
     }
   })
 }
-
-// import { WalletSummary } from '@/types/expenses'
-// import type { ExpenseCategory } from '@/types/database'
-// import { cacheTag } from 'next/cache'
-// import { getUser } from '@/lib/auth/get-user'
-// import { supabaseAdmin } from '@/lib/supabase/admin'
-
-// async function fetchWallets(userId: string) {
-//   'use cache'
-//   cacheTag(`wallets-${userId}`)
-
-//   const {data, error} = await supabaseAdmin.from('wallets')
-//   .select('*')
-//   .order('created_at', {ascending: true})
-
-//   if (error) throw error
-
-//   return data as WalletSummary[];
-// }
-
-// export async function useWallets() {
-//   const user = await getUser();
-
-//   if (!user) return { success: false, message: 'Not authenticated.' }
-
-//   return fetchWallets(user.id)
-// }
