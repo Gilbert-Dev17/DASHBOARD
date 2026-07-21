@@ -11,7 +11,13 @@ import { Separator } from '../ui/separator'
 import { Label } from '../ui/label'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
-const Sidebar = () => {
+import type { UserSummary } from '@/types/dashboard'
+
+interface SidebarProps {
+  user?: UserSummary | null;
+}
+
+const Sidebar = ({ user }: SidebarProps) => {
   const pathname = usePathname();
   const activeQuickAdds = getActiveQuickAdds(pathname);
   const { resolvedTheme, setTheme } = useTheme();
@@ -24,6 +30,12 @@ const Sidebar = () => {
     { icon: CheckSquare, label: 'Schedule', point: '/schedule' },
     { icon: PiggyBank, label: 'Finance', point: '/finance' }
   ];
+
+  const initials = user?.first_name
+    ? user.first_name.charAt(0).toUpperCase()
+    : user?.email?.charAt(0).toUpperCase() || 'U';
+
+  const displayName = user?.first_name || user?.name?.split(' ')[0] || 'User';
 
   return (
     <aside className="fixed left-5 md:left-5 top-1/2 -translate-y-1/2 z-40">
@@ -96,14 +108,14 @@ const Sidebar = () => {
         >
           <Link href="/profile" className="flex items-center">
             <div className="w-12 h-12 flex items-center justify-center shrink-0">
-              <Avatar className="h-7 w-7">
-                <AvatarImage alt="Profile" className="object-cover" />
-                <AvatarFallback className="text-[10px]">PR</AvatarFallback>
+              <Avatar className="h-12 w-12">
+                <AvatarImage src={user?.avatar_url || undefined} alt="Profile" className="object-cover" />
+                <AvatarFallback className="text-sm font-light text-muted-foreground">{initials}</AvatarFallback>
               </Avatar>
             </div>
             <div className="flex items-center overflow-hidden transition-all duration-300 w-0 opacity-0 group-hover:w-full group-hover:opacity-100">
               <span className="text-sm font-medium tracking-wide whitespace-nowrap">
-                Gilbert
+                {displayName}
               </span>
             </div>
           </Link>

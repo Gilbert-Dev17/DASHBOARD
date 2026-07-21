@@ -119,7 +119,7 @@ export const TransferForm = () => {
                     {isWalletsPending ? (
                       <SelectItem disabled value="loading">Loading...</SelectItem>
                     ) : wallets.length === 0 ? (
-                      <SelectItem disabled value="empty">No wallets found</SelectItem>
+                      <SelectItem value="empty">No wallets found</SelectItem>
                     ) : (
                       wallets.map((wallet) => (
                         <SelectItem
@@ -156,7 +156,7 @@ export const TransferForm = () => {
                     {isWalletsPending ? (
                       <SelectItem disabled value="loading">Loading...</SelectItem>
                     ) : wallets.length === 0 ? (
-                      <SelectItem disabled value="empty">No wallets found</SelectItem>
+                      <SelectItem value="empty">No wallets found</SelectItem>
                     ) : (
                       wallets.map((wallet) => (
                         <SelectItem
