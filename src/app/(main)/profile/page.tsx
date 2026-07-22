@@ -39,7 +39,7 @@ export default async function ProfilePage() {
 
         {/* RIGHT COLUMN: Preferences */}
         <aside className="lg:col-span-5 space-y-16 mt-8 lg:mt-0">
-          <ProfileSettings email={user.email} />
+          <ProfileSettings user={user} />
         </aside>
 
       </div>

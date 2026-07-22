@@ -21,40 +21,45 @@ export async function addTransferAction(data: {
   // a standard way to represent a transfer is to create two records:
   // one for the money leaving the source, and one for the money entering the destination.
 
-  const { error } = await supabase
-    .from('transactions')
-    .insert([
-      {
-        user_id: user.id,
-        wallet_id: data.fromAccountId,
-        category_id: null,
-        title: data.note || 'Transfer Out',
-        amount: -(data.amount + fee), // Subtract amount + fee from source
-        type: 'transfer',
-        transferFee: fee,
-        created_for_date: new Date().toISOString().split('T')[0]
-      },
-      {
-        user_id: user.id,
-        wallet_id: data.toAccountId,
-        category_id: null,
-        title: data.note || 'Transfer In',
-        amount: data.amount, // Add amount to destination
-        type: 'transfer',
-        transferFee: 0,
-        created_for_date: new Date().toISOString().split('T')[0]
-      }
-    ])
+  try {
+    const { error } = await supabase
+      .from('transactions')
+      .insert([
+        {
+          user_id: user.id,
+          wallet_id: data.fromAccountId,
+          category_id: null,
+          title: data.note || 'Transfer Out',
+          amount: -(data.amount + fee), // Subtract amount + fee from source
+          type: 'transfer',
+          transferFee: fee,
+          created_for_date: new Date().toISOString().split('T')[0]
+        },
+        {
+          user_id: user.id,
+          wallet_id: data.toAccountId,
+          category_id: null,
+          title: data.note || 'Transfer In',
+          amount: data.amount, // Add amount to destination
+          type: 'transfer',
+          transferFee: 0,
+          created_for_date: new Date().toISOString().split('T')[0]
+        }
+      ])
 
-  if (error) {
-    console.error('Error inserting transfer:', error)
-    return { success: false, error: error.message }
+    if (error) {
+      console.error('Error inserting transfer:', error)
+      return { success: false, error: error.message }
+    }
+
+    // Revalidate Server Cache
+    updateTag(`wallets-${user.id}`)
+    updateTag(`transactions-${user.id}`)
+    updateTag(`snapshots-${user.id}`)
+
+    return { success: true }
+  } catch (error: any) {
+    console.error('Unexpected error in addTransferAction:', error)
+    return { success: false, error: error.message || 'An unexpected error occurred' }
   }
-
-  // Revalidate Server Cache
-  updateTag(`wallets-${user.id}`)
-  updateTag(`transactions-${user.id}`)
-  updateTag(`snapshots-${user.id}`)
-
-  return { success: true }
 }
