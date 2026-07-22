@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { TrendingUp, TrendingDown } from 'lucide-react';
+import { TrendingUp, TrendingDown, ArrowDownCircle, ArrowUpCircle } from 'lucide-react';
 import { WalletHistory, WalletSummary, TransactionHistory } from '@/types/expenses';
 import { formatCurrency, formatSignedCurrency } from '@/utils/currency';
 import { calculateFinancialTotals } from '@/utils/financial';
@@ -9,6 +9,7 @@ import { Card, CardTitle, CardContent, CardFooter } from '../ui/card';
 import { Bar, BarChart, XAxis, YAxis } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 import { buildNetWorthTrend, getTrendDirection, TREND_COLORS } from '@/lib/finance/net-worth-trend';
+import { Separator } from '../ui/separator';
 
 interface SummaryExpenseProps {
   wallets: WalletSummary[];
@@ -141,5 +142,56 @@ export const SummaryExpense = ({
         );
       })}
     </React.Fragment>
+  );
+};
+
+export const IncomeExpenseCard = ({ transactions, currency }: { transactions: TransactionHistory[], currency: string }) => {
+  const { income, expense } = useMemo(() => {
+    return transactions.reduce(
+      (acc, t) => {
+        if (t.type === 'income') acc.income += t.amount;
+        if (t.type === 'expense') acc.expense += t.amount;
+        return acc;
+      },
+      { income: 0, expense: 0 }
+    );
+  }, [transactions]);
+
+  const [incDollars, incCents] = formatCurrency(income, currency).split('.');
+  const [expDollars, expCents] = formatCurrency(expense, currency).split('.');
+
+  return (
+    <Card className="flex flex-col shrink-0 bg-card shadow-vercel text-card-foreground">
+      <CardContent className="flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full bg-emerald-500/10 flex items-center justify-center shrink-0">
+              <ArrowUpCircle className="w-3.5 h-3.5 text-emerald-500" />
+            </div>
+            <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Income</p>
+          </div>
+
+          <div className="text-xl md:text-2xl font-mono font-medium text-foreground tracking-tight">
+            {incDollars}
+            {incCents && <span className="text-sm text-muted-foreground">.{incCents}</span>}
+          </div>
+        </div>
+
+        <Separator className=" w-[calc(100%+32px)]" />
+
+        <div className="flex flex-col gap-2">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full bg-rose-500/10 flex items-center justify-center shrink-0">
+              <ArrowDownCircle className="w-3.5 h-3.5 text-rose-500" />
+            </div>
+            <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Expenses</p>
+          </div>
+          <div className="text-xl md:text-2xl font-mono font-medium text-foreground tracking-tight">
+            {expDollars}
+            {expCents && <span className="text-sm text-muted-foreground">.{expCents}</span>}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
