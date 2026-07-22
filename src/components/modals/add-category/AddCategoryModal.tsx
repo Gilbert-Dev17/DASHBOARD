@@ -7,6 +7,7 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
+  DialogDescription,
 } from '@/components/ui/dialog'
 import { FieldError, FieldGroup, FieldLabel, Field } from "@/components/ui/field"
 import { Input } from '@/components/ui/input'
@@ -82,12 +83,17 @@ export const AddCategoryModal = () => {
 
       <DialogContent className="sm:max-w-md">
         <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogHeader className='py-2'>
-            <DialogTitle>New Category</DialogTitle>
+          <DialogHeader>
+            <DialogTitle className="font-bold">
+              Add Category
+            </DialogTitle>
+            <DialogDescription>
+              Create a new category to organize your transactions.
+            </DialogDescription>
           </DialogHeader>
 
           {/* Live Preview Card */}
-          <div className="flex items-center gap-4 p-4 rounded-xl border border-border/50 bg-secondary/20 backdrop-blur-sm shadow-sm transition-all duration-300">
+          <div className="mt-2 flex items-center gap-4 p-4 rounded-xl border border-border/50 bg-secondary/20 backdrop-blur-sm shadow-sm transition-all duration-300">
             <div
               className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full shadow-inner transition-colors duration-500"
               style={{ backgroundColor: `${currentColor}20`, color: currentColor }}

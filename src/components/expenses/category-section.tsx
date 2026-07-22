@@ -49,7 +49,7 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
           <CardTitle id="categories-heading" className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Categories</CardTitle>
           <AddCategoryModal />
         </CardHeader>
-        <CardContent className={`p-6 ${allCategories.length > 0 ? 'grid grid-cols-1 xl:grid-cols-2 gap-8 items-center min-h-75' : 'flex flex-col items-center justify-center py-16 text-center'}`}>
+        <CardContent className={`p-6 ${allCategories.length > 0 ? 'grid grid-cols-1 xl:grid-cols-2 items-center min-h-75 py-0' : 'flex flex-col items-center justify-center py-16 text-center'}`}>
           {/* Chart or Empty State on the Left */}
           <div className={allCategories.length > 0 ? 'flex justify-center items-center w-full' : 'flex flex-col items-center justify-center text-center w-full'}>
             {chartCategories.length > 0 ? (
@@ -129,11 +129,15 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
             </div>
           )}
         </CardContent>
-          <Link href='/finance/viewAllCategories' className='flex flex-row justify-end px-6'>
-            <Button variant={'link'} className="group px-0 text-muted-foreground hover:text-foreground flex items-center gap-1">
+        {allCategories.length > 0 &&
+          <div className='flex flex-row justify-end px-6'>
+            <Button asChild variant={'link'} className="group px-0 text-muted-foreground hover:text-foreground flex items-center gap-1">
+              <Link href='/finance/viewAllCategories'>
                 View All Categories <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
+              </Link>
             </Button>
-          </Link>
+          </div>
+        }
       </Card>
   )
 }

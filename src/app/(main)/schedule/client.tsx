@@ -10,7 +10,7 @@ import { TaskWithSubtasks } from '@/types/dashboard'
 import { getTodayInTimezone } from '@/utils/timezone'
 import { useRouter } from 'next/navigation'
 
-import { Spinner } from '../ui/spinner'
+import { Spinner } from '@/components/ui/spinner'
 
 interface PageProps {
   agendaTitle: string

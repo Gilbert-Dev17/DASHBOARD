@@ -5,6 +5,7 @@ import Link from 'next/link';
 
 import { ArrowLeft, Filter, CreditCard } from 'lucide-react';
 import PageComponent from '@/components/shared/PageComponent';
+import { HeaderTitle } from '@/components/shared/HeaderTitle';
 import { Button } from '@/components/ui/button';
 import { formatCurrency } from '@/utils/currency';
 import { TransactionHistory } from '@/types/expenses';
@@ -36,11 +37,14 @@ function getWeekKey(date: Date) {
   })}`;
 }
 
+import { useRouter } from 'next/navigation';
+
 interface ViewAllTransactionsProps {
   transactions: TransactionHistory[];
 }
 
 export function ViewAllTransactions({ transactions }: ViewAllTransactionsProps) {
+  const router = useRouter();
   const [selectedFilter, setSelectedFilter] = useState('day');
   const [page, setPage] = useState(1);
   const itemsPerPage = 30;
@@ -78,7 +82,9 @@ export function ViewAllTransactions({ transactions }: ViewAllTransactionsProps) 
           break;
 
         case 'year':
-          key = date.getFullYear().toString();
+          key = date.toLocaleDateString('en-US', {
+            year: 'numeric',
+          });
           break;
 
         default:
@@ -111,15 +117,16 @@ export function ViewAllTransactions({ transactions }: ViewAllTransactionsProps) 
         {/* HEADER */}
         <header className="flex flex-col md:flex-row md:items-end justify-between items-start gap-6 mb-12">
           <div className="flex flex-col gap-2">
-            <Link href="/finance" className="mb-2">
-              <Button variant="ghost" size="sm" className="h-8 px-2 text-muted-foreground hover:text-foreground">
-                <ArrowLeft size={14} className="mr-2" />
-                Back to Expenses
-              </Button>
-            </Link>
-            <h1 className="text-3xl font-light tracking-tight">
-              All Transactions
-            </h1>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="group h-8 px-2 text-muted-foreground hover:text-foreground mb-2 w-fit"
+              onClick={() => router.back()}
+            >
+              <ArrowLeft size={14} className="mr-2 transition-transform duration-300 group-hover:-translate-x-1" />
+              Back
+            </Button>
+            <HeaderTitle title="All Transactions" desc="View and filter all your past logs and transactions." />
           </div>
 
           <nav aria-label="Time period filter">

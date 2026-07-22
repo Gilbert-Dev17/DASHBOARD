@@ -73,11 +73,12 @@ export function WalletGrid({ wallets, isLoading = false }: WalletGridProps) {
                   <CarouselNext className="static translate-y-0 my-0" />
                 </div>
 
-              <Link href='/finance/viewAllAccounts'>
-                <Button variant={'link'} className="group px-0 text-muted-foreground hover:text-foreground flex items-center gap-1">
-                    View All Wallets <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
+                <Button asChild variant={'link'} className="group px-0 flex flex-row text-muted-foreground hover:text-foreground items-center gap-1"
+                  >
+                    <Link href='/finance/viewAllAccounts'>
+                      View All Wallets <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
+                    </Link>
                 </Button>
-              </Link>
             </div>
           </Carousel>
         </CardContent>

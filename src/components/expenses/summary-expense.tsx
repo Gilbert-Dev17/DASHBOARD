@@ -63,28 +63,14 @@ export const SummaryExpense = ({
             <Card className="w-full">
               <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
                 <div className="flex flex-col gap-4">
-                <div>
-                  <CardTitle
-                    id={`finances-heading-${currency}`}
-                    className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground"
-                  >
-                    <div className="flex flex-row items-center gap-4">
+                  <div>
+                    <CardTitle
+                      id={`finances-heading-${currency}`}
+                      className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground"
+                    >
                       Net Worth ({currency})
-                      {trendPercentage !== null && (
-                        <Badge
-                          className="flex items-center px-3 py-1 rounded-full text-[10px] font-medium"
-                          style={{ backgroundColor: `${trendColor}1A`, color: trendColor }}
-                        >
-                          {direction === 'up' && <TrendingUp size={12} />}
-                          {direction === 'down' && <TrendingDown size={12} />}
-                          {direction === 'flat' && <Minus size={12} />}
-                          {trendPercentage > 0 ? '+' : ''}
-                          {trendPercentage}%
-                        </Badge>
-                      )}
-                    </div>
-                  </CardTitle>
-                </div>
+                    </CardTitle>
+                  </div>
 
                   <div
                     className={`text-5xl md:text-6xl font-mono tracking-tighter tabular-nums flex items-baseline gap-1 ${
@@ -95,14 +81,28 @@ export const SummaryExpense = ({
                     {nwCents && <span className="text-2xl md:text-3xl text-muted-foreground">.{nwCents}</span>}
                   </div>
 
-                  <p className="text-xs lg:text-sm text-muted-foreground font-medium max-w-sm">
-                    {trendPercentage === null
-                      ? 'Waiting for 30 days of data to calculate your first trend.'
-                      : direction === 'flat'
-                        ? "No change from last month's snapshots."
-                        : direction === 'up'
-                          ? `Up ${trendPercentage}% from last month's snapshots.`
-                          : `Down ${Math.abs(trendPercentage)}% from last month's snapshots.`}
+                  <p className="text-xs lg:text-sm text-muted-foreground font-medium max-w-sm leading-relaxed">
+                    {trendPercentage === null ? (
+                      'Waiting for 30 days of data to calculate your first trend.'
+                    ) : direction === 'flat' ? (
+                      "No change from last month's snapshots."
+                    ) : direction === 'up' ? (
+                      <span className="inline-flex items-center flex-wrap gap-x-1.5">
+                        Up
+                        <span className="flex items-center gap-1.5 text-[10px] font-medium text-emerald-500">
+                          <TrendingUp size={12} /> {trendPercentage}%
+                        </span>
+                        from last month's snapshots.
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center flex-wrap gap-x-1.5">
+                        Down
+                        <span className="flex items-center gap-1.5 text-[10px] font-medium text-rose-500">
+                          <TrendingDown size={12} /> {Math.abs(trendPercentage)}%
+                        </span>
+                        from last month's snapshots.
+                      </span>
+                    )}
                   </p>
                 </div>
 

@@ -1,7 +1,7 @@
 import { getTodayInTimezone } from '@/utils/timezone'
 import { startOfMonth, endOfMonth, parseISO, format } from 'date-fns'
 
-import { PlannerPage } from "@/components/planner/plannerPage"
+import { PlannerPage } from "./client"
 import { getTasksByDate, getMonthTasksSummary } from "./action"
 import { getUser } from "@/lib/auth/get-user";
 import { redirect } from "next/navigation";

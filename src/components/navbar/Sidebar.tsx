@@ -8,7 +8,6 @@ import { Home, CheckSquare, PiggyBank, Sun, Moon } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { getActiveQuickAdds } from './quick-add-registry'
 import { Separator } from '../ui/separator'
-import { Label } from '../ui/label'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 import type { UserSummary } from '@/types/dashboard'

@@ -5,9 +5,9 @@ import dynamic from 'next/dynamic'
 import PageComponent from '@/components/shared/PageComponent'
 import { TaskWithSubtasks, UserSummary, WalletSummary } from '@/types/dashboard'
 import { WalletSnapshot } from '@/types/database'
-import { GreetingHeader } from './greetingHeader'
+import { GreetingHeader } from '@/components/home/greetingHeader'
 import { AgendaSection } from '@/components/shared/AgendaSection'
-import { NetWorthOverview } from './NetWorthOverview'
+import { NetWorthOverview } from '@/components/home/NetWorthOverview'
 
 import { useDashboard } from '@/hooks/useDashboard'
 import { Skeleton } from "@/components/ui/skeleton"

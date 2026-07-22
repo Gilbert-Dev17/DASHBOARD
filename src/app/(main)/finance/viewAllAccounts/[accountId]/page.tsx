@@ -1,5 +1,5 @@
-import { AccountStatement } from './client';
-import { getWalletId } from './action';
+import { AccountStatement } from '../../accounts/[accountId]/client';
+import { getWalletId } from '../../accounts/[accountId]/action';
 import { getUser } from '@/lib/auth/get-user';
 import { redirect } from 'next/navigation';
 

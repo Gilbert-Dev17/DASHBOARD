@@ -26,6 +26,7 @@ import { DeleteWalletModal } from '@/components/modals/delete-wallet/DeleteWalle
 import PageComponent from '@/components/shared/PageComponent';
 import { Wallets, TransactionHistory } from '@/types/expenses';
 import { getSignedAmount } from '@/utils/currency';
+import { useRouter } from 'next/navigation';
 
 interface AccountStatementProps {
   accountData: (Wallets & { transactions: TransactionHistory[] }) | null
@@ -39,6 +40,7 @@ export function AccountStatement({accountData} : AccountStatementProps) {
   const itemsPerPage = 30;
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (accountData?.id) {
@@ -51,9 +53,7 @@ export function AccountStatement({accountData} : AccountStatementProps) {
       <div className="flex flex-col items-center justify-center min-h-[50vh] text-center">
         <h2 className="text-2xl font-semibold mb-2">Account Not Found</h2>
         <p className="text-muted-foreground mb-6">We couldn't find the account you're looking for.</p>
-        <Link href="/finance">
-          <Button variant="outline">Back to Expenses</Button>
-        </Link>
+        <Button variant="outline" onClick={() => router.back()}>Back</Button>
       </div>
     );
   }
@@ -69,16 +69,21 @@ export function AccountStatement({accountData} : AccountStatementProps) {
 
   return (
     <PageComponent>
+
     <div className=" mx-auto w-full pt-6">
       {/* HEADER */}
       <header className="flex flex-col gap-6 mb-12">
         <div className="flex justify-between items-center w-full">
-          <Link href="/finance" className="w-fit">
-            <Button variant="ghost" size="sm" className="h-8 px-2 text-muted-foreground hover:text-foreground">
-              <ArrowLeft size={14} className="mr-2" />
-              Back to Expenses
-            </Button>
-          </Link>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 px-2 text-muted-foreground hover:text-foreground w-fit"
+            onClick={() => router.back()}
+          >
+            <ArrowLeft size={14} className="mr-2" />
+            Back
+          </Button>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>

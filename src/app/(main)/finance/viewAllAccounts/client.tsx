@@ -6,27 +6,33 @@ import { Button } from '@/components/ui/button'
 import { WalletCard } from '@/components/expenses/wallet-Card'
 import { type Wallets, TransactionHistory } from '@/types/expenses'
 import Link from 'next/link'
+import { HeaderTitle } from '@/components/shared/HeaderTitle'
+import { useRouter } from 'next/navigation'
 
 interface ViewAllAccountsClientProps {
   wallets: (Wallets & { transactions: TransactionHistory[] })[]
 }
 
 export function ViewAllAccountsClient({ wallets }: ViewAllAccountsClientProps) {
+
+  const router = useRouter();
+
   return (
     <PageComponent>
       <section className='mt-5'>
         {/* HEADER */}
         <header className="flex flex-col md:flex-row md:items-end justify-between items-start gap-6 mb-12">
           <div className="flex flex-col gap-2">
-            <Link href="/finance" className="mb-2">
-              <Button variant="ghost" size="sm" className="h-8 px-2 text-muted-foreground hover:text-foreground">
-                <ArrowLeft size={14} className="mr-2" />
-                Back to Finance
-              </Button>
-            </Link>
-            <h1 className="text-3xl font-light tracking-tight">
-              All Wallets
-            </h1>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="group h-8 px-2 text-muted-foreground hover:text-foreground mb-2 w-fit"
+              onClick={() => router.back()}
+            >
+              <ArrowLeft size={14} className="mr-2 transition-transform duration-300 group-hover:-translate-x-1" />
+              Back
+            </Button>
+            <HeaderTitle title="All Wallets" desc="Manage and view all your active wallets." />
           </div>
         </header>
 

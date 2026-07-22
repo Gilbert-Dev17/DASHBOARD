@@ -1,4 +1,4 @@
-import { ViewAllTransactions } from '@/components/expenses/view-All/viewAllTransactions';
+import { ViewAllTransactions } from './client';
 import { getAllTransaction } from './action';
 import { getUser } from '@/lib/auth/get-user';
 import { redirect } from 'next/navigation';

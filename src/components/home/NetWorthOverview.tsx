@@ -29,26 +29,31 @@ export const NetWorthOverview = ({ wallets, historicalSnapshots = [] }: NetWorth
               <h2 id={`finances-heading-${currency}`} className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground">
                 Net Worth ({currency})
               </h2>
-              {trendPercentage !== null && (
-                <Badge
-                  className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-medium ${
-                  trendPercentage >= 0 ? 'bg-emerald-500/10 text-emerald-500' : 'bg-rose-500/10 text-rose-500'
-                }`}>
-                  {trendPercentage >= 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                  {trendPercentage > 0 ? '+' : ''}{trendPercentage}%
-                </Badge>
-              )}
             </div>
             <div className="text-5xl md:text-6xl font-mono text-accent tracking-tighter tabular-nums flex items-baseline gap-1">
               {nwDollars}
               {nwCents && <span className="text-2xl md:text-3xl text-muted-foreground">.{nwCents}</span>}
             </div>
-            <p className="text-xs lg:text-sm text-muted-foreground font-medium max-w-sm">
-              {trendPercentage === null
-                ? "Waiting for 30 days of data to calculate your first trend."
-                : trendPercentage >= 0
-                  ? `Up ${trendPercentage}% from last month's snapshots.`
-                  : `Down ${Math.abs(trendPercentage)}% from last month's snapshots.`}
+            <p className="text-xs lg:text-sm text-muted-foreground font-medium max-w-sm leading-relaxed">
+              {trendPercentage === null ? (
+                "Waiting for 30 days of data to calculate your first trend."
+              ) : trendPercentage >= 0 ? (
+                <span className="inline-flex items-center flex-wrap gap-x-1.5">
+                  Up
+                  <span className="flex items-center gap-1.5 text-[10px] font-medium text-emerald-500 ">
+                    <TrendingUp size={12} /> {trendPercentage}%
+                  </span>
+                  from last month's snapshots.
+                </span>
+              ) : (
+                <span className="inline-flex items-center flex-wrap gap-x-1.5">
+                  Down
+                  <Badge variant="secondary" className="flex items-center gap-1.5 text-[10px] font-medium text-rose-500">
+                    <TrendingDown size={12} /> {Math.abs(trendPercentage)}%
+                  </Badge>
+                  from last month's snapshots.
+                </span>
+              )}
             </p>
           </section>
         );
