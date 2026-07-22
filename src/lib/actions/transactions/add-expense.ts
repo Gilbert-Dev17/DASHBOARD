@@ -34,7 +34,6 @@ export async function addExpenseAction(data: {
     return { success: false, error: error.message }
   }
 
-  // Revalidate Server Cache
   updateTag(`wallets-${user.id}`)
   updateTag(`categories-${user.id}`)
   updateTag(`transactions-${user.id}`)

@@ -14,14 +14,14 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
   return (
     <section className="flex flex-col h-full" aria-labelledby="logs-heading">
       <header className="flex flex-row justify-between items-center pb-4 mb-2 shrink-0">
-        <h2 id="logs-heading" className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Recent Logs</h2>
+        <h2 id="logs-heading" className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Recent Transactions</h2>
         <Button variant="ghost" size="sm" className="text-[10px] uppercase tracking-wider h-8" asChild>
           <Link href="/finance/viewAll">View History</Link>
         </Button>
       </header>
       {transactions.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center py-16 text-muted-foreground text-sm">
-          No recent logs yet.
+          No recent Transactions yet.
         </div>
       ) : (
         <div className="flex-1 min-h-0 max-h-100 pr-4 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">

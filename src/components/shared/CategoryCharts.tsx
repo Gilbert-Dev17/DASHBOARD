@@ -25,9 +25,10 @@ const parseCategoryTotal = (total: string | number) => {
 
 interface ChartPieDonutTextProps {
   categories: CategorySummary[];
+  currency: string;
 }
 
-export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
+export function ChartPieDonutText({ categories, currency }: ChartPieDonutTextProps) {
   const chartData = React.useMemo(
     () =>
       categories.map((category, index) => ({
@@ -94,7 +95,7 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
                                 <span className="text-xs font-medium text-foreground">{data.category}</span>
                             </div>
                             <span className="text-sm font-mono font-bold text-foreground">
-                                {formatCurrency(data.amount || 0, 'PHP')}
+                                {formatCurrency(data.amount || 0, currency)}
                             </span>
                         </div>
                         )

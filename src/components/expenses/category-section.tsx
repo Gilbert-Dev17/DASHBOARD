@@ -50,13 +50,12 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
           <AddCategoryModal />
         </CardHeader>
         <CardContent className={`p-6 ${allCategories.length > 0 ? 'grid grid-cols-1 xl:grid-cols-2 items-center min-h-75 py-0' : 'flex flex-col items-center justify-center py-16 text-center'}`}>
-          {/* Chart or Empty State on the Left */}
+
           <div className={allCategories.length > 0 ? 'flex justify-center items-center w-full' : 'flex flex-col items-center justify-center text-center w-full'}>
             {chartCategories.length > 0 ? (
               <div aria-hidden="true" className="w-full max-w-sm">
-                <ChartPieDonutText categories={chartCategories} />
+                <ChartPieDonutText categories={chartCategories} currency={currency} />
 
-                {/* Screen reader only table for accessibility */}
                 <table className="sr-only">
                   <caption>Category Breakdown</caption>
                   <thead>
@@ -87,10 +86,10 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
             )}
           </div>
 
-          {/* Data on the Right */}
+
           {allCategories.length > 0 && (
             <div className="flex flex-col gap-10">
-              {/* Total Amount */}
+
               {chartCategories.length > 0 && (
                 <div className="flex flex-col gap-2">
                   <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
@@ -103,7 +102,7 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
                 </div>
               )}
 
-              {/* Available Categories */}
+
               <div className="flex flex-col gap-4">
                 <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                   Available Categories

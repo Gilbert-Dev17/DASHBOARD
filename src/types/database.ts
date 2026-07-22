@@ -9,6 +9,7 @@ export interface User {
     avatar_url?: string;
     status: string; // e.g. 'on_boarding'
     created_at: string;
+    activeCurrency: string;
 }
 
 export interface TaskCategory {

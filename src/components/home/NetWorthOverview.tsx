@@ -36,7 +36,7 @@ export const NetWorthOverview = ({ wallets, historicalSnapshots = [] }: NetWorth
             </div>
             <p className="text-xs lg:text-sm text-muted-foreground font-medium max-w-sm leading-relaxed">
               {trendPercentage === null ? (
-                "Waiting for 30 days of data to calculate your first trend."
+                "Waiting for a day of data to calculate your first trend."
               ) : trendPercentage >= 0 ? (
                 <span className="inline-flex items-center flex-wrap gap-x-1.5">
                   Up

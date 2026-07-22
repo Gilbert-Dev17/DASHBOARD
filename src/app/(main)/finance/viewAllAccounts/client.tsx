@@ -44,11 +44,27 @@ export function ViewAllAccountsClient({ wallets }: ViewAllAccountsClientProps) {
             <p className="text-sm text-muted-foreground">You haven't added any wallets yet.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {wallets.map((wallet) => (
-              <Link key={wallet.id} href={`/finance/viewAllAccounts/${wallet.id}`}>
-                <WalletCard key={wallet.id} wallet={wallet as any} />
-              </Link>
+          <div className="flex flex-col gap-12">
+            {Object.entries(
+              wallets.reduce((acc, wallet) => {
+                const currency = wallet.currency || 'PHP';
+                if (!acc[currency]) acc[currency] = [];
+                acc[currency].push(wallet);
+                return acc;
+              }, {} as Record<string, typeof wallets>)
+            ).map(([currency, currencyWallets]) => (
+              <div key={currency} className="space-y-4">
+                <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground border-b border-border/50 pb-2">
+                  {currency} Wallets
+                </h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                  {currencyWallets.map((wallet) => (
+                    <Link key={wallet.id} href={`/finance/viewAllAccounts/${wallet.id}`}>
+                      <WalletCard key={wallet.id} wallet={wallet as any} />
+                    </Link>
+                  ))}
+                </div>
+              </div>
             ))}
           </div>
         )}

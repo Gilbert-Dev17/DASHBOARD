@@ -67,18 +67,15 @@ export function WalletGrid({ wallets, isLoading = false }: WalletGridProps) {
               ))}
             </CarouselContent>
             <div className='flex flex-row justify-between items-center mt-6'>
-               {/* {wallets.length > 2 && ( */}
-                <div className="hidden sm:flex gap-2">
-                  <CarouselPrevious className="static translate-y-0 my-0" />
-                  <CarouselNext className="static translate-y-0 my-0" />
-                </div>
-
-                <Button asChild variant={'link'} className="group px-0 flex flex-row text-muted-foreground hover:text-foreground items-center gap-1"
-                  >
-                    <Link href='/finance/viewAllAccounts'>
-                      View All Wallets <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
-                    </Link>
-                </Button>
+              <div className="hidden sm:flex gap-2">
+                <CarouselPrevious className="static translate-y-0 my-0" />
+                <CarouselNext className="static translate-y-0 my-0" />
+              </div>
+              <Button asChild variant={'link'} className="group px-0 flex flex-row text-muted-foreground hover:text-foreground items-center gap-1">
+                <Link href='/finance/viewAllAccounts'>
+                  View All Wallets <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
+                </Link>
+              </Button>
             </div>
           </Carousel>
         </CardContent>

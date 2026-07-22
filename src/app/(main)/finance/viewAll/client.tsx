@@ -7,7 +7,7 @@ import { ArrowLeft, Filter, CreditCard } from 'lucide-react';
 import PageComponent from '@/components/shared/PageComponent';
 import { HeaderTitle } from '@/components/shared/HeaderTitle';
 import { Button } from '@/components/ui/button';
-import { formatCurrency } from '@/utils/currency';
+import { formatCurrency, getSignedAmount, formatSignedCurrency } from '@/utils/currency';
 import { TransactionHistory } from '@/types/expenses';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import {
@@ -38,25 +38,32 @@ function getWeekKey(date: Date) {
 }
 
 import { useRouter } from 'next/navigation';
+import { CurrencySwitcher } from '@/components/shared/CurrencySwitcher';
+import { WalletSummary, UserSummary } from '@/types/dashboard';
+import { useCurrencyFilter } from '@/hooks/useCurrencyFilter';
 
 interface ViewAllTransactionsProps {
   transactions: TransactionHistory[];
+  wallets: WalletSummary[];
+  user?: UserSummary;
 }
 
-export function ViewAllTransactions({ transactions }: ViewAllTransactionsProps) {
+export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTransactionsProps) {
   const router = useRouter();
   const [selectedFilter, setSelectedFilter] = useState('day');
   const [page, setPage] = useState(1);
   const itemsPerPage = 30;
 
+  const { availableCurrencies, activeCurrency, setActiveCurrency, filteredTransactions } = useCurrencyFilter({ wallets, user, transactions });
+
   useEffect(() => {
     setPage(1);
-  }, [selectedFilter]);
+  }, [selectedFilter, activeCurrency]);
 
   const groupedTransactions = useMemo(() => {
     const groups: Record<string, TransactionHistory[]> = {};
 
-    transactions.forEach((transaction) => {
+    filteredTransactions.forEach((transaction) => {
       const date = new Date(transaction.created_for_date || transaction.created_at);
 
       let key = '';
@@ -101,12 +108,17 @@ export function ViewAllTransactions({ transactions }: ViewAllTransactionsProps) 
     return Object.entries(groups).map(([label, transactions]) => ({
       label,
       total: transactions.reduce(
-        (sum, transaction) => sum + transaction.amount,
+        (sum, transaction) => sum + getSignedAmount({
+          amount: Number(transaction.amount),
+          transaction_type: transaction.type,
+          wallet_id: transaction.wallet_id,
+          to_wallet_id: (transaction as any).to_wallet_id || null
+        }, transaction.wallet_id),
         0
       ),
       transactions,
     }));
-  }, [selectedFilter]);
+  }, [selectedFilter, activeCurrency]);
 
   const totalPages = Math.ceil(groupedTransactions.length / itemsPerPage);
   const paginatedGroups = groupedTransactions.slice((page - 1) * itemsPerPage, page * itemsPerPage);
@@ -129,7 +141,12 @@ export function ViewAllTransactions({ transactions }: ViewAllTransactionsProps) 
             <HeaderTitle title="All Transactions" desc="View and filter all your past logs and transactions." />
           </div>
 
-          <nav aria-label="Time period filter">
+          <nav aria-label="Time period filter" className="flex flex-col sm:flex-row items-center gap-4">
+            <CurrencySwitcher 
+              currencies={availableCurrencies} 
+              activeCurrency={activeCurrency} 
+              onCurrencyChange={setActiveCurrency} 
+            />
             <Tabs
               value={selectedFilter}
               onValueChange={setSelectedFilter}
@@ -179,8 +196,8 @@ export function ViewAllTransactions({ transactions }: ViewAllTransactionsProps) 
                           {group.label}
                         </span>
 
-                        <span className="font-semibold tabular-nums text-foreground/90">
-                          {formatCurrency(group.total, group.transactions[0]?.wallets?.currency)}
+                        <span className={`font-semibold tabular-nums ${group.total > 0 ? 'text-emerald-500' : group.total < 0 ? 'text-rose-500' : 'text-foreground/90'}`}>
+                          {formatSignedCurrency(group.total, activeCurrency, true)}
                         </span>
                       </div>
                     </AccordionTrigger>
@@ -201,6 +218,17 @@ export function ViewAllTransactions({ transactions }: ViewAllTransactionsProps) 
                           <TableBody>
                             {group.transactions.map((transaction) => {
                               const dateObj = new Date(transaction.created_for_date || transaction.created_at);
+                              
+                              const signedAmount = getSignedAmount({
+                                amount: Number(transaction.amount),
+                                transaction_type: transaction.type,
+                                wallet_id: transaction.wallet_id,
+                                to_wallet_id: (transaction as any).to_wallet_id || null
+                              }, transaction.wallet_id);
+                              
+                              const isPositive = signedAmount > 0;
+                              const isTransfer = transaction.type === 'transfer';
+                              const colorClass = isTransfer ? 'text-muted-foreground' : isPositive ? 'text-emerald-500' : 'text-rose-500';
 
                               return (
                                 <TableRow key={transaction.id} className="group/row border-b-border/50 transition-colors hover:bg-secondary/20">
@@ -221,8 +249,8 @@ export function ViewAllTransactions({ transactions }: ViewAllTransactionsProps) 
                                   <TableCell className="text-xs font-mono text-muted-foreground">
                                     {dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                                   </TableCell>
-                                  <TableCell className="text-right tabular-nums font-medium text-foreground/90">
-                                    {formatCurrency(transaction.amount, transaction.wallets?.currency)}
+                                  <TableCell className={`text-right tabular-nums font-medium ${colorClass}`}>
+                                    {formatSignedCurrency(signedAmount, activeCurrency, !isTransfer)}
                                   </TableCell>
                                 </TableRow>
                               );

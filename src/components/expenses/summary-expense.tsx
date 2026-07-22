@@ -1,13 +1,12 @@
 'use client';
 
 import React, { useMemo } from 'react';
-import { TrendingUp, TrendingDown, Minus } from 'lucide-react';
+import { TrendingUp, TrendingDown } from 'lucide-react';
 import { WalletHistory, WalletSummary, TransactionHistory } from '@/types/expenses';
 import { formatCurrency, formatSignedCurrency } from '@/utils/currency';
 import { calculateFinancialTotals } from '@/utils/financial';
-import { Card, CardTitle, CardContent, CardHeader } from '../ui/card';
-import { Badge } from '../ui/badge';
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from 'recharts';
+import { Card, CardTitle, CardContent, CardFooter } from '../ui/card';
+import { Bar, BarChart, XAxis, YAxis } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 import { buildNetWorthTrend, getTrendDirection, TREND_COLORS } from '@/lib/finance/net-worth-trend';
 
@@ -61,8 +60,8 @@ export const SummaryExpense = ({
             className="flex flex-col xl:flex-row xl:items-center justify-between gap-8 xl:gap-12"
           >
             <Card className="w-full">
-              <CardContent className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
-                <div className="flex flex-col gap-4">
+              <CardContent className="flex flex-col md:flex-row items-start md:items-center gap-8 lg:gap-16">
+                <div className="flex flex-col gap-4 shrink-0">
                   <div>
                     <CardTitle
                       id={`finances-heading-${currency}`}
@@ -83,9 +82,7 @@ export const SummaryExpense = ({
 
                   <p className="text-xs lg:text-sm text-muted-foreground font-medium max-w-sm leading-relaxed">
                     {trendPercentage === null ? (
-                      'Waiting for 30 days of data to calculate your first trend.'
-                    ) : direction === 'flat' ? (
-                      "No change from last month's snapshots."
+                      'Waiting for a day of data to calculate your first trend.'
                     ) : direction === 'up' ? (
                       <span className="inline-flex items-center flex-wrap gap-x-1.5">
                         Up
@@ -106,34 +103,31 @@ export const SummaryExpense = ({
                   </p>
                 </div>
 
-                <div className="w-full h-24 lg:h-32">
+                <div className="w-full h-24 lg:h-32 flex-1 -mb-5 lg:-mb-6">
                   {hasEnoughHistory ? (
-                    <ChartContainer config={chartConfig} className="w-full h-full">
-                      <LineChart
+                    <ChartContainer config={chartConfig} className="w-full h-full p-0 m-0">
+                      <BarChart
                         accessibilityLayer
                         data={chartData}
-                        margin={{ left: 12, right: 12, top: 12, bottom: 12 }}
+                        margin={{ top: 0, right: 0, left: 0, bottom: 0 }}
                       >
-                        <CartesianGrid vertical={false} opacity={0.3} />
                         <XAxis
                           dataKey="label"
                           tickLine={false}
                           axisLine={false}
-                          tickMargin={8}
+                          tickMargin={2}
                           fontSize={10}
+                          tickFormatter={(value) => typeof value === 'string' ? value.slice(0, 3) : value}
                         />
                         <YAxis hide domain={['auto', 'auto']} />
                         <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-                        <Line
+                        <Bar
                           dataKey="value"
-                          type="step"
-                          stroke={trendColor}
-                          strokeWidth={3}
-                          dot={{ r: 4, strokeWidth: 2, fill: 'var(--background)' }}
-                          activeDot={{ r: 6 }}
-                          isAnimationActive={false}
+                          fill={trendColor}
+                          radius={2}
+                          isAnimationActive={true}
                         />
-                      </LineChart>
+                      </BarChart>
                     </ChartContainer>
                   ) : (
                     <div className="flex h-full w-full items-center justify-center rounded-md border border-dashed border-border/50 text-[10px] uppercase tracking-wider text-muted-foreground/60">
