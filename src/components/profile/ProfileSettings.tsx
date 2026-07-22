@@ -9,17 +9,46 @@ import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 
+import { updateDefaultCurrency } from '@/app/(main)/profile/action'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { UserSummary } from '@/types/dashboard'
+import { AVAILABLE_CURRENCIES } from '@/lib/constants/currencies'
+
 interface ProfileSettingsProps {
-  email?: string
+  user: UserSummary
 }
 
-export function ProfileSettings({ email }: ProfileSettingsProps) {
+export function ProfileSettings({ user }: ProfileSettingsProps) {
   const { resolvedTheme, setTheme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const router = useRouter()
   const supabase = createClient()
 
+  const [currency, setCurrency] = useState(user.activeCurrency || 'PHP')
+  const [isUpdatingCurrency, setIsUpdatingCurrency] = useState(false)
+
   useEffect(() => setMounted(true), [])
+
+  const handleCurrencyChange = async (val: string) => {
+    setCurrency(val)
+    setIsUpdatingCurrency(true)
+
+    if (user.id) {
+      const { success, error } = await updateDefaultCurrency(user.id, val)
+      if (success) {
+        toast.success(`Default currency updated to ${val}`)
+      } else {
+        toast.error(error || 'Failed to update currency')
+      }
+    }
+    setIsUpdatingCurrency(false)
+  }
 
   const handleSignOut = async () => {
     const { error } = await supabase.auth.signOut()
@@ -50,7 +79,7 @@ export function ProfileSettings({ email }: ProfileSettingsProps) {
                 <Mail size={16} className="text-accent shrink-0" />
                 <div>
                   <span className="text-sm font-medium">Email</span>
-                  <p className="text-xs text-muted-foreground font-mono">{email}</p>
+                  <p className="text-xs text-muted-foreground font-mono">{user.email}</p>
                 </div>
               </div>
             </CardContent>
@@ -109,9 +138,21 @@ export function ProfileSettings({ email }: ProfileSettingsProps) {
           <Card variant="dashed">
             <CardContent className="flex items-center justify-between">
               <div>
-                <span className="text-sm font-medium">Currency</span>
-                <p className="text-xs text-muted-foreground">Philippine Peso (₱)</p>
+                <span className="text-sm font-medium">Default Currency</span>
+                <p className="text-xs text-muted-foreground">Select your primary display currency</p>
               </div>
+              <Select value={currency} onValueChange={handleCurrencyChange} disabled={isUpdatingCurrency}>
+                <SelectTrigger className="w-[120px] h-8 text-xs font-semibold">
+                  <SelectValue placeholder="Currency" />
+                </SelectTrigger>
+                <SelectContent>
+                  {AVAILABLE_CURRENCIES.map((c) => (
+                    <SelectItem key={c.code} value={c.code} className="text-xs">
+                      {c.code} ({c.symbol})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </CardContent>
           </Card>
         </div>

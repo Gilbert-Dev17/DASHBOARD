@@ -25,6 +25,8 @@ import { EditWalletModal } from '@/components/modals/edit-wallet/EditWalletModal
 import { DeleteWalletModal } from '@/components/modals/delete-wallet/DeleteWalletModal';
 import PageComponent from '@/components/shared/PageComponent';
 import { Wallets, TransactionHistory } from '@/types/expenses';
+import { getSignedAmount } from '@/utils/currency';
+import { useRouter } from 'next/navigation';
 
 interface AccountStatementProps {
   accountData: (Wallets & { transactions: TransactionHistory[] }) | null
@@ -38,6 +40,7 @@ export function AccountStatement({accountData} : AccountStatementProps) {
   const itemsPerPage = 30;
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (accountData?.id) {
@@ -50,9 +53,7 @@ export function AccountStatement({accountData} : AccountStatementProps) {
       <div className="flex flex-col items-center justify-center min-h-[50vh] text-center">
         <h2 className="text-2xl font-semibold mb-2">Account Not Found</h2>
         <p className="text-muted-foreground mb-6">We couldn't find the account you're looking for.</p>
-        <Link href="/finance">
-          <Button variant="outline">Back to Expenses</Button>
-        </Link>
+        <Button variant="outline" onClick={() => router.back()}>Back</Button>
       </div>
     );
   }
@@ -68,16 +69,21 @@ export function AccountStatement({accountData} : AccountStatementProps) {
 
   return (
     <PageComponent>
+
     <div className=" mx-auto w-full pt-6">
       {/* HEADER */}
       <header className="flex flex-col gap-6 mb-12">
         <div className="flex justify-between items-center w-full">
-          <Link href="/finance" className="w-fit">
-            <Button variant="ghost" size="sm" className="h-8 px-2 text-muted-foreground hover:text-foreground">
-              <ArrowLeft size={14} className="mr-2" />
-              Back to Expenses
-            </Button>
-          </Link>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            className="h-8 px-2 text-muted-foreground hover:text-foreground w-fit"
+            onClick={() => router.back()}
+          >
+            <ArrowLeft size={14} className="mr-2" />
+            Back
+          </Button>
 
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -137,6 +143,19 @@ export function AccountStatement({accountData} : AccountStatementProps) {
             <Timeline>
               {paginatedTransactions.map((txn: TransactionHistory, index: number) => {
                 const dateObj = new Date(txn.created_for_date || txn.created_at || new Date());
+                 const signedAmount = getSignedAmount({
+                    amount: Number(txn.amount),
+                    transaction_type: txn.type,
+                    wallet_id: txn.wallet_id,
+                    to_wallet_id: (txn as any).to_wallet_id || null
+                  }, txn.wallet_id)
+
+                  const isPositive = signedAmount > 0;
+                  const isTransfer = txn.type === 'transfer';
+
+                  const colorClass = isTransfer ? 'text-muted-foreground' : isPositive
+                  ? 'text-emerald-500' : 'text-rose-500';
+
                 return (
                   <TimelineItem key={`${txn.id}-${index}`}>
                     <TimelineTime dateTime={txn.created_for_date || txn.created_at || ''}>
@@ -147,8 +166,8 @@ export function AccountStatement({accountData} : AccountStatementProps) {
                       <div className="flex flex-col py-3 px-4 -ml-4 rounded-xl hover:bg-secondary/40 transition-colors group">
                         <div className="flex justify-between items-start gap-4">
                           <span className="font-medium text-[15px] leading-tight text-foreground/90 group-hover:text-foreground">{txn.title}</span>
-                          <span className={`tabular-nums font-mono text-base shrink-0 ${Number(txn.amount) > 0 ? 'text-emerald-500' : 'text-rose-500'}`}>
-                            {formatSignedCurrency(Number(txn.amount), accountData.currency, true)}
+                          <span className={`tabular-nums font-mono shrink-0 ${colorClass}`}>
+                            {formatSignedCurrency(signedAmount, txn.wallets?.currency, !isTransfer)}
                           </span>
                         </div>
                         <div className="text-[10px] uppercase tracking-wider text-muted-foreground/80 mt-1.5 flex items-center gap-2">

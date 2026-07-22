@@ -143,10 +143,8 @@ export const ExpenseForm = () => {
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
-                    {isCategoriesPending ? (
-                      <SelectItem disabled value="loading">Loading...</SelectItem>
-                    ) : categories.length === 0 ? (
-                      <SelectItem value="empty">No categories</SelectItem>
+                    {categories.length === 0 ? (
+                      <SelectItem value="empty" disabled>No categories</SelectItem>
                     ) : (
                       categories.map((category) => (
                         <SelectItem key={category.id} value={category.id}>

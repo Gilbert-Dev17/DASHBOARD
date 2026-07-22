@@ -21,10 +21,11 @@ export async function getUser(): Promise<UserSummary | null> {
         id: user.id ?? null,
         email: user.email ?? '',
         // Use the profile name if it exists, otherwise fallback to Google's user_metadata
-        first_name: profile?.first_name ?? 
-            user.user_metadata?.name?.split(' ')[0] ?? 
+        first_name: profile?.first_name ??
+            user.user_metadata?.name?.split(' ')[0] ??
             user.user_metadata?.full_name?.split(' ')[0] ?? null,
         name: profile?.name ?? user.user_metadata?.full_name ?? user.user_metadata?.name ?? null,
         avatar_url: profile?.avatar_url ?? user.user_metadata?.avatar_url ?? user.user_metadata?.picture ?? null,
+        activeCurrency: profile?.activecurrency ?? null
     }
 }

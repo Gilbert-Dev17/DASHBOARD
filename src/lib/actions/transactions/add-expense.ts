@@ -16,28 +16,32 @@ export async function addExpenseAction(data: {
   if (!user) return { success: false, message: 'Not authenticated.' }
 
 
-  const { error } = await supabase
-    .from('transactions')
-    .insert({
-      user_id: user.id,
-      wallet_id: data.accountId,
-      category_id: data.categoryId,
-      title: data.note || 'Expense',
-      amount: data.amount,
-      type: 'expense',
-      transferFee: 0,
-      created_for_date: new Date().toISOString().split('T')[0]
-    })
+  try {
+    const { error } = await supabase
+      .from('transactions')
+      .insert({
+        user_id: user.id,
+        wallet_id: data.accountId,
+        category_id: data.categoryId,
+        title: data.note || 'Expense',
+        amount: data.amount,
+        type: 'expense',
+        transferFee: 0,
+        created_for_date: new Date().toISOString().split('T')[0]
+      })
 
-  if (error) {
-    console.error('Error inserting expense:', error)
-    return { success: false, error: error.message }
+    if (error) {
+      console.error('Error inserting expense:', error)
+      return { success: false, error: error.message }
+    }
+
+    updateTag(`wallets-${user.id}`)
+    updateTag(`categories-${user.id}`)
+    updateTag(`transactions-${user.id}`)
+
+    return { success: true }
+  } catch (error: any) {
+    console.error('Unexpected error in addExpenseAction:', error)
+    return { success: false, error: error.message || 'An unexpected error occurred' }
   }
-
-  // Revalidate Server Cache
-  updateTag(`wallets-${user.id}`)
-  updateTag(`categories-${user.id}`)
-  updateTag(`transactions-${user.id}`)
-
-  return { success: true }
 }

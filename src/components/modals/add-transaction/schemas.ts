@@ -18,7 +18,7 @@ export type ExpenseFormValues = z.infer<typeof expenseSchema>
 export const incomeSchema = z.object({
   amount: amountField,
   accountId: accountField,
-  source: z.string().min(1, 'Please select a source'),
+  source: z.string().default('Income'),
   note: noteField,
 })
 

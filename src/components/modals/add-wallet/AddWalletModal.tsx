@@ -1,9 +1,9 @@
 'use client'
 
-import React, { useState } from 'react'
-import { Plus, Wallet as WalletIcon } from 'lucide-react'
+import { useState } from 'react'
+import { Plus, Wallet} from 'lucide-react'
 import {
-   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,
+   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription
 } from '@/components/ui/dialog'
 import { Field, FieldGroup, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
@@ -88,11 +88,13 @@ export const AddWalletModal = () => {
 
       <DialogContent className="sm:max-w-md">
         <form onSubmit={handleSubmit(onSubmit)}>
-          <DialogHeader className="py-2">
-            <DialogTitle className="flex items-center gap-2">
-              <WalletIcon className="h-5 w-5 text-primary" />
-              New Wallet
+          <DialogHeader >
+            <DialogTitle className="font-bold">
+              Add Wallet
             </DialogTitle>
+            <DialogDescription >
+              Create a new wallet to track your finances.
+            </DialogDescription>
           </DialogHeader>
 
           {/* Live Preview Card */}

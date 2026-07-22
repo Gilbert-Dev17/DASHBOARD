@@ -1,5 +1,3 @@
-import React from "react";
-
 export const HeaderTitle = ({ title, desc }: { title: string; desc: string }) => {
   return (
     <div>

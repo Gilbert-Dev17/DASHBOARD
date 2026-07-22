@@ -5,9 +5,9 @@ import dynamic from 'next/dynamic'
 import PageComponent from '@/components/shared/PageComponent'
 import { TaskWithSubtasks, UserSummary, WalletSummary } from '@/types/dashboard'
 import { WalletSnapshot } from '@/types/database'
-import { GreetingHeader } from './greetingHeader'
+import { GreetingHeader } from '@/components/home/greetingHeader'
 import { AgendaSection } from '@/components/shared/AgendaSection'
-import { NetWorthOverview } from './NetWorthOverview'
+import { NetWorthOverview } from '@/components/home/NetWorthOverview'
 
 import { useDashboard } from '@/hooks/useDashboard'
 import { Skeleton } from "@/components/ui/skeleton"
@@ -47,15 +47,19 @@ export default function DashboardPage({ initialTasks, user, wallets, historicalS
   const displayName = user?.first_name || user?.name?.split(' ')[0] || 'User';
   useDashboard();
 
+  // Find all available currencies
+  const availableCurrencies = Array.from(new Set(wallets.map(w => w.currency || 'PHP')));
+  // Determine the active currency (User preference > First available)
+  const activeCurrency = user?.activeCurrency || availableCurrencies[0] || 'PHP';
+  
+  // Filter wallets for the dashboard
+  const filteredWallets = wallets.filter(w => (w.currency || 'PHP') === activeCurrency);
+
   return (
     <PageComponent>
       <header className="mb-16 lg:mb-20">
         <GreetingHeader firstName={displayName} tasks={initialTasks || []} />
       </header>
-
-      {/* <pre className="bg-muted p-4 rounded text-xs overflow-auto max-h-96">
-        {JSON.stringify(initialTasks, null, 2)}
-       </pre> */}
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
 
@@ -63,7 +67,7 @@ export default function DashboardPage({ initialTasks, user, wallets, historicalS
 
         <aside className="lg:col-span-5 space-y-8 mt-8 lg:mt-0">
 
-        <NetWorthOverview wallets={wallets} historicalSnapshots={historicalSnapshots} />
+        <NetWorthOverview wallets={filteredWallets} historicalSnapshots={historicalSnapshots} />
 
         <LifeProgress />
 

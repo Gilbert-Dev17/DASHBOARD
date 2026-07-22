@@ -25,9 +25,10 @@ const parseCategoryTotal = (total: string | number) => {
 
 interface ChartPieDonutTextProps {
   categories: CategorySummary[];
+  currency: string;
 }
 
-export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
+export function ChartPieDonutText({ categories, currency }: ChartPieDonutTextProps) {
   const chartData = React.useMemo(
     () =>
       categories.map((category, index) => ({
@@ -78,35 +79,6 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
                 cornerRadius={8}
                 paddingAngle={4}
             >
-                <Label
-                    content={({ viewBox }) => {
-                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                        return (
-                        <text
-                            x={viewBox.cx}
-                            y={viewBox.cy}
-                            textAnchor="middle"
-                            dominantBaseline="middle"
-                        >
-                            <tspan
-                            x={viewBox.cx}
-                            y={(viewBox.cy || 0) - 12}
-                            className="fill-muted-foreground text-sm tracking-widest uppercase"
-                            >
-                            Total
-                            </tspan>
-                            <tspan
-                            x={viewBox.cx}
-                            y={(viewBox.cy || 0) + 16}
-                            className="fill-foreground text-lg font-mono"
-                            >
-                            {formatCurrency(totalAmount, 'PHP')}
-                            </tspan>
-                        </text>
-                        )
-                    }
-                    }}
-                />
             </Pie>
             <ChartTooltip
                 content={({ active, payload }: any) => {
@@ -123,7 +95,7 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
                                 <span className="text-xs font-medium text-foreground">{data.category}</span>
                             </div>
                             <span className="text-sm font-mono font-bold text-foreground">
-                                {formatCurrency(data.amount || 0, 'PHP')}
+                                {formatCurrency(data.amount || 0, currency)}
                             </span>
                         </div>
                         )

@@ -18,25 +18,30 @@ export async function addWalletAction(data: {
   const user = await getUser();
   if (!user) return { success: false, error: 'Not authenticated.' }
 
-  const { error } = await supabase
-    .from('wallets')
-    .insert({
-      user_id: user.id,
-      name: data.name,
-      balance: data.balance,
-      currency: data.currency,
-      type: data.type,
-      icon: data.icon,
-      color: data.color
-    })
+  try {
+    const { error } = await supabase
+      .from('wallets')
+      .insert({
+        user_id: user.id,
+        name: data.name,
+        balance: data.balance,
+        currency: data.currency,
+        type: data.type,
+        icon: data.icon,
+        color: data.color
+      })
 
-  if (error) {
-    console.error('Error inserting wallet:', error)
-    return { success: false, error: error.message }
+    if (error) {
+      console.error('Error inserting wallet:', error)
+      return { success: false, error: error.message }
+    }
+
+    // Revalidate Server Cache
+    updateTag(`wallets-${user.id}`)
+
+    return { success: true }
+  } catch (error: any) {
+    console.error('Unexpected error in addWalletAction:', error)
+    return { success: false, error: error.message || 'An unexpected error occurred' }
   }
-
-  // Revalidate Server Cache
-  updateTag(`wallets-${user.id}`)
-
-  return { success: true }
 }
