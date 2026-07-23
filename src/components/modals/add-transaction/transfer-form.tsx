@@ -12,16 +12,25 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Calendar as CalendarIcon } from "lucide-react"
+import { format } from "date-fns"
+import { cn } from "@/lib/utils"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 import { transferSchema, TransferFormValues } from './schemas'
 import { useWallets } from '@/hooks/useFinanceData'
 import { addTransferAction } from '@/lib/actions/transactions'
-import { formatInputAmount } from '@/utils/currency'
+import { formatInputAmount, formatCurrency } from '@/utils/currency'
 
 
 export const TransferForm = () => {
   const {
-    handleSubmit, control, reset, watch, formState: { errors },
+    handleSubmit, control, reset, watch, setError, formState: { errors },
   } = useForm<TransferFormValues>({
     resolver: zodResolver(transferSchema as any),
     defaultValues: {
@@ -30,6 +39,7 @@ export const TransferForm = () => {
       toAccountId: '',
       transferFee: '' as any,
       note: '',
+      date: undefined,
     }
   })
 
@@ -57,13 +67,24 @@ export const TransferForm = () => {
     }
   })
 
+  const selectedFromWallet = wallets.find(w => w.id === currentFromAccount)
+
   function onSubmit(data: TransferFormValues) {
+    if (selectedFromWallet) {
+      const totalDeduction = Number(data.amount) + (Number(data.transferFee) || 0)
+      if (totalDeduction > selectedFromWallet.balance) {
+        setError('amount', { type: 'manual', message: 'Insufficient balance in source wallet (including fee)' })
+        return
+      }
+    }
+
     addTransfer({
       amount: data.amount,
       fromAccountId: data.fromAccountId,
       toAccountId: data.toAccountId,
       transferFee: data.transferFee,
       note: data.note,
+      date: data.date,
     })
   }
 
@@ -103,9 +124,16 @@ export const TransferForm = () => {
       </FieldGroup>
 
       {/* From → To accounts */}
-      <div className="flex flex-row items-end gap-2">
+      <div className="grid grid-cols-2 gap-4">
         <FieldGroup>
-          <FieldLabel>From</FieldLabel>
+          <div className="flex justify-between items-center">
+            <FieldLabel className="mb-0">From</FieldLabel>
+            {selectedFromWallet && (
+              <span className="text-[10px] text-muted-foreground font-medium">
+                Bal: {formatCurrency(selectedFromWallet.balance, selectedFromWallet.currency || 'PHP')}
+              </span>
+            )}
+          </div>
           <Controller
             control={control}
             name="fromAccountId"
@@ -210,21 +238,53 @@ export const TransferForm = () => {
         />
       </FieldGroup>
 
-      {/* Note */}
-      <FieldGroup>
-        <FieldLabel>Note</FieldLabel>
-        <Controller
-          control={control}
-          name="note"
-          render={({ field }) => (
-            <Input
-              type="text"
-              placeholder="What's this transfer for?"
-              {...field}
-            />
-          )}
-        />
-      </FieldGroup>
+      <div className="grid grid-cols-2 gap-4">
+        <FieldGroup>
+          <FieldLabel>Date</FieldLabel>
+          <Controller
+            control={control}
+            name="date"
+            render={({ field }) => (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal border-border/50",
+                      !field.value && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {field.value ? format(field.value, "PPP") : <span>Today</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={field.onChange}
+                  />
+                </PopoverContent>
+              </Popover>
+            )}
+          />
+        </FieldGroup>
+
+        <FieldGroup>
+          <FieldLabel>Note</FieldLabel>
+          <Controller
+            control={control}
+            name="note"
+            render={({ field }) => (
+              <Input
+                type="text"
+                placeholder="What's this transfer for?"
+                {...field}
+              />
+            )}
+          />
+        </FieldGroup>
+      </div>
 
       <Button type="submit" size="lg" className="w-full" disabled={!watch('amount') || !watch('fromAccountId') || !watch('toAccountId') || isSubmitting}>
         {isSubmitting ? 'Transferring...' : 'Transfer'}

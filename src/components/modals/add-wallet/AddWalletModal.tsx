@@ -3,7 +3,8 @@
 import { useState } from 'react'
 import { Plus, Wallet} from 'lucide-react'
 import {
-   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription
+   Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription,
+   DialogFooter
 } from '@/components/ui/dialog'
 import { Field, FieldGroup, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
@@ -22,7 +23,7 @@ import { WALLET_TYPES, WALLET_STYLES, AVAILABLE_CURRENCIES } from '@/lib/constan
 import { formatInputAmount } from '@/utils/currency'
 
 const walletSchema = z.object({
-  name: z.string().min(1, 'Wallet name is required'),
+  name: z.string().min(1, 'Wallet name is required').max(30, 'Name must be 30 characters or less'),
   balance: z.coerce.number().default(0),
   currency: z.string().min(1, 'Please select a currency'),
   type: z.enum(['Debit', 'Assets', 'Stocks', 'Crypto', 'Credit', 'Loans']),
@@ -116,12 +117,17 @@ export const AddWalletModal = () => {
           <FieldGroup className="mt-4 space-y-5">
             {/* Wallet Name */}
             <Field>
-              <FieldLabel
-                htmlFor="wallet-name"
-                className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground"
-              >
-                ACCOUNT NAME
-              </FieldLabel>
+              <div className="flex justify-between items-center mb-1">
+                <FieldLabel
+                  htmlFor="wallet-name"
+                  className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-0"
+                >
+                  ACCOUNT NAME
+                </FieldLabel>
+                <span className="text-[10px] text-muted-foreground font-medium">
+                  {currentName.length}/30
+                </span>
+              </div>
                 <Controller
                   control={control}
                   name="name"
@@ -129,6 +135,7 @@ export const AddWalletModal = () => {
                     <Input
                       id="wallet-name"
                       placeholder="e.g., Main Bank, Cash, Credit Card..."
+                      maxLength={30}
                       {...field}
                       className="h-12 bg-background/50 border-border/50 focus:bg-background transition-colors"
                     />
@@ -140,7 +147,7 @@ export const AddWalletModal = () => {
             <div className="grid grid-cols-2 gap-4">
               {/* Wallet Type */}
               <Field>
-                <FieldLabel className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                <FieldLabel className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                   ACCOUNT TYPE
                 </FieldLabel>
                 <Controller
@@ -166,7 +173,7 @@ export const AddWalletModal = () => {
 
               {/* Currency */}
               <Field>
-                <FieldLabel className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                <FieldLabel className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
                   CURRENCY
                 </FieldLabel>
                  <Controller
@@ -197,7 +204,7 @@ export const AddWalletModal = () => {
             <Field>
               <FieldLabel
                 htmlFor="wallet-balance"
-                className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground"
+                className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground"
               >
                 {currentType === 'Credit' || currentType === 'Loans' ? 'CURRENT BALANCE (OWED)' : 'INITIAL BALANCE'}
               </FieldLabel>
@@ -230,16 +237,16 @@ export const AddWalletModal = () => {
             </Field>
           </FieldGroup>
 
-          <div className="mt-8 flex justify-end">
+          <DialogFooter className="mt-8 flex justify-end">
             <Button
               type="submit"
               size="lg"
               className="w-full font-semibold shadow-sm"
-              disabled={isPending}
+              disabled={isPending || !currentName.trim()}
             >
               {isPending ? 'Adding...' : 'Add Wallet'}
             </Button>
-          </div>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

@@ -20,17 +20,15 @@ export function ViewAllCategoriesClient({ categories }: ViewAllCategoriesClientP
   return (
     <PageComponent>
       <section className='mt-5'>
-        {/* HEADER */}
         <header className="flex flex-col md:flex-row md:items-end justify-between items-start gap-6 mb-12">
-          <div className="flex flex-col gap-2">
-            <Button
-              variant="ghost"
-              size="sm"
+          <div className="flex flex-row items-center gap-2">
+             <Button
+              variant="link"
+              size="icon"
               className="group h-8 px-2 text-muted-foreground hover:text-foreground mb-2 w-fit"
               onClick={() => router.back()}
             >
               <ArrowLeft size={14} className="mr-2 transition-transform duration-300 group-hover:-translate-x-1" />
-              Back
             </Button>
             <HeaderTitle title="All Categories" desc="Manage and view all your custom expense categories." />
           </div>

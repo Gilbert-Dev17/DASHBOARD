@@ -24,12 +24,14 @@ export default function ExpenseTrackerPage({ user, wallets, transactions, histor
 
   const { availableCurrencies, activeCurrency, setActiveCurrency, filteredWallets, filteredTransactions } = useCurrencyFilter({ wallets, user, transactions });
 
-  // const filteredCategories = useMemo(() => allCategories.filter(c => (c.currency || 'PHP') === activeCurrency), [allCategories, activeCurrency]);
-
   return (
     <PageComponent>
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
-        <HeaderTitle title='Finance' desc=''/>
+        <HeaderTitle
+          title='Finance'
+          desc='Track your net worth and manage your expenses across multiple currencies.'
+          />
+
         <CurrencySwitcher
           currencies={availableCurrencies}
           activeCurrency={activeCurrency}

@@ -5,6 +5,7 @@ import {
  } from '@/components/ui/timeline'
  import { formatSignedCurrency, getSignedAmount } from '@/utils/currency'
  import { TransactionHistory } from '@/types/expenses'
+ import { ArrowRight } from 'lucide-react'
 
  interface RecentLogsSectionProps {
    transactions: TransactionHistory[];
@@ -14,14 +15,16 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
   return (
     <section className="flex flex-col h-full" aria-labelledby="logs-heading">
       <header className="flex flex-row justify-between items-center pb-4 mb-2 shrink-0">
-        <h2 id="logs-heading" className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Recent Transactions</h2>
-        <Button variant="ghost" size="sm" className="text-[10px] uppercase tracking-wider h-8" asChild>
-          <Link href="/finance/viewAll">View History</Link>
+        <h2 id="logs-heading" className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Transactions</h2>
+        <Button variant="link" size="sm" className="group px-0 flex flex-row text-muted-foreground hover:text-foreground items-center gap-1" asChild>
+          <Link href="/finance/viewAll">
+            View All <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
+          </Link>
         </Button>
       </header>
       {transactions.length === 0 ? (
         <div className="flex-1 flex flex-col items-center justify-center py-16 text-muted-foreground text-sm">
-          No recent Transactions yet.
+          No Transactions yet.
         </div>
       ) : (
         <div className="flex-1 min-h-0 max-h-100 pr-4 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">

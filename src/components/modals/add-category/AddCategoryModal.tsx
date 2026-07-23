@@ -8,6 +8,7 @@ import {
   DialogTitle,
   DialogTrigger,
   DialogDescription,
+  DialogFooter,
 } from '@/components/ui/dialog'
 import { FieldError, FieldGroup, FieldLabel, Field } from "@/components/ui/field"
 import { Input } from '@/components/ui/input'
@@ -22,7 +23,7 @@ import { toast } from 'sonner'
 import { addCategoryAction } from '@/lib/actions/transactions'
 
 const categorySchema = z.object({
-  name: z.string().min(1, 'Category name is required'),
+  name: z.string().min(1, 'Category name is required').max(30, 'Name must be 30 characters or less'),
   icon: z.string().min(1, 'Please select an icon'),
   color: z.string().min(1, 'Please select a color'),
 })
@@ -110,12 +111,17 @@ export const AddCategoryModal = () => {
 
         <FieldGroup className="mt-2 space-y-6">
           <Field>
-            <FieldLabel
-              htmlFor="category-name"
-              className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground"
-            >
-              CATEGORY NAME
-            </FieldLabel>
+            <div className="flex justify-between items-center mb-1">
+              <FieldLabel
+                htmlFor="category-name"
+                className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-0"
+              >
+                CATEGORY NAME
+              </FieldLabel>
+              <span className="text-[10px] text-muted-foreground font-medium">
+                {currentName.length}/30
+              </span>
+            </div>
             <Controller
               control={control}
               name="name"
@@ -124,6 +130,7 @@ export const AddCategoryModal = () => {
                   type='text'
                   id="category-name"
                   placeholder="e.g., Groceries, Rent, Subscriptions..."
+                  maxLength={30}
                   {...field}
                   className="h-12 bg-background/50 border-border/50 focus:bg-background transition-colors"
                 />
@@ -196,11 +203,11 @@ export const AddCategoryModal = () => {
           </Field>
         </FieldGroup>
 
-        <div className="mt-4 flex justify-end">
+        <DialogFooter className="mt-4 flex justify-end">
           <Button type="submit" size="lg" className="w-full font-semibold shadow-sm" disabled={isPending || !currentName.trim()}>
             {isPending ? 'Creating...' : 'Create Category'}
           </Button>
-        </div>
+        </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

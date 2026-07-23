@@ -10,6 +10,7 @@ export async function addTransferAction(data: {
   toAccountId: string
   transferFee?: number
   note?: string
+  date?: Date
 }) {
   const supabase = await createClient()
    const user = await getUser();
@@ -32,8 +33,10 @@ export async function addTransferAction(data: {
           title: data.note || 'Transfer Out',
           amount: -(data.amount + fee), // Subtract amount + fee from source
           type: 'transfer',
-          transferFee: fee,
-          created_for_date: new Date().toISOString().split('T')[0]
+          transferFee: data.transferFee || 0,
+          created_for_date: data.date
+            ? new Date(data.date.getTime() - (data.date.getTimezoneOffset() * 60000)).toISOString().split('T')[0]
+            : new Date().toISOString().split('T')[0]
         },
         {
           user_id: user.id,
@@ -43,7 +46,9 @@ export async function addTransferAction(data: {
           amount: data.amount, // Add amount to destination
           type: 'transfer',
           transferFee: 0,
-          created_for_date: new Date().toISOString().split('T')[0]
+          created_for_date: data.date
+            ? new Date(data.date.getTime() - (data.date.getTimezoneOffset() * 60000)).toISOString().split('T')[0]
+            : new Date().toISOString().split('T')[0]
         }
       ])
 

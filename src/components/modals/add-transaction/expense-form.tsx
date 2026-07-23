@@ -11,15 +11,24 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Calendar as CalendarIcon } from "lucide-react"
+import { format } from "date-fns"
+import { cn } from "@/lib/utils"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 import { expenseSchema, ExpenseFormValues } from './schemas'
 import { useWallets, useExpenseCategories } from '@/hooks/useFinanceData'
 import { addExpenseAction } from '@/lib/actions/transactions'
-import { formatInputAmount } from '@/utils/currency'
+import { formatInputAmount, formatCurrency } from '@/utils/currency'
 
 export const ExpenseForm = () => {
   const {
-    handleSubmit, control, watch, reset, formState: { errors },
+    handleSubmit, control, watch, reset, setError, formState: { errors },
   } = useForm<ExpenseFormValues>({
     resolver: zodResolver(expenseSchema as any),
     defaultValues: {
@@ -27,6 +36,7 @@ export const ExpenseForm = () => {
       accountId: '',
       categoryId: '',
       note: '',
+      date: undefined,
     }
   })
 
@@ -53,12 +63,20 @@ export const ExpenseForm = () => {
     }
   })
 
+  const selectedWallet = wallets.find(w => w.id === watch('accountId'))
+
   function onSubmit(data: ExpenseFormValues) {
+    if (selectedWallet && Number(data.amount) > selectedWallet.balance) {
+      setError('amount', { type: 'manual', message: 'Insufficient balance in wallet' })
+      return
+    }
+
     addExpense({
       amount: data.amount,
       accountId: data.accountId,
       categoryId: data.categoryId,
       note: data.note,
+      date: data.date,
     })
   }
 
@@ -99,7 +117,14 @@ export const ExpenseForm = () => {
       {/* Account & Category side-by-side */}
       <div className="grid grid-cols-2 gap-4">
         <FieldGroup>
-          <FieldLabel>Account</FieldLabel>
+          <div className="flex justify-between items-center">
+            <FieldLabel className="mb-0">Account</FieldLabel>
+            {selectedWallet && (
+              <span className="text-[10px] text-muted-foreground font-medium">
+                Bal: {formatCurrency(selectedWallet.balance, selectedWallet.currency || 'PHP')}
+              </span>
+            )}
+          </div>
           <Controller
             control={control}
             name="accountId"
@@ -165,21 +190,54 @@ export const ExpenseForm = () => {
 
       <FieldSeparator />
 
-      {/* Note */}
-      <FieldGroup>
-        <FieldLabel>Note</FieldLabel>
-        <Controller
-          control={control}
-          name="note"
-          render={({ field }) => (
-            <Input
-              type="text"
-              placeholder="What was this for?"
-              {...field}
-            />
-          )}
-        />
-      </FieldGroup>
+      <div className="grid grid-cols-2 gap-4">
+        <FieldGroup>
+          <FieldLabel>Date</FieldLabel>
+          <Controller
+            control={control}
+            name="date"
+            render={({ field }) => (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal border-border/50",
+                      !field.value && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {field.value ? format(field.value, "PPP") : <span>Today</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            )}
+          />
+        </FieldGroup>
+
+        <FieldGroup>
+          <FieldLabel>Note</FieldLabel>
+          <Controller
+            control={control}
+            name="note"
+            render={({ field }) => (
+              <Input
+                type="text"
+                placeholder="What was this for?"
+                {...field}
+              />
+            )}
+          />
+        </FieldGroup>
+      </div>
 
       <Button type="submit" size="lg" className="w-full" disabled={!watch('amount') || !watch('accountId') || !watch('categoryId') || isSubmitting}>
         {isSubmitting ? 'Adding...' : 'Add Expense'}

@@ -40,7 +40,7 @@ export function WalletGrid({ wallets, isLoading = false }: WalletGridProps) {
           <Carousel opts={{ align: "start" }} className="w-full">
             <CarouselContent className="-ml-4">
               {Array.from({ length: 4 }).map((_, i) => (
-                <CarouselItem key={`skeleton-${i}`} className="pl-4 basis-full xl:basis-1/2">
+                <CarouselItem key={`skeleton-${i}`} className=" basis-full xl:basis-1/2">
                   <WalletCardSkeleton />
                 </CarouselItem>
               ))}
@@ -56,10 +56,10 @@ export function WalletGrid({ wallets, isLoading = false }: WalletGridProps) {
         </CardContent>
       ) : (
         <CardContent>
-          <Carousel opts={{ align: "start" }} className="w-full">
-            <CarouselContent className="-ml-4">
+          <Carousel className="w-full">
+            <CarouselContent className=" mr-3 p-2">
               {wallets.map((wallet) => (
-                <CarouselItem key={wallet.id} className="pl-4 basis-full xl:basis-1/2">
+                <CarouselItem key={wallet.id} className=" basis-full xl:basis-1/2">
                   <Link key={wallet.id} href={`/finance/accounts/${wallet.id}`}>
                     <WalletCard wallet={wallet} />
                   </Link>
@@ -73,7 +73,7 @@ export function WalletGrid({ wallets, isLoading = false }: WalletGridProps) {
               </div>
               <Button asChild variant={'link'} className="group px-0 flex flex-row text-muted-foreground hover:text-foreground items-center gap-1">
                 <Link href='/finance/viewAllAccounts'>
-                  View All Wallets <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
+                  View All<ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>
               </Button>
             </div>

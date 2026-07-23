@@ -3,13 +3,14 @@ import { AddCategoryModal } from '@/components/modals/add-category/AddCategoryMo
 import { TransactionHistory, CategorySummary } from '@/types/expenses'
 import { ExpenseCategory } from '@/types/database'
 import { formatCurrency } from '@/utils/currency'
-import { Badge } from '@/components/ui/badge'
+import { CategoryBadge } from '@/components/shared/CategoryBadge'
 import { ArrowRight } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
 import { AVAILABLE_ICONS } from '@/lib/constants/categories'
 import { HelpCircle } from 'lucide-react'
 import { Button } from '../ui/button'
 import Link from 'next/link'
+import { Badge } from '../ui/badge'
 
 interface CategorySectionProps {
   transactions: TransactionHistory[];
@@ -44,12 +45,12 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
   const totalExpenses = chartCategories.reduce((acc, cat) => acc + (cat.total || 0), 0);
 
   return (
-      <Card className="bg-card/30"  aria-labelledby="categories-heading">
+      <Card className="bg-card/3 gap-0"  aria-labelledby="categories-heading">
         <CardHeader className="flex justify-between items-center shrink-0">
           <CardTitle id="categories-heading" className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Categories</CardTitle>
           <AddCategoryModal />
         </CardHeader>
-        <CardContent className={`p-6 ${allCategories.length > 0 ? 'grid grid-cols-1 xl:grid-cols-2 items-center min-h-75 py-0' : 'flex flex-col items-center justify-center py-16 text-center'}`}>
+        <CardContent className={`${allCategories.length > 0 ? 'grid grid-cols-1 xl:grid-cols-2 items-center min-h-75 py-0' : 'flex flex-col items-center justify-center text-center'}`}>
 
           <div className={allCategories.length > 0 ? 'flex justify-center items-center w-full' : 'flex flex-col items-center justify-center text-center w-full'}>
             {chartCategories.length > 0 ? (
@@ -108,21 +109,35 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
                   Available Categories
                 </h3>
                 <div className="flex flex-wrap gap-2">
-                  {allCategories.map(cat => {
-                    const iconObj = cat.icon ? AVAILABLE_ICONS.find(i => i.name === cat.icon) : null;
-                    const Icon = iconObj?.icon || HelpCircle;
+                  {(() => {
+                    const sortedCategories = [...allCategories].sort((a, b) => {
+                      const totalA = categoryMap.get(a.id)?.total || 0;
+                      const totalB = categoryMap.get(b.id)?.total || 0;
+                      return totalB - totalA;
+                    });
+
+                    const visibleCategories = sortedCategories.slice(0, 5);
+                    const hiddenCount = sortedCategories.length - 5;
 
                     return (
-                      <Badge
-                        key={cat.id}
-                        variant="outline"
-                        className="gap-2 rounded-full bg-card/50 px-3 py-1.5 text-xs font-medium shadow-sm transition-colors hover:bg-card/80 justify-start"
-                      >
-                        <Icon size={14} className="shrink-0" style={{ color: cat.color || 'var(--muted)' }} />
-                        <span className="text-foreground/90 truncate max-w-30">{cat.name}</span>
-                      </Badge>
+                      <>
+                        {visibleCategories.map(cat => (
+                          <CategoryBadge
+                            key={cat.id}
+                            name={cat.name}
+                            icon={cat.icon}
+                            color={cat.color}
+                          />
+                        ))}
+
+                        {hiddenCount > 0 && (
+                          <Badge className="inline-flex items-center rounded-full bg-muted/30 px-3 py-1.5 text-xs font-medium shadow-sm border border-dashed border-border text-muted-foreground">
+                            +{hiddenCount} more
+                          </Badge>
+                        )}
+                      </>
                     )
-                  })}
+                  })()}
                 </div>
               </div>
             </div>
@@ -132,7 +147,7 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
           <div className='flex flex-row justify-end px-6'>
             <Button asChild variant={'link'} className="group px-0 text-muted-foreground hover:text-foreground flex items-center gap-1">
               <Link href='/finance/viewAllCategories'>
-                View All Categories <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
+                View All<ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
               </Link>
             </Button>
           </div>

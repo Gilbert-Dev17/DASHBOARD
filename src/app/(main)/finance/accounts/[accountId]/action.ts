@@ -22,6 +22,9 @@ async function fetchWalletId(userId: string, accountId: string) {
     .single()
 
     if (error) {
+        if (error.code === 'PGRST116') {
+            return null;
+        }
         console.error("Error fetching walletId:", error.message)
         throw error;
     }

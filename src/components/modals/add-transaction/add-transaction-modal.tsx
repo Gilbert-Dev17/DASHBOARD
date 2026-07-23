@@ -48,7 +48,7 @@ export function AddTransactionModal() {
         </DialogHeader>
 
         <Tabs defaultValue="expense">
-          <TabsList className='w-full items-center'>
+          <TabsList className='w-full items-center bg-card border border-border/50'>
             <TabsTrigger value="expense">Expense</TabsTrigger>
             <TabsTrigger value="income">Income</TabsTrigger>
             <TabsTrigger value="transfer">Transfer</TabsTrigger>

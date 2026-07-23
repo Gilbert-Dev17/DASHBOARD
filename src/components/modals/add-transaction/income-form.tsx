@@ -11,6 +11,15 @@ import {
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
+import { Calendar as CalendarIcon } from "lucide-react"
+import { format } from "date-fns"
+import { cn } from "@/lib/utils"
+import { Calendar } from "@/components/ui/calendar"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
 
 import { incomeSchema, IncomeFormValues } from './schemas'
 import { useWallets } from '@/hooks/useFinanceData'
@@ -27,6 +36,7 @@ export const IncomeForm = () => {
       accountId: '',
       source: '',
       note: '',
+      date: undefined,
     }
   })
 
@@ -57,6 +67,7 @@ export const IncomeForm = () => {
       accountId: data.accountId,
       source: data.source,
       note: data.note,
+      date: data.date,
     })
   }
 
@@ -130,21 +141,54 @@ export const IncomeForm = () => {
 
       <FieldSeparator />
 
-      {/* Note */}
-      <FieldGroup>
-        <FieldLabel>Note</FieldLabel>
-        <Controller
-          control={control}
-          name="note"
-          render={({ field }) => (
-            <Input
-              type="text"
-              placeholder="Where did this come from?"
-              {...field}
-            />
-          )}
-        />
-      </FieldGroup>
+      <div className="grid grid-cols-2 gap-4">
+        <FieldGroup>
+          <FieldLabel>Date</FieldLabel>
+          <Controller
+            control={control}
+            name="date"
+            render={({ field }) => (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className={cn(
+                      "w-full justify-start text-left font-normal border-border/50",
+                      !field.value && "text-muted-foreground"
+                    )}
+                  >
+                    <CalendarIcon className="mr-2 h-4 w-4" />
+                    {field.value ? format(field.value, "PPP") : <span>Today</span>}
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0">
+                  <Calendar
+                    mode="single"
+                    selected={field.value}
+                    onSelect={field.onChange}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            )}
+          />
+        </FieldGroup>
+        
+        <FieldGroup>
+          <FieldLabel>Note</FieldLabel>
+          <Controller
+            control={control}
+            name="note"
+            render={({ field }) => (
+              <Input
+                type="text"
+                placeholder="Where did this come from?"
+                {...field}
+              />
+            )}
+          />
+        </FieldGroup>
+      </div>
 
       <Button type="submit" size="lg" className="w-full" disabled={!watch('amount') || !watch('accountId') || isSubmitting}>
         {isSubmitting ? 'Adding...' : 'Add Income'}
