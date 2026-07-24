@@ -18,6 +18,7 @@ export default async function page() {
     getExpenseCategories(user.id)
   ]);
 
+  // console.log(historicalSnapshots)
 
   return (
     <ExpenseTrackerPage

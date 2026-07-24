@@ -37,7 +37,7 @@ const Sidebar = ({ user }: SidebarProps) => {
   const displayName = user?.first_name || user?.name?.split(' ')[0] || 'User';
 
   return (
-    <aside className="fixed left-5 md:left-5 top-1/2 -translate-y-1/2 z-40">
+    <aside className="fixed left-5 md:left-10 top-1/2 -translate-y-1/2 z-40">
       <nav className="flex flex-col items-start gap-2 p-2 rounded-md bg-background/50 backdrop-blur-xl shadow-lg border border-border transition-all duration-300 group">
         {navItems.map((item) => {
           const active = pathname === item.point;

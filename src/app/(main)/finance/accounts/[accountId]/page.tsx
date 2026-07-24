@@ -13,6 +13,10 @@ export default async function AccountDetailsPage({ params }: { params: Promise<{
 
   const walletData = await getWalletId(user.id, accountId);
 
+  if (!walletData) {
+    redirect('/finance');
+  }
+
   return (
       <AccountStatement accountData={walletData} />
   );

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 
-export function useDashboard() {
+export function useWeather() {
   const [supabase] = useState(() => createClient());
   const router = useRouter();
 

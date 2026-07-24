@@ -21,40 +21,38 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-import { expenseSchema, ExpenseFormValues } from './schemas'
-import { useWallets, useExpenseCategories } from '@/hooks/useFinanceData'
-import { addExpenseAction } from '@/lib/actions/transactions'
-import { formatInputAmount, formatCurrency } from '@/utils/currency'
+import { incomeSchema, IncomeFormValues } from './schemas'
+import { useWallets } from '@/hooks/useFinanceData'
+import { addIncomeAction } from '@/lib/actions/transactions'
+import { formatInputAmount } from '@/utils/currency'
 
-export const ExpenseForm = () => {
+export const IncomeForm = () => {
   const {
-    handleSubmit, control, watch, reset, setError, formState: { errors },
-  } = useForm<ExpenseFormValues>({
-    resolver: zodResolver(expenseSchema as any),
+    handleSubmit, control, watch, reset, formState: { errors },
+  } = useForm<IncomeFormValues>({
+    resolver: zodResolver(incomeSchema as any),
     defaultValues: {
       amount: '' as any,
       accountId: '',
-      categoryId: '',
+      source: '',
       note: '',
       date: undefined,
     }
   })
 
   const { data: wallets = [], isPending: isWalletsPending } = useWallets()
-  const { data: categories = [], isPending: isCategoriesPending } = useExpenseCategories()
 
   const queryClient = useQueryClient()
 
-  const { mutate: addExpense, isPending: isSubmitting } = useMutation({
-    mutationFn: addExpenseAction,
+  const { mutate: addIncome, isPending: isSubmitting } = useMutation({
+    mutationFn: addIncomeAction,
     onSuccess: (result) => {
       if (!result.success) {
-        toast.error(result.error || 'Failed to add expense')
+        toast.error(result.error || 'Failed to add income')
         return
       }
-      toast.success('Expense logged successfully!')
+      toast.success('Income logged successfully!')
       reset()
-      // Refresh all related data on the client
       queryClient.invalidateQueries({ queryKey: ['wallets'] })
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
     },
@@ -63,18 +61,11 @@ export const ExpenseForm = () => {
     }
   })
 
-  const selectedWallet = wallets.find(w => w.id === watch('accountId'))
-
-  function onSubmit(data: ExpenseFormValues) {
-    if (selectedWallet && Number(data.amount) > selectedWallet.balance) {
-      setError('amount', { type: 'manual', message: 'Insufficient balance in wallet' })
-      return
-    }
-
-    addExpense({
+  function onSubmit(data: IncomeFormValues) {
+    addIncome({
       amount: data.amount,
       accountId: data.accountId,
-      categoryId: data.categoryId,
+      source: data.source,
       note: data.note,
       date: data.date,
     })
@@ -114,24 +105,16 @@ export const ExpenseForm = () => {
         )}
       </FieldGroup>
 
-      {/* Account & Category side-by-side */}
-      <div className="grid grid-cols-2 gap-4">
+      {/* Account & Source side-by-side */}
         <FieldGroup>
-          <div className="flex justify-between items-center">
-            <FieldLabel className="mb-0">Account</FieldLabel>
-            {selectedWallet && (
-              <span className="text-[10px] text-muted-foreground font-medium">
-                Bal: {formatCurrency(selectedWallet.balance, selectedWallet.currency || 'PHP')}
-              </span>
-            )}
-          </div>
+          <FieldLabel>Account</FieldLabel>
           <Controller
             control={control}
             name="accountId"
             render={({ field }) => (
               <Select value={field.value} onValueChange={field.onChange}>
                 <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select account" />
+                  <SelectValue placeholder="Deposit to" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
@@ -155,38 +138,6 @@ export const ExpenseForm = () => {
             <FieldError>{errors.accountId.message}</FieldError>
           )}
         </FieldGroup>
-
-        <FieldGroup>
-          <FieldLabel>Category</FieldLabel>
-          <Controller
-            control={control}
-            name="categoryId"
-            render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select category" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    {categories.length === 0 ? (
-                      <SelectItem value="empty" disabled>No categories</SelectItem>
-                    ) : (
-                      categories.map((category) => (
-                        <SelectItem key={category.id} value={category.id}>
-                          {category.name}
-                        </SelectItem>
-                      ))
-                    )}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            )}
-          />
-          {errors.categoryId && (
-            <FieldError>{errors.categoryId.message}</FieldError>
-          )}
-        </FieldGroup>
-      </div>
 
       <FieldSeparator />
 
@@ -215,13 +166,14 @@ export const ExpenseForm = () => {
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
+                    initialFocus
                   />
                 </PopoverContent>
               </Popover>
             )}
           />
         </FieldGroup>
-
+        
         <FieldGroup>
           <FieldLabel>Note</FieldLabel>
           <Controller
@@ -230,7 +182,7 @@ export const ExpenseForm = () => {
             render={({ field }) => (
               <Input
                 type="text"
-                placeholder="What was this for?"
+                placeholder="Where did this come from?"
                 {...field}
               />
             )}
@@ -238,8 +190,8 @@ export const ExpenseForm = () => {
         </FieldGroup>
       </div>
 
-      <Button type="submit" size="lg" className="w-full" disabled={!watch('amount') || !watch('accountId') || !watch('categoryId') || isSubmitting}>
-        {isSubmitting ? 'Adding...' : 'Add Expense'}
+      <Button type="submit" size="lg" className="w-full" disabled={!watch('amount') || !watch('accountId') || isSubmitting}>
+        {isSubmitting ? 'Adding...' : 'Add Income'}
       </Button>
     </form>
   )

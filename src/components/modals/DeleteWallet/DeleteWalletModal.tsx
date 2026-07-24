@@ -31,16 +31,17 @@ export const DeleteWalletModal = ({ walletId, isOpen, setIsOpen }: DeleteWalletM
 
   const { mutate: deleteWallet, isPending } = useMutation({
     mutationFn: () => deleteWalletAction(walletId),
+    onMutate: () => {
+      router.back()
+      setIsOpen(false)
+      toast.success('Wallet deleted successfully')
+    },
     onSuccess: (result) => {
       if (!result.success) {
         toast.error(result.error || 'Failed to delete wallet')
         return
       }
-      toast.success('Wallet deleted successfully')
       queryClient.invalidateQueries({ queryKey: ['wallets'] })
-      setIsOpen(false)
-      // Redirect back to main finance page
-      router.push('/finance')
     },
     onError: () => {
       toast.error('An unexpected error occurred')

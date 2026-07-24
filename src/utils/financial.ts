@@ -44,7 +44,16 @@ export function calculateFinancialTotals(
       let historicalAssets = 0;
       let historicalLiabilities = 0;
 
+      // Extract the oldest snapshot for each wallet to calculate the 30-day delta
+      const oldestSnapshotsByWallet = new Map<string, WalletHistory>();
       safeSnapshots.forEach(snap => {
+         const current = oldestSnapshotsByWallet.get(snap.wallet_id);
+         if (!current || new Date(snap.recorded_at) < new Date(current.recorded_at)) {
+            oldestSnapshotsByWallet.set(snap.wallet_id, snap);
+         }
+      });
+
+      oldestSnapshotsByWallet.forEach(snap => {
         const currentWallet = currencyWallets.find(w => w.id === snap.wallet_id);
         if (currentWallet) {
           if (isAsset(currentWallet.type)) historicalAssets += snap.balance;

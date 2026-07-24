@@ -9,6 +9,7 @@ export async function addExpenseAction(data: {
   accountId: string
   categoryId: string
   note?: string
+  date?: Date
 }) {
   const supabase = await createClient()
 
@@ -27,7 +28,9 @@ export async function addExpenseAction(data: {
         amount: data.amount,
         type: 'expense',
         transferFee: 0,
-        created_for_date: new Date().toISOString().split('T')[0]
+        created_for_date: data.date 
+          ? new Date(data.date.getTime() - (data.date.getTimezoneOffset() * 60000)).toISOString().split('T')[0]
+          : new Date().toISOString().split('T')[0]
       })
 
     if (error) {
@@ -38,6 +41,7 @@ export async function addExpenseAction(data: {
     updateTag(`wallets-${user.id}`)
     updateTag(`categories-${user.id}`)
     updateTag(`transactions-${user.id}`)
+    updateTag(`snapshots-${user.id}`)
 
     return { success: true }
   } catch (error: any) {

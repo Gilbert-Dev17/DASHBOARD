@@ -5,11 +5,12 @@ import dynamic from 'next/dynamic'
 import PageComponent from '@/components/shared/PageComponent'
 import { TaskWithSubtasks, UserSummary, WalletSummary } from '@/types/dashboard'
 import { WalletSnapshot } from '@/types/database'
-import { GreetingHeader } from '@/components/home/greetingHeader'
+import { GreetingHeader } from '@/components/home/GreetingHeader'
 import { AgendaSection } from '@/components/shared/AgendaSection'
 import { NetWorthOverview } from '@/components/home/NetWorthOverview'
+import { useCurrencyFilter } from '@/hooks/useCurrencyFilter'
 
-import { useDashboard } from '@/hooks/useDashboard'
+import { useWeather } from '@/hooks/useWeather'
 import { Skeleton } from "@/components/ui/skeleton"
 
 const LifeProgress = dynamic(
@@ -45,15 +46,13 @@ interface DashboardPageProps {
 export default function DashboardPage({ initialTasks, user, wallets, historicalSnapshots = [] }: DashboardPageProps) {
 
   const displayName = user?.first_name || user?.name?.split(' ')[0] || 'User';
-  useDashboard();
+  useWeather();
 
-  // Find all available currencies
-  const availableCurrencies = Array.from(new Set(wallets.map(w => w.currency || 'PHP')));
-  // Determine the active currency (User preference > First available)
-  const activeCurrency = user?.activeCurrency || availableCurrencies[0] || 'PHP';
-  
-  // Filter wallets for the dashboard
-  const filteredWallets = wallets.filter(w => (w.currency || 'PHP') === activeCurrency);
+  const {filteredWallets} = useCurrencyFilter({user, wallets})
+
+  // const availableCurrencies = Array.from(new Set(wallets.map(w => w.currency || 'PHP')));
+  // const activeCurrency = user?.activeCurrency || availableCurrencies[0] || 'PHP';
+  // // const filteredWallets = wallets.filter(w => (w.currency || 'PHP') === activeCurrency);
 
   return (
     <PageComponent>

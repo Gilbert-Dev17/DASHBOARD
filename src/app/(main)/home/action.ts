@@ -82,7 +82,7 @@ export async function getWalletData(userId: string) {
 // * Networth call
 async function fetchCachedHistoricalSnapshots(userId: string) {
   'use cache'
-  cacheLife('hours');
+  cacheLife('minutes');
   cacheTag(`snapshots-${userId}`);
 
   const thirtyDaysAgo = new Date();
@@ -93,7 +93,7 @@ async function fetchCachedHistoricalSnapshots(userId: string) {
     .from('wallet_snapshots')
     .select('*')
     .eq('user_id', userId)
-    .gte('recorded_at', targetDate)
+    // .gte('recorded_at', targetDate)
     .order('recorded_at', { ascending: true });
 
   if (error) {
@@ -101,15 +101,7 @@ async function fetchCachedHistoricalSnapshots(userId: string) {
     return [];
   }
 
-  // Grab the oldest snapshot for each wallet in this window
-  const oldestSnapshots = new Map<string, WalletHistory>();
-  for (const snap of (data || [])) {
-    if (!oldestSnapshots.has(snap.wallet_id)) {
-      oldestSnapshots.set(snap.wallet_id, snap);
-    }
-  }
-
-  return Array.from(oldestSnapshots.values());
+  return data || [];
 }
 
 export async function getHistoricalSnapshots(userId: string) {
