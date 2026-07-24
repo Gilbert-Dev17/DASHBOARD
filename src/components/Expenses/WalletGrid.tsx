@@ -1,6 +1,6 @@
 import { Wallet as WalletIcon, ArrowRight } from 'lucide-react';
-import { AddWalletModal } from '../modals/add-wallet/AddWalletModal';
-import { WalletCard } from './wallet-Card';
+import { AddWalletModal } from '../Modals/AddWallet/AddWalletModal';
+import { WalletCard } from './WalletCard';
 import type { WalletSummary } from '@/types/dashboard';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '../ui/card';
 import {

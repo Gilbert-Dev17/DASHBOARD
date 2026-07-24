@@ -8,9 +8,9 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 
-import { ExpenseForm } from './expense-form'
-import { IncomeForm } from './income-form'
-import { TransferForm } from './transfer-form'
+import { ExpenseForm } from './ExpenseForm'
+import { IncomeForm } from './IncomeForm'
+import { TransferForm } from './TransferForm'
 
 import { useGlobalShortcut } from '@/hooks/useGlobalShortcut'
 

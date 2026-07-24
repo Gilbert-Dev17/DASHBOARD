@@ -166,14 +166,13 @@ export const IncomeForm = () => {
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
-                    initialFocus
                   />
                 </PopoverContent>
               </Popover>
             )}
           />
         </FieldGroup>
-        
+
         <FieldGroup>
           <FieldLabel>Note</FieldLabel>
           <Controller

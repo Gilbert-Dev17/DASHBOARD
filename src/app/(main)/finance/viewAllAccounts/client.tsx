@@ -3,7 +3,7 @@
 import { ArrowLeft, Wallet as WalletIcon } from 'lucide-react'
 import PageComponent from '@/components/shared/PageComponent'
 import { Button } from '@/components/ui/button'
-import { WalletCard } from '@/components/expenses/wallet-Card'
+import { WalletCard } from '@/components/expenses/WalletCard'
 import { type Wallets, TransactionHistory } from '@/types/expenses'
 import Link from 'next/link'
 import { HeaderTitle } from '@/components/shared/HeaderTitle'

@@ -6,7 +6,7 @@ import { useGeolocation } from '@/hooks/geoLocation'
 import type { WeatherData, Coordinates } from '@/types/weather'
 import type { TaskWithSubtasks } from '@/types/dashboard'
 import { Badge } from '../ui/badge'
-import { WeatherCardSkeleton } from './weatherCardSkeleton'
+import { WeatherCardSkeleton } from './WeatherCardSkeleton'
 import { toast } from 'sonner'
 import { generateDailyBrief } from '@/utils/daily-brief'
 
