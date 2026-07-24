@@ -3,12 +3,13 @@
 import { useState, useTransition } from 'react'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { AgendaSection } from '@/components/shared/AgendaSection'
+import { AgendaSection } from '@/components/Shared/AgendaSection'
 import PageComponent from '@/components/shared/PageComponent'
-import { CustomCalendar } from '@/components/shared/CustomCalendar'
+import { CustomCalendar } from '@/components/Shared/CustomCalendar'
 import { TaskWithSubtasks } from '@/types/dashboard'
 import { getTodayInTimezone } from '@/utils/timezone'
 import { useRouter } from 'next/navigation'
+import { HeaderTitle } from '@/components/Shared/HeaderTitle'
 
 import { Spinner } from '@/components/ui/spinner'
 
@@ -27,16 +28,23 @@ export function PlannerPage({ agendaTitle, initialTasks, dateObj, datesWithTasks
 
   return (
     <PageComponent>
+      <div className='mb-4'>
+        <HeaderTitle title='Schedule' desc='Manage your schedules'/>
+      </div>
+
        <div className="grid grid-cols-12 gap-10 h-[calc(100vh-7rem)]">
 
-        <CustomCalendar
-          initialDate={dateObj}
-          datesWithTasks={datesWithTasks}
-          startTransition={startTransition}
-        />
+        <div className='col-span-4'>
+          <CustomCalendar
+            initialDate={dateObj}
+            datesWithTasks={datesWithTasks}
+            startTransition={startTransition}
+          />
+        </div>
 
-          <div className="lg:col-span-4 flex flex-col h-full overflow-hidden">
-            <div className="flex justify-between items-center mt-2 mb-2">
+
+          <div className="lg:col-span-8 flex flex-col h-full overflow-hidden">
+            <div className="flex justify-between items-center">
               <Label className="text-3xl font-light tracking-tight" >
                  {agendaTitle}
               </Label>
