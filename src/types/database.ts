@@ -38,6 +38,15 @@ export interface Subtask {
     created_at: string;
 }
 
+export interface DailyNote {
+    id: string; // UUID
+    user_id: string; // UUID
+    date: string; // YYYY-MM-DD
+    content: string;
+    created_at: string;
+    updated_at: string;
+}
+
 // * Expenses
 
 export interface ExpenseCategory {

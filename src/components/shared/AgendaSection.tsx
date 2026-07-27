@@ -207,14 +207,14 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
       {tasks.length === 0 ? (
         <p className="text-muted-foreground py-4">No tasks for today.</p>
       ) : (
-        <div className="flex-1 min-h-0 max-h-[650px] pr-4 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="flex-1 min-h-0 max-h-162 pr-4 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <Timeline className="space-y-8">
             {tasks.map((task) => (
               <TimelineItem key={task.id}>
 
                 <TimelineTime dateTime={task.time || undefined}>
                     {task.time && task.time.split(':').length === 3 && task.time.split(':')[2] !== '00'
-                      ? 'OPEN BLOCK'
+                      ? 'FREE'
                       : (task.time ? formatTime(task.time) : '--:--')}
                 </TimelineTime>
 

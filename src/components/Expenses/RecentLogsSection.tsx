@@ -1,11 +1,12 @@
 import Link from 'next/link'
 import { Button } from '../ui/button'
 import {
-  Timeline, TimelineItem, TimelineTime, TimelineContent
- } from '@/components/ui/timeline'
- import { formatSignedCurrency, getSignedAmount } from '@/utils/currency'
- import { TransactionHistory } from '@/types/expenses'
- import { ArrowRight } from 'lucide-react'
+ Timeline, TimelineItem, TimelineTime, TimelineContent
+} from '@/components/ui/timeline'
+import { formatSignedCurrency, getSignedAmount } from '@/utils/currency'
+import { TransactionHistory } from '@/types/expenses'
+import { ArrowRight } from 'lucide-react'
+import { Separator } from '../ui/separator'
 
  interface RecentLogsSectionProps {
    transactions: TransactionHistory[];
@@ -27,7 +28,7 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
           No Transactions yet.
         </div>
       ) : (
-        <div className="min-h-0 max-h-100 pr-4 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="min-h-0 max-h-110 pr-4 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
 
         <Timeline>
           {transactions.map((txn) => {
@@ -73,9 +74,12 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
               </TimelineItem>
             )
           })}
+
         </Timeline>
         </div>
       )}
+
+        <Separator orientation='horizontal' className='bg-accent mt-2' />
     </section>
   )
 }

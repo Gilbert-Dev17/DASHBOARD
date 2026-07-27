@@ -6,22 +6,24 @@ import { Button } from '@/components/ui/button'
 import { AgendaSection } from '@/components/Shared/AgendaSection'
 import PageComponent from '@/components/shared/PageComponent'
 import { CustomCalendar } from '@/components/Shared/CustomCalendar'
-import { TaskWithSubtasks } from '@/types/dashboard'
+import { TaskWithSubtasks, Notes } from '@/types/dashboard'
 import { getTodayInTimezone } from '@/utils/timezone'
 import { useRouter } from 'next/navigation'
 import { HeaderTitle } from '@/components/Shared/HeaderTitle'
+import {NotesSection} from '@/components/Shared/NotesSection'
 
 import { Spinner } from '@/components/ui/spinner'
 
 interface PageProps {
   agendaTitle: string
   initialTasks: TaskWithSubtasks[]
+  note: Notes | null
   dateObj: Date
   datesWithTasks: { date: string; count: number }[]
   finalDate: string
 }
 
-export function PlannerPage({ agendaTitle, initialTasks, dateObj, datesWithTasks, finalDate }: PageProps) {
+export function PlannerPage({ agendaTitle, initialTasks, note, dateObj, datesWithTasks, finalDate }: PageProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition();
   const isToday = finalDate === getTodayInTimezone()
@@ -34,18 +36,20 @@ export function PlannerPage({ agendaTitle, initialTasks, dateObj, datesWithTasks
 
        <div className="grid grid-cols-12 gap-10 h-[calc(100vh-7rem)]">
 
-        <div className='col-span-4'>
+        <div className='col-span-4 space-y-4'>
           <CustomCalendar
             initialDate={dateObj}
             datesWithTasks={datesWithTasks}
             startTransition={startTransition}
           />
+
+          <NotesSection note={note} />
         </div>
 
 
           <div className="lg:col-span-8 flex flex-col h-full overflow-hidden">
             <div className="flex justify-between items-center">
-              <Label className="text-3xl font-light tracking-tight" >
+              <Label className="text-2xl font-medium tracking-tight text-accent" >
                  {agendaTitle}
               </Label>
 
