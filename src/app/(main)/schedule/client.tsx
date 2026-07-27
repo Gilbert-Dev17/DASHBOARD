@@ -46,7 +46,7 @@ export function PlannerPage({ agendaTitle, initialTasks, note, dateObj, datesWit
             </h2>
 
             <Button variant="ghost" size="sm" onClick={() => setShowNotes(!showNotes)} className="text-xs">
-              {showNotes ? 'Show Calendar' : 'Edit Notes'}
+              {showNotes ? 'Show Calendar' : ''}
             </Button>
           </div>
 

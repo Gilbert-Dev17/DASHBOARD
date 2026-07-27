@@ -34,6 +34,16 @@ export function buildNetWorthTrend(
   currency: string,
   currentNetWorth: number
 ): NetWorthTrendPoint[] {
+  const MONTHS_TO_SHOW = 6;
+  const now = new Date();
+
+  // Generate the 6-month window: current month + 5 prior
+  const monthSlots: string[] = [];
+  for (let i = MONTHS_TO_SHOW - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    monthSlots.push(monthKey(d));
+  }
+
   const relevant = historicalSnapshots
     .filter((s) => {
       const wallet = wallets.find((w) => w.id === s.wallet_id);
@@ -41,14 +51,12 @@ export function buildNetWorthTrend(
     })
     .sort((a, b) => new Date(a.recorded_at).getTime() - new Date(b.recorded_at).getTime());
 
-  if (relevant.length === 0) return [];
-
+  // Build a map of month -> net worth by processing snapshots chronologically
+  // and carrying each wallet's last known balance forward
   const latestBalanceByWallet = new Map<string, number>();
-  const monthOrder: string[] = [];
   const monthTotals = new Map<string, number>();
 
-  const finalizeMonth = (key: string) => {
-    if (!monthTotals.has(key)) monthOrder.push(key);
+  const computeTotal = (): number => {
     let total = 0;
     latestBalanceByWallet.forEach((balance, walletId) => {
       const wallet = wallets.find((w) => w.id === walletId);
@@ -56,31 +64,43 @@ export function buildNetWorthTrend(
       if (ASSET_TYPES.includes(wallet.type)) total += balance;
       if (LIABILITY_TYPES.includes(wallet.type)) total -= balance;
     });
-    monthTotals.set(key, total);
+    return total;
   };
 
+  // Process all snapshots to build monthly totals
   let cursorMonth: string | null = null;
   for (const snap of relevant) {
     const key = monthKey(new Date(snap.recorded_at));
-    if (cursorMonth !== null && key !== cursorMonth) finalizeMonth(cursorMonth);
+    if (cursorMonth !== null && key !== cursorMonth) {
+      monthTotals.set(cursorMonth, computeTotal());
+    }
     latestBalanceByWallet.set(snap.wallet_id, snap.balance);
     cursorMonth = key;
   }
-  if (cursorMonth) finalizeMonth(cursorMonth);
+  if (cursorMonth) monthTotals.set(cursorMonth, computeTotal());
 
-  const spansMultipleYears = new Set(monthOrder.map((k) => k.split('-')[0])).size > 1;
+  // Fill carry-forward values for months in between snapshots
+  // Walk the 6-month window and carry the last known total forward
+  const currentKey = monthKey(now);
+  const spansMultipleYears = new Set(monthSlots.map((k) => k.split('-')[0])).size > 1;
+  let lastKnownValue = 0;
 
-  const historical = monthOrder.map((key) => ({
-    key,
-    label: monthLabel(key, spansMultipleYears),
-    value: monthTotals.get(key)!,
-  }));
+  return monthSlots.map((key) => {
+    if (key === currentKey) {
+      // Always use the live calculated figure for the current month
+      return { key, label: 'Now', value: currentNetWorth };
+    }
 
-  // Replace the current month's point with the live figure instead of appending a duplicate.
-  const currentKey = monthKey(new Date());
-  const withoutCurrentMonth = historical.filter((p) => p.key !== currentKey);
+    if (monthTotals.has(key)) {
+      lastKnownValue = monthTotals.get(key)!;
+    }
 
-  return [...withoutCurrentMonth, { key: currentKey, label: 'Now', value: currentNetWorth }];
+    return {
+      key,
+      label: monthLabel(key, spansMultipleYears),
+      value: lastKnownValue,
+    };
+  });
 }
 
 export type TrendDirection = 'up' | 'down' | 'flat' | 'unknown';

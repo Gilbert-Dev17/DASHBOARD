@@ -96,9 +96,9 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
                   <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
                     Total
                   </span>
-                  <div className="text-4xl lg:text-5xl font-mono text-foreground tracking-tighter flex items-baseline gap-1">
+                  <div className="text-3xl lg:text-4xl font-mono text-foreground tracking-tighter flex items-baseline gap-1">
                     {formatCurrency(totalExpenses, currency).split('.')[0]}
-                    <span className="text-xl lg:text-2xl text-muted-foreground font-medium">.{formatCurrency(totalExpenses, currency).split('.')[1]}</span>
+                    <span className="text-lg lg:text-xl text-muted-foreground font-medium">.{formatCurrency(totalExpenses, currency).split('.')[1]}</span>
                   </div>
                 </div>
               )}
