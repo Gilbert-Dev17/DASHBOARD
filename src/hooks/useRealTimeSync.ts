@@ -18,6 +18,7 @@ export function useRealTimeSync() {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_notes' }, () => router.refresh())
       // Finance Tables
       .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' }, () => router.refresh())
+      .on('postgres_changes', {event: '*', schema: 'public', table: 'expense_categories'}, () => router.refresh())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'wallets' }, () => router.refresh())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'wallet_snapshots' }, () => router.refresh())
       .subscribe((status) => {
