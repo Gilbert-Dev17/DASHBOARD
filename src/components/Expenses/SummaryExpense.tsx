@@ -70,12 +70,12 @@ export const SummaryExpense = ({
               </div>
 
               <div
-                className={`text-5xl md:text-6xl font-mono tracking-tighter tabular-nums flex items-baseline gap-1 ${
+                className={`text-4xl md:text-5xl font-mono tracking-tighter tabular-nums flex items-baseline gap-1 ${
                   isNegative ? 'text-rose-400' : 'text-accent'
                 }`}
               >
                 {nwDollars}
-                {nwCents && <span className="text-2xl md:text-3xl text-muted-foreground">.{nwCents}</span>}
+                {nwCents && <span className="text-xl md:text-2xl text-muted-foreground">.{nwCents}</span>}
               </div>
 
               <p className="text-xs lg:text-sm text-muted-foreground font-medium max-w-sm leading-relaxed">
