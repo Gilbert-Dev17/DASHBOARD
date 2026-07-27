@@ -5,12 +5,11 @@ import dynamic from 'next/dynamic'
 import PageComponent from '@/components/shared/PageComponent'
 import { TaskWithSubtasks, UserSummary, WalletSummary } from '@/types/dashboard'
 import { WalletSnapshot } from '@/types/database'
-import { GreetingHeader } from '@/components/Home/GreetingHeader'
+import { GreetingHeader } from '@/components/Home/greetingHeader'
 import { AgendaSection } from '@/components/Shared/AgendaSection'
 import { NetWorthOverview } from '@/components/Home/NetWorthOverview'
 import { useCurrencyFilter } from '@/hooks/useCurrencyFilter'
 
-import { useWeather } from '@/hooks/useWeather'
 import { Skeleton } from "@/components/ui/skeleton"
 
 const LifeProgress = dynamic(
@@ -46,7 +45,6 @@ interface DashboardPageProps {
 export default function DashboardPage({ initialTasks, user, wallets, historicalSnapshots = [] }: DashboardPageProps) {
 
   const displayName = user?.first_name || user?.name?.split(' ')[0] || 'User';
-  useWeather();
 
   const { filteredWallets } = useCurrencyFilter({user, wallets})
 
