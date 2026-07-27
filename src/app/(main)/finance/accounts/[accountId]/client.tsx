@@ -21,8 +21,8 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu';
-import { EditWalletModal } from '@/components/modals/edit-wallet/EditWalletModal';
-import { DeleteWalletModal } from '@/components/modals/delete-wallet/DeleteWalletModal';
+import { EditWalletModal } from '@/components/Modals/EditWallet/EditWalletModal';
+import { DeleteWalletModal } from '@/components/Modals/DeleteWallet/DeleteWalletModal';
 import PageComponent from '@/components/shared/PageComponent';
 import { Wallets, TransactionHistory } from '@/types/expenses';
 import { getSignedAmount } from '@/utils/currency';

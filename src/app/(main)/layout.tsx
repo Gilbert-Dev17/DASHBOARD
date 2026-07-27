@@ -1,7 +1,7 @@
 import { ReactNode, Suspense } from 'react'
 
-import Navbar from '@/components/navbar/Navbar'
-import Sidebar from '@/components/navbar/Sidebar'
+import Navbar from '@/components/Navbar/Navbar'
+import Sidebar from '@/components/Navbar/Sidebar'
 import { getUser } from '@/lib/auth/get-user'
 
 async function SidebarWrapper() {

@@ -7,7 +7,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { AVAILABLE_ICONS } from '@/lib/constants/categories'
 import type { CategoryWithTotal } from '@/types/expenses'
 import { formatCurrency } from '@/utils/currency'
-import { HeaderTitle } from '@/components/shared/HeaderTitle'
+import { HeaderTitle } from '@/components/Shared/HeaderTitle'
 import { useRouter } from 'next/navigation'
 
 interface ViewAllCategoriesClientProps {

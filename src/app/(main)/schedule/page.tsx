@@ -2,7 +2,7 @@ import { getTodayInTimezone } from '@/utils/timezone'
 import { startOfMonth, endOfMonth, parseISO, format } from 'date-fns'
 
 import { PlannerPage } from "./client"
-import { getTasksByDate, getMonthTasksSummary } from "./action"
+import { getTasksByDate, getMonthTasksSummary, getDailyNotes } from "./action"
 import { getUser } from "@/lib/auth/get-user";
 import { redirect } from "next/navigation";
 
@@ -28,9 +28,10 @@ export default async function page(props: pageProps) {
   const startStr = format(startOfMonth(dateObj), 'yyyy-MM-dd')
   const endStr = format(endOfMonth(dateObj), 'yyyy-MM-dd')
 
-  const [selectedTasks, datesWithTasks] = await Promise.all([
+  const [selectedTasks, datesWithTasks, NotesToday] = await Promise.all([
     getTasksByDate(user.id, finalDateStr),
-    getMonthTasksSummary(user.id, startStr, endStr)
+    getMonthTasksSummary(user.id, startStr, endStr),
+    getDailyNotes(user.id, finalDateStr)
   ])
 
   const isToday = finalDateStr === getTodayInTimezone()
@@ -41,6 +42,7 @@ export default async function page(props: pageProps) {
       initialTasks={selectedTasks}
       agendaTitle={agendaTitle}
       dateObj={dateObj}
+      note={NotesToday}
       datesWithTasks={datesWithTasks}
       finalDate={finalDateStr}
     />

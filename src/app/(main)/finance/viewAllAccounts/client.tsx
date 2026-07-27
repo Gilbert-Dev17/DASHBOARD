@@ -3,10 +3,10 @@
 import { ArrowLeft, Wallet as WalletIcon } from 'lucide-react'
 import PageComponent from '@/components/shared/PageComponent'
 import { Button } from '@/components/ui/button'
-import { WalletCard } from '@/components/expenses/WalletCard'
+import { WalletCard } from '@/components/Expenses/WalletCard'
 import { type Wallets, TransactionHistory } from '@/types/expenses'
 import Link from 'next/link'
-import { HeaderTitle } from '@/components/shared/HeaderTitle'
+import { HeaderTitle } from '@/components/Shared/HeaderTitle'
 import { useRouter } from 'next/navigation'
 
 interface ViewAllAccountsClientProps {

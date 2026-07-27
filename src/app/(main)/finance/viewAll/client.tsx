@@ -1,11 +1,9 @@
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
-import Link from 'next/link';
-
 import { ArrowLeft, Search, ArrowDown, ArrowUp, ArrowRightLeft, CreditCard } from 'lucide-react';
 import PageComponent from '@/components/shared/PageComponent';
-import { HeaderTitle } from '@/components/shared/HeaderTitle';
+import { HeaderTitle } from '@/components/Shared/HeaderTitle';
 import { Button } from '@/components/ui/button';
 import { formatCurrency, getSignedAmount, formatSignedCurrency } from '@/utils/currency';
 import { TransactionHistory } from '@/types/expenses';
@@ -21,10 +19,10 @@ import {
   Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious,
 } from "@/components/ui/pagination"
 import { useRouter } from 'next/navigation';
-import { CurrencySwitcher } from '@/components/shared/CurrencySwitcher';
+import { CurrencySwitcher } from '@/components/Shared/CurrencySwitcher';
 import { WalletSummary, UserSummary } from '@/types/dashboard';
 import { useCurrencyFilter } from '@/hooks/useCurrencyFilter';
-import { CategoryBadge } from '@/components/shared/CategoryBadge';
+import { CategoryBadge } from '@/components/Shared/CategoryBadge';
 
 const LOG_FILTERS = [
   { name: 'All', value: 'all' },

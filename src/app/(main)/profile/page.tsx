@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation'
 import { getUser } from '@/lib/auth/get-user'
 import PageComponent from '@/components/shared/PageComponent'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
-import { ProfileSettings } from '@/components/profile/ProfileSettings'
+import { ProfileSettings } from '@/components/Profile/ProfileSettings'
 
 export default async function ProfilePage() {
   const user = await getUser()

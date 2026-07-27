@@ -1,11 +1,12 @@
 import Link from 'next/link'
 import { Button } from '../ui/button'
 import {
-  Timeline, TimelineItem, TimelineTime, TimelineContent
- } from '@/components/ui/timeline'
- import { formatSignedCurrency, getSignedAmount } from '@/utils/currency'
- import { TransactionHistory } from '@/types/expenses'
- import { ArrowRight } from 'lucide-react'
+ Timeline, TimelineItem, TimelineTime, TimelineContent
+} from '@/components/ui/timeline'
+import { formatSignedCurrency, getSignedAmount } from '@/utils/currency'
+import { TransactionHistory } from '@/types/expenses'
+import { ArrowRight } from 'lucide-react'
+import { Separator } from '../ui/separator'
 
  interface RecentLogsSectionProps {
    transactions: TransactionHistory[];
@@ -13,7 +14,7 @@ import {
 
 export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
   return (
-    <section className="flex flex-col h-full" aria-labelledby="logs-heading">
+    <section className="flex flex-col flex-1" aria-labelledby="logs-heading">
       <header className="flex flex-row justify-between items-center pb-4 mb-2 shrink-0">
         <h2 id="logs-heading" className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Transactions</h2>
         <Button variant="link" size="sm" className="group px-0 flex flex-row text-muted-foreground hover:text-foreground items-center gap-1" asChild>
@@ -23,11 +24,11 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
         </Button>
       </header>
       {transactions.length === 0 ? (
-        <div className="flex-1 flex flex-col items-center justify-center py-16 text-muted-foreground text-sm">
+        <div className="flex flex-col items-center justify-center py-16 text-muted-foreground text-sm">
           No Transactions yet.
         </div>
       ) : (
-        <div className="flex-1 min-h-0 max-h-100 pr-4 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="min-h-0 max-h-110 pr-4 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
 
         <Timeline>
           {transactions.map((txn) => {
@@ -73,9 +74,12 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
               </TimelineItem>
             )
           })}
+
         </Timeline>
         </div>
       )}
+
+        <Separator orientation='horizontal' className='bg-accent mt-2' />
     </section>
   )
 }
