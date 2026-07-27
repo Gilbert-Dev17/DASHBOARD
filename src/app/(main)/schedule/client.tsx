@@ -24,6 +24,7 @@ interface PageProps {
 }
 
 export function PlannerPage({ agendaTitle, initialTasks, note, dateObj, datesWithTasks, finalDate }: PageProps) {
+  const [showNotes, setShowNotes] = useState(false)
   const router = useRouter()
   const [isPending, startTransition] = useTransition();
   const isToday = finalDate === getTodayInTimezone()
@@ -31,19 +32,33 @@ export function PlannerPage({ agendaTitle, initialTasks, note, dateObj, datesWit
   return (
     <PageComponent>
       <div className='mb-4'>
-        <HeaderTitle title='Schedule' desc='Manage your schedules'/>
+        <HeaderTitle
+          title='Schedule'
+          desc='Organize your tasks and capture daily reflections.'/>
       </div>
 
        <div className="grid grid-cols-12 gap-10 h-[calc(100vh-7rem)]">
 
-        <div className='col-span-4 space-y-4'>
-          <CustomCalendar
-            initialDate={dateObj}
-            datesWithTasks={datesWithTasks}
-            startTransition={startTransition}
-          />
+        <div className='col-span-4 flex flex-col h-full space-y-4 min-h-0'>
+          <div className="flex justify-between items-center shrink-0">
+            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
+              {showNotes ? 'Daily Notes' : 'Calendar'}
+            </h2>
 
-          <NotesSection note={note} />
+            <Button variant="ghost" size="sm" onClick={() => setShowNotes(!showNotes)} className="text-xs">
+              {showNotes ? 'Show Calendar' : 'Edit Notes'}
+            </Button>
+          </div>
+
+          {!showNotes && (
+            <CustomCalendar
+              initialDate={dateObj}
+              datesWithTasks={datesWithTasks}
+              startTransition={startTransition}
+            />
+          )}
+
+          <NotesSection note={note} dateStr={finalDate} isExpanded={showNotes} onExpand={() => setShowNotes(true)} />
         </div>
 
 
