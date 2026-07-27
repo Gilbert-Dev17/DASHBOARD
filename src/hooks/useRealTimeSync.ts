@@ -5,19 +5,22 @@ import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 
-export function useWeather() {
+export function useRealTimeSync() {
   const [supabase] = useState(() => createClient());
   const router = useRouter();
 
-  useEffect(() => {
+    useEffect(() => {
     const channel = supabase
       .channel('dashboard-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, () => {
-        router.refresh();
-      })
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'subtasks' }, () => {
-        router.refresh();
-      })
+      // Schedule & Home Tables
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, () => router.refresh())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'subtasks' }, () => router.refresh())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_notes' }, () => router.refresh())
+      // Finance Tables
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' }, () => router.refresh())
+      .on('postgres_changes', {event: '*', schema: 'public', table: 'expense_categories'}, () => router.refresh())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'wallets' }, () => router.refresh())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'wallet_snapshots' }, () => router.refresh())
       .subscribe((status) => {
         if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
           console.error('Dashboard realtime channel failed:', status);

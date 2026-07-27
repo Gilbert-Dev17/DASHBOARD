@@ -1,4 +1,5 @@
 import { ReactNode, Suspense } from 'react'
+import { RealtimeSync } from '@/components/Shared/RealTimeSync'
 
 import Navbar from '@/components/Navbar/Navbar'
 import Sidebar from '@/components/Navbar/Sidebar'
@@ -9,7 +10,6 @@ async function SidebarWrapper() {
     return (
         <>
             <Sidebar user={user} />
-            {/* <Navbar user={user} /> */}
         </>
     );
 }
@@ -17,6 +17,7 @@ async function SidebarWrapper() {
 export default function MainLayout({children}: Readonly<{children: ReactNode}>){
     return (
         <section className="min-h-full flex flex-col" suppressHydrationWarning>
+            <RealtimeSync />
             <Suspense fallback={null}>
                 <SidebarWrapper />
             </Suspense>
