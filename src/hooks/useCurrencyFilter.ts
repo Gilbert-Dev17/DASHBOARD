@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useTransition } from 'react';
 import type { WalletSummary, UserSummary } from '@/types/dashboard';
 import type { TransactionHistory } from '@/types/expenses';
 
@@ -21,9 +21,16 @@ export function useCurrencyFilter({ wallets, user, transactions }: UseCurrencyFi
 
   const defaultCurrency = user?.activeCurrency || availableCurrencies[0] || 'PHP';
   const [activeCurrency, setActiveCurrency] = useState(defaultCurrency);
+  const [isPending, startTransition] = useTransition();
 
-  const filteredWallets = useMemo(() => 
-    wallets.filter(w => (w.currency || 'PHP') === activeCurrency), 
+  const handleCurrencyChange = (newCurrency: string) => {
+    startTransition(() => {
+      setActiveCurrency(newCurrency);
+    });
+  };
+
+  const filteredWallets = useMemo(() =>
+    wallets.filter(w => (w.currency || 'PHP') === activeCurrency),
   [wallets, activeCurrency]);
 
   const filteredTransactions = useMemo(() => {
@@ -37,8 +44,9 @@ export function useCurrencyFilter({ wallets, user, transactions }: UseCurrencyFi
   return {
     availableCurrencies,
     activeCurrency,
-    setActiveCurrency,
+    setActiveCurrency: handleCurrencyChange,
     filteredWallets,
-    filteredTransactions
+    filteredTransactions,
+    isPending // Added this just in case you ever want to show a tiny loading spinner next to the currency!
   };
 }

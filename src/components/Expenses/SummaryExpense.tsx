@@ -15,14 +15,16 @@ interface SummaryExpenseProps {
   wallets: WalletSummary[];
   historicalSnapshots?: WalletHistory[];
   transactions: TransactionHistory[];
+  activeCurrency: string;
 }
 
 export const SummaryExpense = ({
   wallets,
   historicalSnapshots = [],
   transactions = [],
+  activeCurrency,
 }: SummaryExpenseProps) => {
-  const totalsByCurrency = calculateFinancialTotals(wallets, historicalSnapshots, transactions);
+  const totalsByCurrency = calculateFinancialTotals(wallets, historicalSnapshots, transactions, activeCurrency);
   const currencyBlocks = Object.values(totalsByCurrency);
 
   const trendsByCurrency = useMemo(() => {
@@ -101,7 +103,7 @@ export const SummaryExpense = ({
               </p>
             </div>
 
-            <div className="w-full flex-1 flex flex-col relative">
+            <div className="w-full flex-1 flex flex-col relative min-h-[160px] md:min-h-0">
               <ChartContainer config={chartConfig} className="w-full h-full absolute inset-0">
                 <AreaChart
                   accessibilityLayer

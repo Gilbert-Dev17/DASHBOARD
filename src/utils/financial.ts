@@ -11,7 +11,8 @@ export type FinancialTotals = {
 export function calculateFinancialTotals(
   wallets?: WalletSummary[] | null,
   historicalSnapshots?: WalletHistory[] | null,
-  transactions?: TransactionHistory[] | null
+  transactions?: TransactionHistory[] | null,
+  targetCurrency: string = 'PHP'
 ): Record<string, FinancialTotals> {
     const safeWallets = wallets || [];
     const safeSnapshots = historicalSnapshots || [];
@@ -25,8 +26,8 @@ export function calculateFinancialTotals(
     const totalsByCurrency: Record<string, FinancialTotals> = {};
 
     if (currencies.length === 0) {
-      // Default fallback
-      totalsByCurrency['PHP'] = { netWorth: 0, trendPercentage: null, income: 0, expense: 0, currency: 'PHP' };
+      // Default fallback when there are no wallets for the selected currency
+      totalsByCurrency[targetCurrency] = { netWorth: 0, trendPercentage: null, income: 0, expense: 0, currency: targetCurrency };
       return totalsByCurrency;
     }
 

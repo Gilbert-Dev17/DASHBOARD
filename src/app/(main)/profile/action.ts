@@ -7,10 +7,11 @@ export async function updateDefaultCurrency(userId: string, newCurrency: string)
   const supabase = createClient();
 
   try {
-    const { error } = await supabase
+    const { error } = await (await supabase)
       .from('profiles')
-      .update({ activeCurrency: newCurrency })
+      .update({ activecurrency: newCurrency })
       .eq('id', userId);
+
 
     if (error) {
       console.error('Error updating profile currency:', error);
@@ -18,7 +19,7 @@ export async function updateDefaultCurrency(userId: string, newCurrency: string)
     }
 
     revalidatePath('/', 'layout');
-    
+
     return { success: true };
   } catch (error: any) {
     console.error('Unexpected error updating profile:', error);
