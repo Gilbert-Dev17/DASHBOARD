@@ -6,7 +6,7 @@ import { WalletHistory, WalletSummary, TransactionHistory } from '@/types/expens
 import { formatCurrency, formatSignedCurrency } from '@/utils/currency';
 import { calculateFinancialTotals } from '@/utils/financial';
 import { Card, CardContent} from '../ui/card';
-import { Bar, BarChart, XAxis, YAxis } from 'recharts';
+import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 import { buildNetWorthTrend, getTrendDirection, TREND_COLORS } from '@/lib/finance/net-worth-trend';
 import { Separator } from '../ui/separator';
@@ -48,7 +48,6 @@ export const SummaryExpense = ({
         const direction = getTrendDirection(trendPercentage);
         const trendColor = TREND_COLORS[direction];
         const chartData = trendsByCurrency[currency] ?? [];
-        const hasEnoughHistory = chartData.length >= 1;
 
         const chartConfig = {
           value: { label: 'Net Worth: ', color: trendColor },
@@ -102,37 +101,40 @@ export const SummaryExpense = ({
               </p>
             </div>
 
-            <div className="w-full flex-1 flex flex-col bg-card/30 relative">
-              {hasEnoughHistory ? (
-                <ChartContainer config={chartConfig} className="w-full h-full absolute inset-0">
-                  <BarChart
-                    accessibilityLayer
-                    data={chartData}
-                    margin={{ top: 16, right: 0, left: 0, bottom: 0 }}
-                  >
-                    <XAxis
-                      dataKey="label"
-                      tickLine={false}
-                      axisLine={false}
-                      tickMargin={2}
-                      fontSize={10}
-                      tickFormatter={(value) => typeof value === 'string' ? value.slice(0, 3) : value}
-                    />
-                    <YAxis hide domain={['auto', 'auto']} />
-                    <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-                    <Bar
-                      dataKey="value"
-                      fill={trendColor}
-                      radius={2}
-                      isAnimationActive={true}
-                    />
-                  </BarChart>
-                </ChartContainer>
-              ) : (
-                <div className="flex h-full w-full items-center justify-center text-[10px] uppercase tracking-wider text-muted-foreground/60 p-6 text-center">
-                  Trend appears after your next snapshot
-                </div>
-              )}
+            <div className="w-full flex-1 flex flex-col relative">
+              <ChartContainer config={chartConfig} className="w-full h-full absolute inset-0">
+                <AreaChart
+                  accessibilityLayer
+                  data={chartData}
+                  margin={{ top: 16, right: 16, left: 16, bottom: 0 }}
+                >
+                  <defs>
+                    <linearGradient id={`fill-${currency}`} x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="5%" stopColor={trendColor} stopOpacity={0.3} />
+                      <stop offset="95%" stopColor={trendColor} stopOpacity={0.02} />
+                    </linearGradient>
+                  </defs>
+                  <XAxis
+                    dataKey="label"
+                    tickLine={false}
+                    axisLine={false}
+                    tickMargin={6}
+                    interval={0}
+                    fontSize={10}
+                    tickFormatter={(value) => typeof value === 'string' ? value.slice(0, 3) : value}
+                  />
+                  <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+                  <Area
+                    dataKey="value"
+                    type="monotone"
+                    fill={`url(#fill-${currency})`}
+                    stroke={trendColor}
+                    strokeWidth={1.5}
+                    dot={false}
+                    isAnimationActive={true}
+                  />
+                </AreaChart>
+              </ChartContainer>
             </div>
           </Card>
         );
