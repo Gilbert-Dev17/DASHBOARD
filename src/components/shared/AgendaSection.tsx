@@ -219,7 +219,6 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
                 </TimelineTime>
 
                 <TimelineContent
-                  withCard
                   className={`w-full cursor-pointer ${task.is_done ? 'opacity-50 grayscale' : ''}`}
                   onClick={() => setEditingTask(task)}
                 >
