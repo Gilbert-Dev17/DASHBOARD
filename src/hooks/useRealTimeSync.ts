@@ -24,7 +24,9 @@ export function useRealTimeSync() {
       .subscribe((status) => {
         if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
           console.error('Dashboard realtime channel failed:', status);
-          // (Keep your existing toast error here)
+          toast.error('Realtime connection lost', {
+            description: 'Live updates are currently unavailable. Please refresh the page if this persists.',
+          });
         }
       });
 
