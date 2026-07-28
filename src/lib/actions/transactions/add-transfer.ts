@@ -23,37 +23,26 @@ export async function addTransferAction(data: {
   // one for the money leaving the source, and one for the money entering the destination.
 
   try {
-    const { error } = await supabase
-      .from('transactions')
-      .insert([
-        {
-          user_id: user.id,
-          wallet_id: data.fromAccountId,
-          category_id: null,
-          title: data.note || 'Transfer Out',
-          amount: -(data.amount + fee), // Subtract amount + fee from source
-          type: 'transfer',
-          transferFee: data.transferFee || 0,
-          created_for_date: data.date
-            ? new Date(data.date.getTime() - (data.date.getTimezoneOffset() * 60000)).toISOString().split('T')[0]
-            : new Date().toISOString().split('T')[0]
-        },
-        {
-          user_id: user.id,
-          wallet_id: data.toAccountId,
-          category_id: null,
-          title: data.note || 'Transfer In',
-          amount: data.amount, // Add amount to destination
-          type: 'transfer',
-          transferFee: 0,
-          created_for_date: data.date
-            ? new Date(data.date.getTime() - (data.date.getTimezoneOffset() * 60000)).toISOString().split('T')[0]
-            : new Date().toISOString().split('T')[0]
-        }
-      ])
+    const formattedDate = data.date
+      ? new Date(data.date.getTime() - (data.date.getTimezoneOffset() * 60000)).toISOString().split('T')[0]
+      : new Date().toISOString().split('T')[0]
+
+    const { error } = await supabase.rpc('transfer_funds', {
+      p_user_id: user.id,
+      p_from_wallet: data.fromAccountId,
+      p_to_wallet: data.toAccountId,
+      p_amount: data.amount,
+      p_fee: fee,
+      p_note: data.note || null,
+      p_date: formattedDate
+    })
 
     if (error) {
-      console.error('Error inserting transfer:', error)
+      console.error('Error inserting transfer via RPC:', error)
+      // If the RPC raises our 'Insufficient balance' exception, we can return that to the UI
+      if (error.message.includes('Insufficient balance')) {
+        return { success: false, error: 'Insufficient balance in the source wallet.' }
+      }
       return { success: false, error: error.message }
     }
 

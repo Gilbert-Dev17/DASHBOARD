@@ -9,7 +9,7 @@ interface SignableTransaction {
 
 export const getSignedAmount = (
   txn: SignableTransaction,
-  perspectiveWalletId: string
+  perspectiveWalletId?: string
 ): number => {
   const magnitude = Math.abs(txn.amount);
 
@@ -19,7 +19,9 @@ export const getSignedAmount = (
     case 'expense':
       return -magnitude;
     case 'transfer':
-      return txn.wallet_id === perspectiveWalletId ? -magnitude : magnitude;
+      // Transfers are already signed correctly in the DB:
+      // Transfer Out is negative, Transfer In is positive.
+      return Number(txn.amount);
     default:
       return magnitude;
   }
