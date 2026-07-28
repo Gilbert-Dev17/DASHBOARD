@@ -10,11 +10,12 @@ import { Badge } from '../ui/badge'
 interface NetWorthProps {
   wallets: WalletSummary[];
   historicalSnapshots?: WalletHistory[];
+  activeCurrency: string;
 }
 
-export const NetWorthOverview = ({ wallets, historicalSnapshots = [] }: NetWorthProps) => {
+export const NetWorthOverview = ({ wallets, historicalSnapshots = [], activeCurrency }: NetWorthProps) => {
 
-  const totalsByCurrency = calculateFinancialTotals(wallets, historicalSnapshots);
+  const totalsByCurrency = calculateFinancialTotals(wallets, historicalSnapshots, null, activeCurrency);
   const currencyBlocks = Object.values(totalsByCurrency);
 
   return (
@@ -30,9 +31,9 @@ export const NetWorthOverview = ({ wallets, historicalSnapshots = [] }: NetWorth
                 Net Worth ({currency})
               </h2>
             </div>
-            <div className="text-5xl md:text-6xl font-mono text-accent tracking-tighter tabular-nums flex items-baseline gap-1">
+            <div className="text-4xl md:text-5xl font-mono text-accent tracking-tighter tabular-nums flex items-baseline gap-1">
               {nwDollars}
-              {nwCents && <span className="text-2xl md:text-3xl text-muted-foreground">.{nwCents}</span>}
+              {nwCents && <span className="text-xl md:text-2xl text-muted-foreground">.{nwCents}</span>}
             </div>
             <p className="text-xs lg:text-sm text-muted-foreground font-medium max-w-sm leading-relaxed">
               {trendPercentage === null ? (

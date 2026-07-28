@@ -43,6 +43,7 @@ export default function ExpenseTrackerPage({ user, wallets, transactions, histor
         wallets={filteredWallets}
         historicalSnapshots={historicalSnapshots}
         transactions={filteredTransactions}
+        activeCurrency={activeCurrency}
       />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">

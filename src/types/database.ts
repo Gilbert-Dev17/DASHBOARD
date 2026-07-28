@@ -96,3 +96,17 @@ export interface Transaction {
     created_for_date: string; // YYYY-MM-DD
     created_at: string;
 }
+
+export interface TableCounts {
+  tasks: number
+  subtasks: number
+  daily_notes: number
+  transactions: number
+  wallets: number
+}
+
+export interface DatabaseMetrics {
+  size_bytes: number
+  size_mb: number
+  size_pretty: string
+}

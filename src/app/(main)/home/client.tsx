@@ -46,7 +46,7 @@ export default function DashboardPage({ initialTasks, user, wallets, historicalS
 
   const displayName = user?.first_name || user?.name?.split(' ')[0] || 'User';
 
-  const { filteredWallets } = useCurrencyFilter({user, wallets})
+  const { filteredWallets, activeCurrency } = useCurrencyFilter({user, wallets})
 
   return (
     <PageComponent>
@@ -60,7 +60,7 @@ export default function DashboardPage({ initialTasks, user, wallets, historicalS
 
         <aside className="lg:col-span-5 space-y-8 mt-8 lg:mt-0">
 
-        <NetWorthOverview wallets={filteredWallets} historicalSnapshots={historicalSnapshots} />
+        <NetWorthOverview wallets={filteredWallets} historicalSnapshots={historicalSnapshots} activeCurrency={activeCurrency} />
 
         <LifeProgress />
 

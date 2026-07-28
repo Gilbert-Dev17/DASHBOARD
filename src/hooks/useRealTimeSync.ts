@@ -12,6 +12,8 @@ export function useRealTimeSync() {
     useEffect(() => {
     const channel = supabase
       .channel('dashboard-changes')
+      // Profiles Table
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, () => router.refresh())
       // Schedule & Home Tables
       .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, () => router.refresh())
       .on('postgres_changes', { event: '*', schema: 'public', table: 'subtasks' }, () => router.refresh())
