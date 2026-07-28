@@ -37,10 +37,8 @@ export function DatabaseMetricsCard({ size_mb, size_pretty, tableCounts }: Datab
 
   return (
     <div className="rounded-xl border border-border/60 bg-card p-6 space-y-5">
-      {/* Top Tags */}
-      <div className="flex items-center justify-between">
 
-        <div>
+      <div>
           <div className="flex items-center gap-2 mb-1">
             <Database size={14} className="text-accent shrink-0" />
             <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
@@ -56,8 +54,7 @@ export function DatabaseMetricsCard({ size_mb, size_pretty, tableCounts }: Datab
           </p>
         </div>
 
-        <Server size={14} className="text-muted-foreground shrink-0" />
-      </div>
+
 
       {/* Big Number + Delta */}
       <div className="flex items-baseline gap-3">
@@ -82,7 +79,8 @@ export function DatabaseMetricsCard({ size_mb, size_pretty, tableCounts }: Datab
         {totalRows.toLocaleString()} total records across {tableLabels.length} tables
       </p>
 
-      {/* <div className="flex items-center gap-2 flex-wrap">
+      {/* <div className="flex items-center justify-between">
+        <div className="flex items-center gap-2 flex-wrap">
           {tableLabels.map(({ label, count }) => (
             <Badge
               key={label}
@@ -92,7 +90,10 @@ export function DatabaseMetricsCard({ size_mb, size_pretty, tableCounts }: Datab
               {label} · {count}
             </Badge>
           ))}
-        </div> */}
+        </div>
+
+        <Server size={14} className="text-muted-foreground shrink-0" />
+      </div> */}
     </div>
   )
 }
