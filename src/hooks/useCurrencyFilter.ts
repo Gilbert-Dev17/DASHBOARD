@@ -1,4 +1,4 @@
-import { useMemo, useState, useTransition } from 'react';
+import { useEffect, useMemo, useState, useTransition } from 'react';
 import type { WalletSummary, UserSummary } from '@/types/dashboard';
 import type { TransactionHistory } from '@/types/expenses';
 
@@ -22,6 +22,14 @@ export function useCurrencyFilter({ wallets, user, transactions }: UseCurrencyFi
   const defaultCurrency = user?.activeCurrency || availableCurrencies[0] || 'PHP';
   const [activeCurrency, setActiveCurrency] = useState(defaultCurrency);
   const [isPending, startTransition] = useTransition();
+
+  // Sync local state when the server-side activeCurrency changes
+  // (e.g. after profile settings update triggers router.refresh)
+  useEffect(() => {
+    if (user?.activeCurrency && user.activeCurrency !== activeCurrency) {
+      setActiveCurrency(user.activeCurrency);
+    }
+  }, [user?.activeCurrency]);
 
   const handleCurrencyChange = (newCurrency: string) => {
     startTransition(() => {
