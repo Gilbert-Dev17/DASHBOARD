@@ -21,7 +21,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-import { expenseSchema, ExpenseFormValues } from './schemas'
+import { expenseSchema, ExpenseFormValues } from "../AddTransaction/schemas"
 import { useWallets, useExpenseCategories } from '@/hooks/useFinanceData'
 import { addExpenseAction } from '@/lib/actions/transactions'
 import { formatInputAmount, formatCurrency } from '@/utils/currency'
