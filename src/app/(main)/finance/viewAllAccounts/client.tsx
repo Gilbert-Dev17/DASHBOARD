@@ -8,6 +8,7 @@ import { type Wallets, TransactionHistory } from '@/types/expenses'
 import Link from 'next/link'
 import { HeaderTitle } from '@/components/Shared/HeaderTitle'
 import { useRouter } from 'next/navigation'
+import { AddWalletModal } from '@/components/Modals/AddWallet/AddWalletModal'
 
 interface ViewAllAccountsClientProps {
   wallets: (Wallets & { transactions: TransactionHistory[] })[]
@@ -33,6 +34,8 @@ export function ViewAllAccountsClient({ wallets }: ViewAllAccountsClientProps) {
             </Button>
             <HeaderTitle title="All Wallets" desc="Manage and view all your active wallets." />
           </div>
+
+          <AddWalletModal />
         </header>
 
         {/* CONTENT */}
@@ -43,7 +46,7 @@ export function ViewAllAccountsClient({ wallets }: ViewAllAccountsClientProps) {
             <p className="text-sm text-muted-foreground">You haven't added any wallets yet.</p>
           </div>
         ) : (
-          <div className="flex flex-col gap-12">
+          <div className="flex flex-col gap-12 w-full">
             {Object.entries(
               wallets.reduce((acc, wallet) => {
                 const currency = wallet.currency || 'PHP';
@@ -56,9 +59,9 @@ export function ViewAllAccountsClient({ wallets }: ViewAllAccountsClientProps) {
                 <h2 className="text-sm font-semibold uppercase tracking-widest text-muted-foreground border-b border-border/50 pb-2">
                   {currency} Wallets
                 </h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
                   {currencyWallets.map((wallet) => (
-                    <Link key={wallet.id} href={`/finance/viewAllAccounts/${wallet.id}`}>
+                    <Link key={wallet.id} href={`/finance/viewAllAccounts/${wallet.id}`} className="block w-full">
                       <WalletCard key={wallet.id} wallet={wallet as any} />
                     </Link>
                   ))}

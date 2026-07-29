@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { ArrowLeft, Wallet as WalletIcon, CreditCard, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatCurrency, formatSignedCurrency } from '@/utils/currency';

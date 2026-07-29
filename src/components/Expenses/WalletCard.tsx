@@ -11,12 +11,22 @@ interface WalletCardProps {
   wallet: WalletSummary;
 }
 
+function getAmountFontSize(formatted: string) {
+  const len = formatted.length;
+  if (len > 14) return 'text-base';
+  if (len > 11) return 'text-lg';
+  if (len > 9) return 'text-xl';
+  return 'text-2xl';
+}
+
 export function WalletCard({ wallet }: WalletCardProps) {
   const isLiability = wallet.type === 'Credit' || wallet.type === 'Loans';
   const iconEntry = AVAILABLE_ICONS.find((i) => i.name === wallet.icon);
   const Icon: LucideIcon = iconEntry?.icon ?? (isLiability ? CreditCard : WalletIcon);
   const color = wallet.color || (isLiability ? '#ef4444' : '#9ca3af');
   const isNegative = wallet.balance < 0;
+
+  const formattedBalance = formatCurrency(wallet.balance, wallet.currency);
 
   return (
     <div
@@ -33,32 +43,32 @@ export function WalletCard({ wallet }: WalletCardProps) {
           aria-hidden="true"
         />
 
-        <CardHeader className="flex items-start justify-between px-5">
-          <CardTitle className="min-w-0">
-            <p className="truncate text-sm font-medium text-foreground/90">{wallet.name}</p>
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
-              {wallet.type} &bull; {wallet.currency}
-            </p>
-          </CardTitle>
+        <CardHeader className="flex flex-row flex-wrap justify-between items-center gap-x-4 min-w-0">
+          <div className='flex flex-row items-center gap-4'>
+            <div
+              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full
+                         shadow-sm transition-transform duration-200"
+              style={{ backgroundColor: withAlpha(color, 0.15), color }}
+            >
+              <Icon size={16} strokeWidth={2} />
+            </div>
+
+            <CardTitle className="min-w-0">
+              <p className="truncate text-sm font-medium text-foreground/90">{wallet.name}</p>
+              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+                {wallet.type} &bull; {wallet.currency}
+              </p>
+            </CardTitle>
+          </div>
 
           <div
-            className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full
-                       shadow-sm transition-transform duration-200"
-            style={{ backgroundColor: withAlpha(color, 0.15), color }}
-          >
-            <Icon size={16} strokeWidth={2} />
-          </div>
+              className={`font-mono ${getAmountFontSize(formattedBalance)} tabular-nums tracking-tight shrink-0 leading-tight ${
+                isNegative ? 'text-red-400' : 'text-foreground'
+              }`}
+            >
+              {formattedBalance}
+            </div>
         </CardHeader>
-
-        <CardContent className="px-5">
-          <div
-            className={`font-mono text-2xl tabular-nums tracking-tight ${
-              isNegative ? 'text-red-400' : 'text-foreground'
-            }`}
-          >
-            {formatCurrency(wallet.balance, wallet.currency)}
-          </div>
-        </CardContent>
       </Card>
     </div>
   );

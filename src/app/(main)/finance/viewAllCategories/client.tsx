@@ -10,6 +10,8 @@ import { formatCurrency } from '@/utils/currency'
 import { HeaderTitle } from '@/components/Shared/HeaderTitle'
 import { useRouter } from 'next/navigation'
 
+import { AddCategoryModal } from '@/components/Modals/AddCategory/AddCategoryModal'
+
 interface ViewAllCategoriesClientProps {
   categories: CategoryWithTotal[]
 }
@@ -32,6 +34,8 @@ export function ViewAllCategoriesClient({ categories }: ViewAllCategoriesClientP
             </Button>
             <HeaderTitle title="All Categories" desc="Manage and view all your custom expense categories." />
           </div>
+
+          <AddCategoryModal />
         </header>
 
 

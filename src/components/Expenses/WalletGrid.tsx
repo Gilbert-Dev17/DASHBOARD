@@ -3,27 +3,34 @@ import { AddWalletModal } from '../Modals/AddWallet/AddWalletModal';
 import { WalletCard } from './WalletCard';
 import type { WalletSummary } from '@/types/dashboard';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '../ui/card';
-import {
-  Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious,
-} from "@/components/ui/carousel";
 import { Button } from '../ui/button';
 import Link from 'next/link'
 
+import { TransactionHistory } from '@/types/expenses';
+
 interface WalletGridProps {
   wallets: WalletSummary[];
+  transactions?: TransactionHistory[];
   isLoading?: boolean;
 }
 
 function WalletCardSkeleton() {
   return (
     <div
-      className="h-33 rounded-xl border border-border/50 bg-card/30 animate-pulse"
+      className="h-33 rounded-xl border border-border/50 bg-card/30 animate-pulse w-full"
       aria-hidden="true"
     />
   );
 }
 
-export function WalletGrid({ wallets, isLoading = false }: WalletGridProps) {
+export function WalletGrid({ wallets, transactions = [], isLoading = false }: WalletGridProps) {
+  // Sort wallets by usage (most transactions first)
+  const sortedWallets = [...wallets].sort((a, b) => {
+    const aUsage = transactions.filter(t => t.wallet_id === a.id || (t as any).to_wallet_id === a.id).length;
+    const bUsage = transactions.filter(t => t.wallet_id === b.id || (t as any).to_wallet_id === b.id).length;
+    return bUsage - aUsage;
+  });
+
   return (
     <Card aria-label="Your Accounts" className="bg-card/30">
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
@@ -37,15 +44,11 @@ export function WalletGrid({ wallets, isLoading = false }: WalletGridProps) {
 
       {isLoading ? (
         <CardContent>
-          <Carousel opts={{ align: "start" }} className="w-full">
-            <CarouselContent className="-ml-4">
-              {Array.from({ length: 4 }).map((_, i) => (
-                <CarouselItem key={`skeleton-${i}`} className=" basis-full xl:basis-1/2">
-                  <WalletCardSkeleton />
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-          </Carousel>
+          <div className="flex flex-col gap-2">
+            {Array.from({ length: 3 }).map((_, i) => (
+              <WalletCardSkeleton key={`skeleton-${i}`} />
+            ))}
+          </div>
         </CardContent>
       ) : wallets.length === 0 ? (
         <CardContent>
@@ -56,28 +59,20 @@ export function WalletGrid({ wallets, isLoading = false }: WalletGridProps) {
         </CardContent>
       ) : (
         <CardContent>
-          <Carousel className="w-full">
-            <CarouselContent className=" mr-3 p-2">
-              {wallets.map((wallet) => (
-                <CarouselItem key={wallet.id} className=" basis-full xl:basis-1/2">
-                  <Link key={wallet.id} href={`/finance/accounts/${wallet.id}`}>
-                    <WalletCard wallet={wallet} />
-                  </Link>
-                </CarouselItem>
-              ))}
-            </CarouselContent>
-            <div className='flex flex-row justify-between items-center mt-6'>
-              <div className="hidden sm:flex gap-2">
-                <CarouselPrevious className="static translate-y-0 my-0" />
-                <CarouselNext className="static translate-y-0 my-0" />
-              </div>
+          <div className="flex flex-col gap-2">
+            {sortedWallets.slice(0, 3).map((wallet) => (
+              <Link key={wallet.id} href={`/finance/accounts/${wallet.id}`} className="block w-full">
+                <WalletCard wallet={wallet} />
+              </Link>
+            ))}
+          </div>
+            <div className='flex flex-row justify-end items-center mt-4'>
               <Button asChild variant={'link'} className="group px-0 flex flex-row text-muted-foreground hover:text-foreground items-center gap-1">
                 <Link href='/finance/viewAllAccounts'>
                   View All<ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
                 </Link>
               </Button>
             </div>
-          </Carousel>
         </CardContent>
       )}
     </Card>
