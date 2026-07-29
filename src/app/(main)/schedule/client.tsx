@@ -37,9 +37,9 @@ export function PlannerPage({ agendaTitle, initialTasks, note, dateObj, datesWit
           desc='Organize your tasks and capture daily reflections.'/>
       </div>
 
-       <div className="grid grid-cols-12 gap-10 h-[calc(100vh-7rem)]">
+       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:h-[calc(100vh-7rem)]">
 
-        <div className='col-span-4 flex flex-col h-full space-y-4 min-h-0'>
+        <div className='lg:col-span-4 flex flex-col h-full space-y-4 min-h-0'>
           <div className="flex justify-between items-center shrink-0">
             <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
               {showNotes ? 'Daily Notes' : 'Calendar'}

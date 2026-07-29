@@ -3,15 +3,24 @@ import { RealtimeSync } from '@/components/Shared/RealTimeSync'
 
 import Navbar from '@/components/Navbar/Navbar'
 import Sidebar from '@/components/Navbar/Sidebar'
+import { Mobilebar } from '@/components/Navbar/Mobilebar'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { getUser } from '@/lib/auth/get-user'
 
 async function SidebarWrapper() {
-    const user = await getUser();
-    return (
-        <>
-            <Sidebar user={user} />
-        </>
-    );
+  const user = await getUser()
+
+  return (
+    <>
+      <div className="lg:hidden">
+        <Mobilebar user={user} />
+      </div>
+
+      <div className="hidden lg:block">
+        <Sidebar user={user} />
+      </div>
+    </>
+  )
 }
 
 export default function MainLayout({children}: Readonly<{children: ReactNode}>){
@@ -21,7 +30,9 @@ export default function MainLayout({children}: Readonly<{children: ReactNode}>){
             <Suspense fallback={null}>
                 <SidebarWrapper />
             </Suspense>
-            {children}
+            <main className="flex-1 pb-24 lg:pb-0">
+                {children}
+            </main>
         </section>
     )
 }

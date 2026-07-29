@@ -56,11 +56,17 @@ export default function DashboardPage({ initialTasks, user, wallets, historicalS
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
 
+        <div className="block lg:hidden">
+          <NetWorthOverview wallets={filteredWallets} historicalSnapshots={historicalSnapshots} activeCurrency={activeCurrency} />
+        </div>
+
         <AgendaSection initialTasks={initialTasks || []} />
 
         <aside className="lg:col-span-5 space-y-8 mt-8 lg:mt-0">
 
-        <NetWorthOverview wallets={filteredWallets} historicalSnapshots={historicalSnapshots} activeCurrency={activeCurrency} />
+        <div className="hidden lg:block">
+          <NetWorthOverview wallets={filteredWallets} historicalSnapshots={historicalSnapshots} activeCurrency={activeCurrency} />
+        </div>
 
         <LifeProgress />
 

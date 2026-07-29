@@ -123,7 +123,7 @@ if (!isExpanded) {
         </div>
 
         {/* Textarea — full height, flush, no border */}
-        <div className="flex-1 min-h-0 relative">
+        <div className="flex-1 min-h-[300px] lg:min-h-0 relative">
           <Controller
             control={control}
             name="content"
