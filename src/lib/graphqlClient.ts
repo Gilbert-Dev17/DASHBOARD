@@ -6,7 +6,7 @@ export const graphqlClient = new GraphQLClient(endpoint, {
   headers: {},
 });
 
-export async function gqlRequest<T = any>(query: string, variables?: Record<string, any>) {
+export async function gqlRequest<T = unknown>(query: string, variables?: Record<string, unknown>) {
   return graphqlClient.request<T>(query, variables);
 }
 

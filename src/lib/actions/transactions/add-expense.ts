@@ -44,8 +44,8 @@ export async function addExpenseAction(data: {
     updateTag(`snapshots-${user.id}`)
 
     return { success: true }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Unexpected error in addExpenseAction:', error)
-    return { success: false, error: error.message || 'An unexpected error occurred' }
+    return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' }
   }
 }

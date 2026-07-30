@@ -1,10 +1,9 @@
 'use client'
 
-import { TrendingUp, TrendingDown, Wallet } from 'lucide-react'
+import { TrendingUp, TrendingDown } from 'lucide-react'
 import { WalletSummary, WalletHistory } from '@/types/dashboard'
-import { formatCurrency, formatSignedCurrency } from '@/utils/currency'
+import { formatSignedCurrency } from '@/utils/currency'
 import { calculateFinancialTotals } from '@/utils/financial'
-import { AVAILABLE_ICONS } from '@/lib/constants/categories'
 import { Badge } from '../ui/badge'
 
 interface NetWorthProps {
@@ -44,7 +43,7 @@ export const NetWorthOverview = ({ wallets, historicalSnapshots = [], activeCurr
                   <span className="flex items-center gap-1.5 text-[10px] font-medium text-emerald-500 ">
                     <TrendingUp size={12} /> {trendPercentage}%
                   </span>
-                  from last month's snapshots.
+                  from last month&apos;s snapshots.
                 </span>
               ) : (
                 <span className="inline-flex items-center flex-wrap gap-x-1.5">
@@ -52,7 +51,7 @@ export const NetWorthOverview = ({ wallets, historicalSnapshots = [], activeCurr
                   <Badge variant="secondary" className="flex items-center gap-1.5 text-[10px] font-medium text-rose-500">
                     <TrendingDown size={12} /> {Math.abs(trendPercentage)}%
                   </Badge>
-                  from last month's snapshots.
+                  from last month&apos;s snapshots.
                 </span>
               )}
             </p>

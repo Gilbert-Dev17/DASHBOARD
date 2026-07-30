@@ -6,7 +6,7 @@ import { WalletHistory, WalletSummary, TransactionHistory } from '@/types/expens
 import { formatCurrency, formatSignedCurrency } from '@/utils/currency';
 import { calculateFinancialTotals } from '@/utils/financial';
 import { Card, CardContent} from '../ui/card';
-import { Area, AreaChart, CartesianGrid, XAxis } from 'recharts';
+import { Area, AreaChart, XAxis } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 import { buildNetWorthTrend, getTrendDirection, TREND_COLORS } from '@/lib/finance/net-worth-trend';
 import { Separator } from '../ui/separator';
@@ -89,7 +89,7 @@ export const SummaryExpense = ({
                     <span className="flex items-center gap-1.5 text-[10px] font-medium text-emerald-500">
                       <TrendingUp size={12} /> {trendPercentage}%
                     </span>
-                    from last month's snapshots.
+                    from last month&apos;s snapshots.
                   </span>
                 ) : (
                   <span className="inline-flex items-center flex-wrap gap-x-1.5">
@@ -97,7 +97,7 @@ export const SummaryExpense = ({
                     <span className="flex items-center gap-1.5 text-[10px] font-medium text-rose-500">
                       <TrendingDown size={12} /> {Math.abs(trendPercentage)}%
                     </span>
-                    from last month's snapshots.
+                    from last month&apos;s snapshots.
                   </span>
                 )}
               </p>

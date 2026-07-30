@@ -1,10 +1,10 @@
 import { ReactNode, Suspense } from 'react'
 import { RealtimeSync } from '@/components/Shared/RealTimeSync'
 
-import Navbar from '@/components/Navbar/Navbar'
+
 import Sidebar from '@/components/Navbar/Sidebar'
 import { Mobilebar } from '@/components/Navbar/Mobilebar'
-import { useIsMobile } from '@/hooks/use-mobile'
+
 import { getUser } from '@/lib/auth/get-user'
 
 async function SidebarWrapper() {

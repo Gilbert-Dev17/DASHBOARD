@@ -28,7 +28,7 @@ async function fetchWallets(userId: string) {
         data.forEach(wallet => {
             if (wallet.transactions) {
                 // Sort transactions descending (newest first)
-                wallet.transactions.sort((a: any, b: any) =>
+                wallet.transactions.sort((a: TransactionHistory, b: TransactionHistory) =>
                     new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
                 );
             }

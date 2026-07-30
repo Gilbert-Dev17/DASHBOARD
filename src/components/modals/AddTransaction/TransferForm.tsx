@@ -1,6 +1,7 @@
 'use client'
 
 import { zodResolver } from "@hookform/resolvers/zod"
+import { z } from "zod"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 
@@ -32,12 +33,12 @@ export const TransferForm = () => {
   const {
     handleSubmit, control, reset, watch, setError, formState: { errors },
   } = useForm<TransferFormValues>({
-    resolver: zodResolver(transferSchema as any),
+    resolver: zodResolver(transferSchema) as any,
     defaultValues: {
-      amount: '' as any,
+      amount: '' as unknown as number,
       fromAccountId: '',
       toAccountId: '',
-      transferFee: '' as any,
+      transferFee: '' as unknown as number,
       note: '',
       date: undefined,
     }

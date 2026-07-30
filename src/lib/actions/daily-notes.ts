@@ -29,8 +29,8 @@ export async function upsertDailyNote(dateStr: string, content: string) {
         updateTag(`daily-notes-${user.id}-${dateStr}`)
         return { success: true, message: 'Note saved successfully' }
 
-    } catch (error: any) {
+    } catch (error: unknown) {
         console.error('Unexpected error in upsertDailyNote:', error)
-        return { success: false, message: error.message || 'An unexpected error occurred' }
+        return { success: false, message: error instanceof Error ? error.message : 'An unexpected error occurred' }
     }
 }

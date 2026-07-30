@@ -36,7 +36,7 @@ export const AddWalletModal = () => {
   const queryClient = useQueryClient()
 
   const { register, handleSubmit, control, watch, reset, formState: { errors } } = useForm<WalletFormValues>({
-    resolver: zodResolver(walletSchema as any),
+    resolver: zodResolver(walletSchema) as any,
     defaultValues: {
       name: '',
       balance: 0,

@@ -39,7 +39,7 @@ export const UpdateTaskModal = ({ task, open, onOpenChange }: UpdateTaskModalPro
   const {
     register, handleSubmit, control, setValue, watch, reset, formState: { errors, isDirty },
   } = useForm<EditTaskFormValues>({
-    resolver: zodResolver(editTaskSchema as any),
+    resolver: zodResolver(editTaskSchema) as any,
     defaultValues: {
       task_name: task.task_name,
       time: task.time ? task.time.slice(0, 5) : '',

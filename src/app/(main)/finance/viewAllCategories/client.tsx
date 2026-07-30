@@ -1,7 +1,7 @@
 'use client'
 
 import { ArrowLeft, Tag, HelpCircle } from 'lucide-react'
-import PageComponent from '@/components/shared/PageComponent'
+import PageComponent from '@/components/Shared/PageComponent'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { AVAILABLE_ICONS } from '@/lib/constants/categories'
@@ -43,7 +43,7 @@ export function ViewAllCategoriesClient({ categories }: ViewAllCategoriesClientP
           <div className="flex w-full flex-col items-center justify-center rounded-xl border border-dashed py-12 bg-card/30">
             <Tag className="mb-3 h-10 w-10 text-muted-foreground/50" aria-hidden="true" />
             <p className="mb-1 text-base font-medium text-foreground/80">No categories found</p>
-            <p className="text-sm text-muted-foreground">You haven't created any custom categories yet.</p>
+            <p className="text-sm text-muted-foreground">You haven&apos;t created any custom categories yet.</p>
           </div>
         ) : (
           <div className="flex flex-col gap-12">

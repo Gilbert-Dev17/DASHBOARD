@@ -2,7 +2,7 @@
 
 import { supabaseAdmin } from "@/lib/supabase/admin"
 import { getUser } from "@/lib/auth/get-user"
-import { Wallets, TransactionHistory } from "@/types/expenses"
+import { TransactionHistory } from "@/types/expenses"
 import { cacheTag } from "next/cache"
 
 async function fetchTransactions(userId: string) {

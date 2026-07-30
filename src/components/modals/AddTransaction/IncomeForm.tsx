@@ -30,9 +30,9 @@ export const IncomeForm = () => {
   const {
     handleSubmit, control, watch, reset, formState: { errors },
   } = useForm<IncomeFormValues>({
-    resolver: zodResolver(incomeSchema as any),
+    resolver: zodResolver(incomeSchema) as any,
     defaultValues: {
-      amount: '' as any,
+      amount: '' as unknown as number,
       accountId: '',
       source: '',
       note: '',
@@ -166,7 +166,6 @@ export const IncomeForm = () => {
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
-                    initialFocus
                   />
                 </PopoverContent>
               </Popover>

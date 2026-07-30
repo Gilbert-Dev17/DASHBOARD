@@ -97,8 +97,8 @@ export async function submitQuickAddTasks(tasks: ParsedTask[], targetDate?: stri
     updateTag(`planner-tasks-${user.id}`)
 
     return { success: true, message: 'Tasks successfully added!' }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Quick Add Error:', error)
-    return { success: false, message: error.message || 'An unexpected error occurred.' }
+    return { success: false, message: error instanceof Error ? error.message : 'An unexpected error occurred.' }
   }
 }

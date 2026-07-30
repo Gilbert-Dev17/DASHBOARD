@@ -1,10 +1,10 @@
 'use client'
-
+import { Suspense } from 'react';
 import { usePathname, useParams } from 'next/navigation';
 import { Loader2 } from "lucide-react";
-import PageComponent from "@/components/shared/PageComponent";
+import PageComponent from "@/components/Shared/PageComponent";
 
-export default function LoadingState() {
+function LoadingStateInner() {
   const pathname = usePathname();
   const params = useParams();
 
@@ -45,4 +45,24 @@ export default function LoadingState() {
       </div>
     </PageComponent>
   );
+}
+
+export default function LoadingState() {
+  return (
+    <Suspense fallback={
+      <PageComponent>
+        <div className="flex-1 flex flex-col items-center justify-center min-h-[60vh] gap-6 animate-in fade-in duration-700 shimmer">
+          <div className="relative flex items-center justify-center">
+            <div className="absolute inset-0 rounded-full blur-xl bg-primary/20 animate-pulse scale-150" />
+            <Loader2 className="h-8 w-8 animate-spin text-primary relative z-10" strokeWidth={1.5} />
+          </div>
+          <p className="text-sm tracking-wide text-muted-foreground/80 font-medium animate-pulse">
+            Loading...
+          </p>
+        </div>
+      </PageComponent>
+    }>
+      <LoadingStateInner />
+    </Suspense>
+  )
 }

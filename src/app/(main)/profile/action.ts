@@ -22,9 +22,9 @@ export async function updateDefaultCurrency(userId: string, newCurrency: string)
     revalidatePath('/', 'layout');
 
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Unexpected error updating profile:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error' };
   }
 }
 export async function getProfileSystemMetrics() {
@@ -40,8 +40,8 @@ export async function getProfileSystemMetrics() {
     const tableCounts = tableCountData as TableCounts | null;
 
     return { success: true, dbSize, tableCounts };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Error fetching system metrics:', error);
-    return { success: false, error: error.message, dbSize: null, tableCounts: null };
+    return { success: false, error: error instanceof Error ? error.message : 'Unknown error', dbSize: null, tableCounts: null };
   }
 }

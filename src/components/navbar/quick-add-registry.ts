@@ -5,7 +5,7 @@ import { AddTransactionModal } from '@/components/Modals/AddTransaction/AddTrans
 export interface QuickAddRegistry {
     id: string
     match: (pathname: string) => boolean
-    Component: ComponentType<any>
+    Component: ComponentType<unknown>
 }
 
 export const quickAddRegistry: QuickAddRegistry[] = [

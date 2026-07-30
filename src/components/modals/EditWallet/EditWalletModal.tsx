@@ -39,12 +39,12 @@ export const EditWalletModal = ({ wallet, isOpen, setIsOpen }: EditWalletModalPr
   const queryClient = useQueryClient()
 
   const { register, handleSubmit, control, watch, formState: { errors, isDirty } } = useForm<WalletFormValues>({
-    resolver: zodResolver(walletSchema as any),
+    resolver: zodResolver(walletSchema) as any,
     defaultValues: {
       name: wallet.name || '',
       balance: wallet.balance || 0,
       currency: wallet.currency || 'PHP',
-      type: wallet.type as any || 'Debit',
+      type: wallet.type || 'Debit',
     }
   })
 

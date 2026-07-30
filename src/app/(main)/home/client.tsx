@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic'
 
-import PageComponent from '@/components/shared/PageComponent'
+import PageComponent from '@/components/Shared/PageComponent'
 import { TaskWithSubtasks, UserSummary, WalletSummary } from '@/types/dashboard'
 import { WalletSnapshot } from '@/types/database'
 import { GreetingHeader } from '@/components/Home/greetingHeader'

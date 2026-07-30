@@ -26,8 +26,8 @@ function WalletCardSkeleton() {
 export function WalletGrid({ wallets, transactions = [], isLoading = false }: WalletGridProps) {
   // Sort wallets by usage (most transactions first)
   const sortedWallets = [...wallets].sort((a, b) => {
-    const aUsage = transactions.filter(t => t.wallet_id === a.id || (t as any).to_wallet_id === a.id).length;
-    const bUsage = transactions.filter(t => t.wallet_id === b.id || (t as any).to_wallet_id === b.id).length;
+    const aUsage = transactions.filter(t => t.wallet_id === a.id || t.to_wallet_id === a.id).length;
+    const bUsage = transactions.filter(t => t.wallet_id === b.id || t.to_wallet_id === b.id).length;
     return bUsage - aUsage;
   });
 

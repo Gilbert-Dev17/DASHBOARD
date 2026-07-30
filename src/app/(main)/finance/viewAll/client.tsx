@@ -1,11 +1,11 @@
 'use client';
 
 import { useMemo, useState, useEffect } from 'react';
-import { ArrowLeft, Search, ArrowDown, ArrowUp, ArrowRightLeft, CreditCard } from 'lucide-react';
-import PageComponent from '@/components/shared/PageComponent';
+import { ArrowLeft, Search, ArrowDown, ArrowUp, ArrowRightLeft } from 'lucide-react';
+import PageComponent from '@/components/Shared/PageComponent';
 import { HeaderTitle } from '@/components/Shared/HeaderTitle';
 import { Button } from '@/components/ui/button';
-import { formatCurrency, getSignedAmount, formatSignedCurrency } from '@/utils/currency';
+import { getSignedAmount, formatSignedCurrency } from '@/utils/currency';
 import { TransactionHistory } from '@/types/expenses';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
@@ -16,7 +16,7 @@ import {
   Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
 import {
-  Pagination, PaginationContent, PaginationItem, PaginationLink, PaginationNext, PaginationPrevious,
+  Pagination, PaginationContent, PaginationItem,
 } from "@/components/ui/pagination"
 import { useRouter } from 'next/navigation';
 import { CurrencySwitcher } from '@/components/Shared/CurrencySwitcher';
@@ -64,9 +64,16 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
   const { availableCurrencies, activeCurrency, setActiveCurrency, filteredTransactions } = useCurrencyFilter({ wallets, user, transactions });
 
   // Reset page when filters change
-  useEffect(() => {
+  const [prevDeps, setPrevDeps] = useState([selectedFilter, typeFilter, searchQuery, activeCurrency]);
+  if (
+    prevDeps[0] !== selectedFilter ||
+    prevDeps[1] !== typeFilter ||
+    prevDeps[2] !== searchQuery ||
+    prevDeps[3] !== activeCurrency
+  ) {
+    setPrevDeps([selectedFilter, typeFilter, searchQuery, activeCurrency]);
     setPage(1);
-  }, [selectedFilter, typeFilter, searchQuery, activeCurrency]);
+  }
 
   const finalTransactions = useMemo(() => {
     let result = filteredTransactions;
@@ -88,7 +95,7 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
 
     // Sort newest first
     return result.sort((a, b) => new Date(b.created_for_date || b.created_at).getTime() - new Date(a.created_for_date || a.created_at).getTime());
-  }, [filteredTransactions, selectedFilter, typeFilter, searchQuery]);
+  }, [filteredTransactions, typeFilter, searchQuery]);
 
   const totalPages = Math.max(1, Math.ceil(finalTransactions.length / itemsPerPage));
   const paginatedData = finalTransactions.slice((page - 1) * itemsPerPage, page * itemsPerPage);
@@ -205,8 +212,8 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
                           amount: Number(t.amount),
                           transaction_type: t.type,
                           wallet_id: t.wallet_id,
-                          to_wallet_id: (t as any).to_wallet_id || null
-                        }, t.wallet_id), 0);
+                          to_wallet_id: (t as TransactionHistory & { to_wallet_id?: string }).to_wallet_id || null
+                        }), 0);
 
                       rows.push(
                         <TableRow key={`header-${groupKey}`} className="bg-muted/10 hover:bg-muted/10 border-b-border/50">
@@ -225,13 +232,13 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
                       amount: Number(transaction.amount),
                       transaction_type: transaction.type,
                       wallet_id: transaction.wallet_id,
-                      to_wallet_id: (transaction as any).to_wallet_id || null
-                    }, transaction.wallet_id);
+                      to_wallet_id: (transaction as TransactionHistory & { to_wallet_id?: string }).to_wallet_id || null
+                    });
 
                     const isPositive = signedAmount > 0;
                     const isTransfer = transaction.type === 'transfer';
 
-                    let amountColor = isTransfer ? 'text-muted-foreground' : isPositive ? 'text-emerald-500' : 'text-rose-500';
+                    const amountColor = isTransfer ? 'text-muted-foreground' : isPositive ? 'text-emerald-500' : 'text-rose-500';
 
                     // Render Type Icon
                     let TypeIcon = ArrowDown;

@@ -88,6 +88,7 @@ export interface Transaction {
     id: string; // UUID
     user_id: string; // UUID
     wallet_id: string; // UUID
+    to_wallet_id?: string | null; // UUID
     category_id: string | null; // UUID
     title: string;
     amount: number;

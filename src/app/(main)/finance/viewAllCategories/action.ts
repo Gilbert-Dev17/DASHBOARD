@@ -23,15 +23,26 @@ async function fetchCategoriesWithTotal(userId: string) {
         .eq('user_id', userId)
 
     if (error) throw error;
+    
+    interface RawCategoryTx { amount: number; type: string; wallets?: { currency?: string } | null; }
+    interface RawCategory {
+      id: string;
+      name: string;
+      icon: string;
+      color: string;
+      user_id: string;
+      created_at: string;
+      transactions?: RawCategoryTx[] | null;
+    }
 
-    const result: CategoryWithTotal[] = (data || []).map((cat: any) => {
+    const result: CategoryWithTotal[] = ((data as unknown as RawCategory[]) || []).map((cat: RawCategory) => {
         let total = 0;
         let currency = 'PHP';
 
         // Sum only the 'expense' type transactions
-        const expenses = (cat.transactions || []).filter((tx: any) => tx.type === 'expense');
+        const expenses = (cat.transactions || []).filter((tx: RawCategoryTx) => tx.type === 'expense');
 
-        expenses.forEach((tx: any) => {
+        expenses.forEach((tx: RawCategoryTx) => {
             total += tx.amount;
             if (tx.wallets?.currency) currency = tx.wallets.currency;
         });
