@@ -71,7 +71,7 @@ const Sidebar = ({ user }: SidebarProps) => {
 
         <Suspense fallback={<div className="w-12 h-12" />}>
           {activeQuickAdds.map(({ id, Component }) => (
-              <Component key={id} />
+              <Component key={id} enableShortcut={true} />
           ))}
         </Suspense>
 

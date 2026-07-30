@@ -82,7 +82,7 @@ export const Mobilebar = ({ user }: MobilebarProps) => {
 
       <Suspense fallback={null}>
         {activeQuickAdds.map(({ id, Component }) => (
-          <Component key={id} />
+          <Component key={id} enableShortcut={false} />
         ))}
       </Suspense>
       </aside>

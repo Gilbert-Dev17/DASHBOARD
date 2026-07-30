@@ -5,7 +5,7 @@ import { AddTransactionModal } from '@/components/Modals/AddTransaction/AddTrans
 export interface QuickAddRegistry {
     id: string
     match: (pathname: string) => boolean
-    Component: ComponentType<unknown>
+    Component: ComponentType<{ enableShortcut?: boolean }>
 }
 
 export const quickAddRegistry: QuickAddRegistry[] = [
