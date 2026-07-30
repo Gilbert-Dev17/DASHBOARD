@@ -35,7 +35,7 @@ export const AddCategoryModal = () => {
   const queryClient = useQueryClient()
 
   const { register, handleSubmit, watch, control, reset, formState: { errors } } = useForm<CategoryFormValues>({
-    resolver: zodResolver(categorySchema as any),
+    resolver: zodResolver(categorySchema) as any,
     defaultValues: {
       name: '',
       icon: AVAILABLE_ICONS[0].name,

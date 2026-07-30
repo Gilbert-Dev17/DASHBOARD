@@ -1,6 +1,5 @@
 'use client';
 
-import Link from 'next/link';
 import { ArrowLeft, Wallet as WalletIcon, CreditCard, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatCurrency, formatSignedCurrency } from '@/utils/currency';
@@ -11,8 +10,6 @@ import {
   Pagination,
   PaginationContent,
   PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
 } from '@/components/ui/pagination';
 import {
   DropdownMenu,
@@ -23,7 +20,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { EditWalletModal } from '@/components/Modals/EditWallet/EditWalletModal';
 import { DeleteWalletModal } from '@/components/Modals/DeleteWallet/DeleteWalletModal';
-import PageComponent from '@/components/shared/PageComponent';
+import PageComponent from '@/components/Shared/PageComponent';
 import { Wallets, TransactionHistory } from '@/types/expenses';
 import { getSignedAmount } from '@/utils/currency';
 import { useRouter } from 'next/navigation';
@@ -42,17 +39,20 @@ export function AccountStatement({accountData} : AccountStatementProps) {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const router = useRouter();
 
-  useEffect(() => {
+  const [prevAccountId, setPrevAccountId] = useState(accountData?.id);
+
+  if (accountData?.id !== prevAccountId) {
+    setPrevAccountId(accountData?.id);
     if (accountData?.id) {
       setPage(1);
     }
-  }, [accountData?.id]);
+  }
 
   if (!accountData || !accountData.id) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[50vh] text-center">
         <h2 className="text-2xl font-semibold mb-2">Account Not Found</h2>
-        <p className="text-muted-foreground mb-6">We couldn't find the account you're looking for.</p>
+        <p className="text-muted-foreground mb-6">We couldn&apos;t find the account you&apos;re looking for.</p>
         <Button variant="outline" onClick={() => router.back()}>Back</Button>
       </div>
     );
@@ -147,8 +147,8 @@ export function AccountStatement({accountData} : AccountStatementProps) {
                     amount: Number(txn.amount),
                     transaction_type: txn.type,
                     wallet_id: txn.wallet_id,
-                    to_wallet_id: (txn as any).to_wallet_id || null
-                  }, txn.wallet_id)
+                    to_wallet_id: (txn as TransactionHistory & { to_wallet_id?: string }).to_wallet_id || null
+                  })
 
                   const isPositive = signedAmount > 0;
                   const isTransfer = txn.type === 'transfer';

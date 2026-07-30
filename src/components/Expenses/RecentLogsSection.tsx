@@ -37,8 +37,8 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
               amount: Number(txn.amount),
               transaction_type: txn.type,
               wallet_id: txn.wallet_id,
-              to_wallet_id: (txn as any).to_wallet_id || null
-            }, txn.wallet_id)
+              to_wallet_id: txn.to_wallet_id || null
+            })
 
             const isPositive = signedAmount > 0;
             const isTransfer = txn.type === 'transfer';

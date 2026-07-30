@@ -30,9 +30,9 @@ export const ExpenseForm = () => {
   const {
     handleSubmit, control, watch, reset, setError, formState: { errors },
   } = useForm<ExpenseFormValues>({
-    resolver: zodResolver(expenseSchema as any),
+    resolver: zodResolver(expenseSchema) as any,
     defaultValues: {
-      amount: '' as any,
+      amount: '' as unknown as number,
       accountId: '',
       categoryId: '',
       note: '',
@@ -215,7 +215,6 @@ export const ExpenseForm = () => {
                     mode="single"
                     selected={field.value}
                     onSelect={field.onChange}
-                    initialFocus
                   />
                 </PopoverContent>
               </Popover>

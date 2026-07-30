@@ -21,15 +21,17 @@ export function useCurrencyFilter({ wallets, user, transactions }: UseCurrencyFi
 
   const defaultCurrency = user?.activeCurrency || availableCurrencies[0] || 'PHP';
   const [activeCurrency, setActiveCurrency] = useState(defaultCurrency);
+  const [prevUserCurrency, setPrevUserCurrency] = useState(user?.activeCurrency);
   const [isPending, startTransition] = useTransition();
 
   // Sync local state when the server-side activeCurrency changes
-  // (e.g. after profile settings update triggers router.refresh)
-  useEffect(() => {
-    if (user?.activeCurrency && user.activeCurrency !== activeCurrency) {
+  // Derived state avoids cascading renders
+  if (user?.activeCurrency !== prevUserCurrency) {
+    setPrevUserCurrency(user?.activeCurrency);
+    if (user?.activeCurrency) {
       setActiveCurrency(user.activeCurrency);
     }
-  }, [user?.activeCurrency]);
+  }
 
   const handleCurrencyChange = (newCurrency: string) => {
     startTransition(() => {

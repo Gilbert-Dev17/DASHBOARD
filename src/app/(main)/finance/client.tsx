@@ -1,6 +1,6 @@
 'use client'
 
-import PageComponent from '@/components/shared/PageComponent'
+import PageComponent from '@/components/Shared/PageComponent'
 import { TransactionHistory } from '@/types/expenses'
 import type { WalletSummary, UserSummary } from '@/types/dashboard'
 import { WalletGrid } from '@/components/Expenses/WalletGrid'
@@ -39,22 +39,31 @@ export default function ExpenseTrackerPage({ user, wallets, transactions, histor
         />
       </div>
 
-      <SummaryExpense
-        wallets={filteredWallets}
-        historicalSnapshots={historicalSnapshots}
-        transactions={filteredTransactions}
-        activeCurrency={activeCurrency}
-      />
+      <div className="flex flex-col gap-6">
+        <SummaryExpense
+          wallets={filteredWallets}
+          historicalSnapshots={historicalSnapshots}
+          transactions={filteredTransactions}
+          activeCurrency={activeCurrency}
+        />
+
+        <div className="block lg:hidden">
+          <IncomeExpenseCard transactions={filteredTransactions} currency={activeCurrency} />
+        </div>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mt-6">
         <div className="lg:col-span-8 flex flex-col gap-6 min-w-0">
-          <WalletGrid wallets={filteredWallets} />
+          <WalletGrid wallets={filteredWallets} transactions={filteredTransactions} />
 
           <CategorySection transactions={filteredTransactions} allCategories={allCategories} currency={activeCurrency} />
         </div>
 
         <div className="lg:col-span-4 flex flex-col gap-6">
-          <IncomeExpenseCard transactions={filteredTransactions} currency={activeCurrency} />
+          <div className="hidden lg:block">
+            <IncomeExpenseCard transactions={filteredTransactions} currency={activeCurrency} />
+          </div>
+
           <RecentLogsSection transactions={filteredTransactions} />
         </div>
       </div>

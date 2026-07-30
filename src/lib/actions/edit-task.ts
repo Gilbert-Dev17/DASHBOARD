@@ -104,8 +104,8 @@ export async function submitTaskEdit(payload: EditTaskPayload) {
     updateTag(`planner-tasks-${user.id}`)
 
     return { success: true, message: 'Task updated successfully!' }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Edit Task Error:', error)
-    return { success: false, message: error.message || 'An unexpected error occurred.' }
+    return { success: false, message: error instanceof Error ? error.message : 'An unexpected error occurred.' }
   }
 }

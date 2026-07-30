@@ -33,16 +33,18 @@ export const NotesSection = ({ note, dateStr, isExpanded, onExpand }: NotesProps
   const [optimisticContent, setOptimisticContent] = useState(note?.content || '')
 
   const { handleSubmit, control, reset, formState: { isDirty } } = useForm<UpdateDailyNotes>({
-      resolver: zodResolver(UpdateNotesSchema),
+      resolver: zodResolver(UpdateNotesSchema) as any,
       defaultValues: {
           content: note?.content || ''
       }
   })
 
-  useEffect(() => {
-      reset({ content: note?.content || '' })
-      setOptimisticContent(note?.content || '')
-  }, [note, reset])
+  const [prevNote, setPrevNote] = useState(note)
+  if (note !== prevNote) {
+    setPrevNote(note)
+    reset({ content: note?.content || '' })
+    setOptimisticContent(note?.content || '')
+  }
 
   const { mutate: saveNote, isPending } = useMutation({
       mutationFn: async (data: UpdateDailyNotes) => {
@@ -55,7 +57,7 @@ export const NotesSection = ({ note, dateStr, isExpanded, onExpand }: NotesProps
           reset(undefined, { keepValues: true })
           router.refresh()
       },
-      onError: (error: any) => {
+      onError: (error: Error) => {
           toast.error(error.message || "Failed to save note")
           setOptimisticContent(note?.content || '')
       }
@@ -123,7 +125,7 @@ if (!isExpanded) {
         </div>
 
         {/* Textarea — full height, flush, no border */}
-        <div className="flex-1 min-h-0 relative">
+        <div className="flex-1 min-h-[300px] lg:min-h-0 relative">
           <Controller
             control={control}
             name="content"

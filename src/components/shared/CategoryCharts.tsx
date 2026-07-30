@@ -42,17 +42,17 @@ export function ChartPieDonutText({ categories, currency }: ChartPieDonutTextPro
 
   const chartConfig = React.useMemo(
     () =>
-      categories.reduce<Record<string, { label: string; color: string; icon: React.ComponentType<any> }>>(
+      categories.reduce<Record<string, { label: string; color: string; icon: React.ComponentType<unknown> }>>(
         (acc, category, index) => {
           const iconObj = category.icon ? AVAILABLE_ICONS.find(i => i.name === category.icon) : null;
           acc[category.name] = {
             label: category.name,
             color: category.color || AVAILABLE_COLORS[index % AVAILABLE_COLORS.length],
-            icon: (iconObj?.icon || HelpCircle) as React.ComponentType<any>,
+            icon: (iconObj?.icon || HelpCircle) as React.ComponentType<unknown>,
           }
           return acc
         },
-        {} as Record<string, { label: string; color: string; icon: React.ComponentType<any> }>
+        {} as Record<string, { label: string; color: string; icon: React.ComponentType<unknown> }>
       ) satisfies ChartConfig,
     [categories]
   )
@@ -84,7 +84,7 @@ export function ChartPieDonutText({ categories, currency }: ChartPieDonutTextPro
                 content={({ active, payload }: any) => {
                     if (active && payload && payload.length) {
                         const data = payload[0].payload;
-                        const iconObj = data.icon ? AVAILABLE_ICONS.find((i: any) => i.name === data.icon) : null;
+                        const iconObj = data.icon ? AVAILABLE_ICONS.find((i) => i.name === data.icon) : null;
                         const Icon = iconObj?.icon || HelpCircle;
                         return (
                         <div className="bg-background/95 border border-border/50 p-3 rounded-lg shadow-xl backdrop-blur-sm flex items-center justify-between gap-4">

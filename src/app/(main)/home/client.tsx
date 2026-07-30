@@ -2,7 +2,7 @@
 
 import dynamic from 'next/dynamic'
 
-import PageComponent from '@/components/shared/PageComponent'
+import PageComponent from '@/components/Shared/PageComponent'
 import { TaskWithSubtasks, UserSummary, WalletSummary } from '@/types/dashboard'
 import { WalletSnapshot } from '@/types/database'
 import { GreetingHeader } from '@/components/Home/greetingHeader'
@@ -56,11 +56,17 @@ export default function DashboardPage({ initialTasks, user, wallets, historicalS
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-24">
 
+        <div className="block lg:hidden">
+          <NetWorthOverview wallets={filteredWallets} historicalSnapshots={historicalSnapshots} activeCurrency={activeCurrency} />
+        </div>
+
         <AgendaSection initialTasks={initialTasks || []} />
 
         <aside className="lg:col-span-5 space-y-8 mt-8 lg:mt-0">
 
-        <NetWorthOverview wallets={filteredWallets} historicalSnapshots={historicalSnapshots} activeCurrency={activeCurrency} />
+        <div className="hidden lg:block">
+          <NetWorthOverview wallets={filteredWallets} historicalSnapshots={historicalSnapshots} activeCurrency={activeCurrency} />
+        </div>
 
         <LifeProgress />
 

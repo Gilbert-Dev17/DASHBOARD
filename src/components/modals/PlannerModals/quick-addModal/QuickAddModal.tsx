@@ -18,7 +18,7 @@ import { Textarea } from '../../../ui/textarea'
 import { Kbd, KbdGroup } from '../../../ui/kbd'
 import { toast } from 'sonner'
 
-export const QuickAddModal = () => {
+export const QuickAddModal = ({ enableShortcut = true }: { enableShortcut?: boolean }) => {
   const [open, setOpen] = useState(false)
   const [text, setText] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
@@ -49,7 +49,7 @@ export const QuickAddModal = () => {
   })
 
   const handleTrigger = useCallback(() => setOpen((prev) => !prev), [])
-  useGlobalShortcut({ key: 'k', onTrigger: handleTrigger })
+  useGlobalShortcut({ key: 'k', onTrigger: handleTrigger, enabled: enableShortcut })
 
   const filteredCategories = TASK_CATEGORIES.filter(cat =>
     cat.toLowerCase().startsWith(menuFilter.toLowerCase())

@@ -29,8 +29,8 @@ export async function deleteWalletAction(id: string) {
     updateTag(`wallets-${user.id}`)
 
     return { success: true }
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Unexpected error in deleteWalletAction:', error)
-    return { success: false, error: error.message || 'An unexpected error occurred' }
+    return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' }
   }
 }

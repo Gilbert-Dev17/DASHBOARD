@@ -62,7 +62,9 @@ export function useGeolocation({
   }, [handleSuccess, handleError])
 
   useEffect(() => {
-    requestLocation()
+    const timer = setTimeout(() => {
+      requestLocation()
+    }, 0)
 
     if (watch && typeof navigator !== 'undefined' && navigator.geolocation) {
       watchId.current = navigator.geolocation.watchPosition(handleSuccess, handleError, {
@@ -71,6 +73,7 @@ export function useGeolocation({
       })
     }
     return () => {
+      clearTimeout(timer)
       if (watchId.current !== null) navigator.geolocation.clearWatch(watchId.current)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

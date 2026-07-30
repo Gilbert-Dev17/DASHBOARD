@@ -22,7 +22,10 @@ const Sidebar = ({ user }: SidebarProps) => {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => setMounted(true), []);
+  useEffect(() => {
+    const timer = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timer);
+  }, []);
 
   const navItems = [
     { icon: Home, label: 'Home', point: '/home' },
@@ -68,7 +71,7 @@ const Sidebar = ({ user }: SidebarProps) => {
 
         <Suspense fallback={<div className="w-12 h-12" />}>
           {activeQuickAdds.map(({ id, Component }) => (
-              <Component key={id} />
+              <Component key={id} enableShortcut={true} />
           ))}
         </Suspense>
 

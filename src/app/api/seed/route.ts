@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { seedDummyData } from '@/lib/actions/seed';
 
-export async function GET() {
+export async function POST() {
   try {
     const result = await seedDummyData();
     return NextResponse.json({ message: "Seeding successful!", data: result });

@@ -44,9 +44,11 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
   const [tasks, setTasks] = useState<TaskWithSubtasks[]>(initialTasks || [])
   const [editingTask, setEditingTask] = useState<TaskWithSubtasks | null>(null)
 
-  useEffect(() => {
-      setTasks(initialTasks || [])
-    }, [initialTasks])
+  const [prevInitialTasks, setPrevInitialTasks] = useState(initialTasks)
+  if (initialTasks !== prevInitialTasks) {
+    setPrevInitialTasks(initialTasks)
+    setTasks(initialTasks || [])
+  }
   // TODO: turn into a reusable component
     //* Listen for optimistic tasks from QuickAddModal
     useEffect(() => {
@@ -101,7 +103,7 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
               task_name: values.task_name,
               time: values.time ? `${values.time}:00` : undefined,
               task_category: values.category ? { id: task.task_category?.id || null, name: values.category } : null,
-              subtasks: (values.subtasks || []).map((st: any) => ({
+              subtasks: (values.subtasks || []).map((st: { dbId?: string; name: string }) => ({
                 id: st.dbId || crypto.randomUUID(),
                 task_id: taskId,
                 subtask_name: st.name,
@@ -199,7 +201,7 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
       {showTitle && (
         <div className="flex justify-between items-end mb-6 lg:mb-8 shrink-0">
           <h2 id="agenda-heading" className="text-xs font-semibold uppercase tracking-[0.2em] transition-colors duration-500">
-            Today's Agenda
+            Today&apos;s Agenda
           </h2>
         </div>
       )}

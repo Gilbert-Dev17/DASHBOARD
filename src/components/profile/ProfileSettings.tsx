@@ -62,7 +62,7 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
                   <p className="text-xs text-muted-foreground font-mono">{user.email}</p>
                 </div>
               </div>
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-accent">Active</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-accent sm:block hidden">Active</span>
             </CardContent>
           </Card>
       </section>
@@ -73,7 +73,7 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
           Preferences
         </h2>
 
-        <div className="flex flex-row justify-between gap-4">
+        <div className="flex flex-col sm:flex-row justify-between gap-4">
           {/* Theme */}
           <ThemeToggle />
 
@@ -85,7 +85,7 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
                 <p className="text-xs text-muted-foreground">Select your primary display currency</p>
               </div>
               <Select value={currency} onValueChange={handleCurrencyChange} disabled={isUpdatingCurrency}>
-                <SelectTrigger className="w-[120px] h-8 text-xs font-semibold">
+                <SelectTrigger className="w-30 h-8 text-xs font-semibold">
                   <SelectValue placeholder="Currency" />
                 </SelectTrigger>
                 <SelectContent>

@@ -8,8 +8,7 @@ interface SignableTransaction {
 }
 
 export const getSignedAmount = (
-  txn: SignableTransaction,
-  perspectiveWalletId?: string
+  txn: SignableTransaction
 ): number => {
   const magnitude = Math.abs(txn.amount);
 

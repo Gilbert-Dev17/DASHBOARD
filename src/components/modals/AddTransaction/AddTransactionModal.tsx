@@ -14,11 +14,11 @@ import { TransferForm } from './TransferForm'
 
 import { useGlobalShortcut } from '@/hooks/useGlobalShortcut'
 
-export function AddTransactionModal() {
+export function AddTransactionModal({ enableShortcut = true }: { enableShortcut?: boolean }) {
   const [open, setOpen] = useState(false);
 
   const handleTrigger = useCallback(() => setOpen((prev) => !prev), [])
-    useGlobalShortcut({ key: 'k', onTrigger: handleTrigger })
+    useGlobalShortcut({ key: 'k', onTrigger: handleTrigger, enabled: enableShortcut })
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
