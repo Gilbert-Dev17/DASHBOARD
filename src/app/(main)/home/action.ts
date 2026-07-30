@@ -1,7 +1,7 @@
 'use server'
 
 import { cacheTag, cacheLife } from "next/cache";
-import type { TaskWithSubtasks, WalletSummary, WalletHistory } from '@/types/dashboard'
+import type { TaskWithSubtasks, WalletSummary } from '@/types/dashboard'
 import { getTodayInTimezone } from "@/utils/timezone";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getUser } from "@/lib/auth/get-user";
@@ -82,18 +82,15 @@ export async function getWalletData(userId: string) {
 // * Networth call
 async function fetchCachedHistoricalSnapshots(userId: string) {
   'use cache'
-  cacheLife('hours');
+  cacheLife('minutes');
   cacheTag(`snapshots-${userId}`);
 
-  const thirtyDaysAgo = new Date();
-  thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-  const targetDate = thirtyDaysAgo.toISOString();
 
   const { data, error } = await supabaseAdmin
     .from('wallet_snapshots')
     .select('*')
     .eq('user_id', userId)
-    .gte('recorded_at', targetDate)
+    // .gte('recorded_at', targetDate)
     .order('recorded_at', { ascending: true });
 
   if (error) {
@@ -101,15 +98,7 @@ async function fetchCachedHistoricalSnapshots(userId: string) {
     return [];
   }
 
-  // Grab the oldest snapshot for each wallet in this window
-  const oldestSnapshots = new Map<string, WalletHistory>();
-  for (const snap of (data || [])) {
-    if (!oldestSnapshots.has(snap.wallet_id)) {
-      oldestSnapshots.set(snap.wallet_id, snap);
-    }
-  }
-
-  return Array.from(oldestSnapshots.values());
+  return data || [];
 }
 
 export async function getHistoricalSnapshots(userId: string) {

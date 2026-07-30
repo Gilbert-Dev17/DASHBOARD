@@ -34,7 +34,7 @@ export const CustomCalendar = ({ initialDate = new Date(), datesWithTasks = [], 
   const task3Dates = datesWithTasks.filter(d => d.count >= 15).map(d => parseISO(d.date))
 
   return (
-    <Card className="lg:col-span-8 p-6 bg-secondary rounded-md">
+    <Card className=''>
       <Calendar
         mode="single"
         selected={initialDate}
@@ -65,7 +65,7 @@ export const CustomCalendar = ({ initialDate = new Date(), datesWithTasks = [], 
         }}
         components={{
           MonthCaption: ({ calendarMonth }) => (
-            <div className="text-xl flex gap-2 items-baseline px-1">
+            <div className="text-lg flex gap-2 items-baseline px-1 ml-1">
               <span className="font-bold text-foreground">
                 {format(calendarMonth.date, "MMMM")}
               </span>

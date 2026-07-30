@@ -1,8 +1,7 @@
 'use server'
 
 import { cacheTag } from "next/cache";
-import { createClient } from "@/lib/supabase/server";
-import type { TaskWithSubtasks } from '@/types/dashboard'
+import type { Notes, TaskWithSubtasks } from '@/types/dashboard'
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getUser } from "@/lib/auth/get-user";
 
@@ -60,6 +59,7 @@ async function fetchCachedMonthTasksSummary(userId: string, startStr: string, en
     .eq('user_id', userId)
     .gte('created_for_date', startStr)
     .lte('created_for_date', endStr);
+
   if (error) {
     console.error("Error fetching month summary:", error.message);
     return [];
@@ -86,4 +86,35 @@ export async function getMonthTasksSummary(userId: string, startStr: string, end
   }
 
   return fetchCachedMonthTasksSummary(userId, startStr, endStr)
+}
+
+
+async function fetchCachedDailyNotes(userId: string, dateStr: string) {
+  'use cache'
+  cacheTag(`daily-notes-${userId}-${dateStr}`)
+
+  const {data, error} = await supabaseAdmin
+    .from('daily_notes')
+    .select('*')
+    .eq('user_id', userId)
+    .eq('date', dateStr)
+    .maybeSingle()
+
+     if (error) {
+      console.error(`Error fetching Daily Notes:`, error.message);
+      throw error;
+    }
+
+
+    return data as Notes | null;
+}
+
+export async function getDailyNotes(userId: string, dateStr: string){
+  const user = await getUser();
+
+  if (!user|| user.id !== userId ){
+    throw new Error('Unauthorized or invalid user ID');
+  }
+
+  return fetchCachedDailyNotes(userId, dateStr)
 }

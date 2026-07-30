@@ -9,6 +9,7 @@ export async function addExpenseAction(data: {
   accountId: string
   categoryId: string
   note?: string
+  date?: Date
 }) {
   const supabase = await createClient()
 
@@ -16,28 +17,35 @@ export async function addExpenseAction(data: {
   if (!user) return { success: false, message: 'Not authenticated.' }
 
 
-  const { error } = await supabase
-    .from('transactions')
-    .insert({
-      user_id: user.id,
-      wallet_id: data.accountId,
-      category_id: data.categoryId,
-      title: data.note || 'Expense',
-      amount: data.amount,
-      type: 'expense',
-      transferFee: 0,
-      created_for_date: new Date().toISOString().split('T')[0]
-    })
+  try {
+    const { error } = await supabase
+      .from('transactions')
+      .insert({
+        user_id: user.id,
+        wallet_id: data.accountId,
+        category_id: data.categoryId,
+        title: data.note || 'Expense',
+        amount: data.amount,
+        type: 'expense',
+        transferFee: 0,
+        created_for_date: data.date 
+          ? new Date(data.date.getTime() - (data.date.getTimezoneOffset() * 60000)).toISOString().split('T')[0]
+          : new Date().toISOString().split('T')[0]
+      })
 
-  if (error) {
-    console.error('Error inserting expense:', error)
-    return { success: false, error: error.message }
+    if (error) {
+      console.error('Error inserting expense:', error)
+      return { success: false, error: error.message }
+    }
+
+    updateTag(`wallets-${user.id}`)
+    updateTag(`categories-${user.id}`)
+    updateTag(`transactions-${user.id}`)
+    updateTag(`snapshots-${user.id}`)
+
+    return { success: true }
+  } catch (error: unknown) {
+    console.error('Unexpected error in addExpenseAction:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' }
   }
-
-  // Revalidate Server Cache
-  updateTag(`wallets-${user.id}`)
-  updateTag(`categories-${user.id}`)
-  updateTag(`transactions-${user.id}`)
-
-  return { success: true }
 }

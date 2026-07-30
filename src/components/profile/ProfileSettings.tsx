@@ -1,63 +1,54 @@
 'use client'
 
-import { useTheme } from 'next-themes'
-import { useState, useEffect } from 'react'
-import { Sun, Moon, LogOut, Mail } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import React, { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import { createClient } from '@/lib/supabase/client'
-import { useRouter } from 'next/navigation'
+import { ThemeToggle } from './ThemeToggle'
 import { toast } from 'sonner'
 
+import { updateDefaultCurrency } from '@/app/(main)/profile/action'
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+import { UserSummary } from '@/types/dashboard'
+import { AVAILABLE_CURRENCIES } from '@/lib/constants/currencies'
+
 interface ProfileSettingsProps {
-  email?: string
+  user: UserSummary
 }
 
-export function ProfileSettings({ email }: ProfileSettingsProps) {
-  const { resolvedTheme, setTheme } = useTheme()
-  const [mounted, setMounted] = useState(false)
-  const router = useRouter()
-  const supabase = createClient()
+export function ProfileSettings({ user }: ProfileSettingsProps) {
+  const [currency, setCurrency] = useState(user.activeCurrency || 'PHP')
+  const [isUpdatingCurrency, setIsUpdatingCurrency] = useState(false)
 
-  useEffect(() => setMounted(true), [])
+  const handleCurrencyChange = async (val: string) => {
+    setCurrency(val)
+    setIsUpdatingCurrency(true)
 
-  const handleSignOut = async () => {
-    const { error } = await supabase.auth.signOut()
-    if (error) {
-      toast.error('Failed to sign out')
-    } else {
-      toast.success('Signed out successfully')
-      router.push('/login')
-      router.refresh()
+    if (user.id) {
+      const { success, error } = await updateDefaultCurrency(user.id, val)
+      if (success) {
+        toast.success(`Default currency updated to ${val}`)
+      } else {
+        toast.error(error || 'Failed to update currency')
+      }
     }
+    setIsUpdatingCurrency(false)
   }
 
-  if (!mounted) return null
-
   return (
-    <>
+    <React.Fragment>
       {/* Account */}
       <section aria-labelledby="account-heading">
         <h2 id="account-heading" className="text-xs font-semibold uppercase tracking-[0.2em] mb-6 lg:mb-8 transition-colors duration-500">
           Account
         </h2>
 
-        <div className="space-y-4">
-          {/* Email */}
-          <Card variant="dashed">
-            <CardContent className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <Mail size={16} className="text-accent shrink-0" />
-                <div>
-                  <span className="text-sm font-medium">Email</span>
-                  <p className="text-xs text-muted-foreground font-mono">{email}</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
           {/* Google OAuth — Active */}
-          <Card variant="dashed">
+          <Card>
             <CardContent className="flex items-center justify-between">
               <div className="flex items-center gap-3">
                 <svg viewBox="0 0 24 24" width="16" height="16" className="shrink-0">
@@ -67,14 +58,13 @@ export function ProfileSettings({ email }: ProfileSettingsProps) {
                   <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/>
                 </svg>
                 <div>
-                  <span className="text-sm font-medium">Google Sign-in</span>
-                  <p className="text-xs text-muted-foreground">Signed in with Google OAuth</p>
+                  <span className="text-sm font-medium">Signed in with Google OAuth</span>
+                  <p className="text-xs text-muted-foreground font-mono">{user.email}</p>
                 </div>
               </div>
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-accent">Active</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wider text-accent sm:block hidden">Active</span>
             </CardContent>
           </Card>
-        </div>
       </section>
 
       {/* Preferences */}
@@ -83,51 +73,33 @@ export function ProfileSettings({ email }: ProfileSettingsProps) {
           Preferences
         </h2>
 
-        <div className="space-y-4">
+        <div className="flex flex-col sm:flex-row justify-between gap-4">
           {/* Theme */}
-          <Card variant="dashed">
-            <CardContent className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                {resolvedTheme === 'dark' ? <Moon size={16} className="text-accent shrink-0" /> : <Sun size={16} className="text-accent shrink-0" />}
-                <div>
-                  <span className="text-sm font-medium">Appearance</span>
-                  <p className="text-xs text-muted-foreground">{resolvedTheme === 'dark' ? 'Dark' : 'Light'} mode</p>
-                </div>
-              </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="text-xs uppercase tracking-wider font-semibold"
-                onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-              >
-                Toggle
-              </Button>
-            </CardContent>
-          </Card>
+          <ThemeToggle />
 
           {/* Currency */}
-          <Card variant="dashed">
+          <Card className='w-full'>
             <CardContent className="flex items-center justify-between">
               <div>
-                <span className="text-sm font-medium">Currency</span>
-                <p className="text-xs text-muted-foreground">Philippine Peso (₱)</p>
+                <span className="text-sm font-medium">Default Currency</span>
+                <p className="text-xs text-muted-foreground">Select your primary display currency</p>
               </div>
+              <Select value={currency} onValueChange={handleCurrencyChange} disabled={isUpdatingCurrency}>
+                <SelectTrigger className="w-30 h-8 text-xs font-semibold">
+                  <SelectValue placeholder="Currency" />
+                </SelectTrigger>
+                <SelectContent>
+                  {AVAILABLE_CURRENCIES.map((c) => (
+                    <SelectItem key={c.code} value={c.code} className="text-xs">
+                      {c.code} ({c.symbol})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </CardContent>
           </Card>
         </div>
-      </section>
 
-      {/* Sign Out */}
-      <section className='flex justify-end'>
-        <Button
-          variant="link"
-          className="text-destructive hover:text-destructive"
-          onClick={handleSignOut}
-        >
-          <LogOut size={16} />
-          Sign out
-        </Button>
       </section>
-    </>
-  )
-}
+  </React.Fragment>
+)}

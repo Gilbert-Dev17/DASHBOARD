@@ -1,4 +1,4 @@
-import { AccountStatement } from '@/components/expenses/AccountDetails/AccountStatement';
+import { AccountStatement } from './client';
 import { getWalletId } from './action';
 import { getUser } from '@/lib/auth/get-user';
 import { redirect } from 'next/navigation';
@@ -13,7 +13,9 @@ export default async function AccountDetailsPage({ params }: { params: Promise<{
 
   const walletData = await getWalletId(user.id, accountId);
 
-  console.log(walletData)
+  if (!walletData) {
+    redirect('/finance');
+  }
 
   return (
       <AccountStatement accountData={walletData} />

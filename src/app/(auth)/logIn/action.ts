@@ -1,21 +1,23 @@
 'use server'
 
-import {type LoginInput, loginSchema } from "@/lib/validations/login";
 import { createClient } from "@/lib/supabase/server"
+import { redirect } from "next/navigation";
 
 
-export async function LogIn(values: LoginInput) {
-    const parsed = loginSchema.safeParse(values);
-
-     if (!parsed.success) {
-        return { ok: false, message: "Invalid input" };
-    }
-
+export async function GoogleLogIn() {
     const supabase = await createClient();
-    const {error} = await supabase.auth.signInWithPassword(parsed.data);
 
-    if(error){
-        return { ok: false , error: error.message };
+    const {data, error} = await supabase.auth.signInWithOAuth({
+        provider: 'google',
+        options: {
+        redirectTo: `http://localhost:3000/callback`,
+        skipBrowserRedirect: false,
+    },
+    })
+
+    if (error) {
+        throw new Error(error.message);
     }
-      return { ok: true };
+
+    if (data.url) {redirect(data.url)}
 }

@@ -9,7 +9,7 @@ import { formatTime } from '@/lib/formatTime'
 import { toast } from "sonner"
 import { Card, CardContent, } from '@/components/ui/card'
 import { toggleTask, toggleSubTask } from '@/lib/actions/toggleTasks'
-import { UpdateTaskModal } from '@/components/modals/planner-modals/task-updateModal/UpdateTaskModal'
+import { UpdateTaskModal } from '../Modals/PlannerModals/task-updateModal/UpdateTaskModal'
 import type { ParsedTask } from '@/utils/parseTaskLines'
 
 interface TasksProps {
@@ -44,9 +44,11 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
   const [tasks, setTasks] = useState<TaskWithSubtasks[]>(initialTasks || [])
   const [editingTask, setEditingTask] = useState<TaskWithSubtasks | null>(null)
 
-  useEffect(() => {
-      setTasks(initialTasks || [])
-    }, [initialTasks])
+  const [prevInitialTasks, setPrevInitialTasks] = useState(initialTasks)
+  if (initialTasks !== prevInitialTasks) {
+    setPrevInitialTasks(initialTasks)
+    setTasks(initialTasks || [])
+  }
   // TODO: turn into a reusable component
     //* Listen for optimistic tasks from QuickAddModal
     useEffect(() => {
@@ -101,7 +103,7 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
               task_name: values.task_name,
               time: values.time ? `${values.time}:00` : undefined,
               task_category: values.category ? { id: task.task_category?.id || null, name: values.category } : null,
-              subtasks: (values.subtasks || []).map((st: any) => ({
+              subtasks: (values.subtasks || []).map((st: { dbId?: string; name: string }) => ({
                 id: st.dbId || crypto.randomUUID(),
                 task_id: taskId,
                 subtask_name: st.name,
@@ -199,7 +201,7 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
       {showTitle && (
         <div className="flex justify-between items-end mb-6 lg:mb-8 shrink-0">
           <h2 id="agenda-heading" className="text-xs font-semibold uppercase tracking-[0.2em] transition-colors duration-500">
-            Today's Agenda
+            Today&apos;s Agenda
           </h2>
         </div>
       )}
@@ -207,19 +209,18 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
       {tasks.length === 0 ? (
         <p className="text-muted-foreground py-4">No tasks for today.</p>
       ) : (
-        <div className="flex-1 min-h-0 max-h-[650px] pr-4 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        <div className="flex-1 min-h-0 max-h-162 pr-4 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <Timeline className="space-y-8">
             {tasks.map((task) => (
               <TimelineItem key={task.id}>
 
                 <TimelineTime dateTime={task.time || undefined}>
                     {task.time && task.time.split(':').length === 3 && task.time.split(':')[2] !== '00'
-                      ? 'OPEN BLOCK'
+                      ? 'FREE'
                       : (task.time ? formatTime(task.time) : '--:--')}
                 </TimelineTime>
 
                 <TimelineContent
-                  withCard
                   className={`w-full cursor-pointer ${task.is_done ? 'opacity-50 grayscale' : ''}`}
                   onClick={() => setEditingTask(task)}
                 >

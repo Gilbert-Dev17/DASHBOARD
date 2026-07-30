@@ -7,6 +7,6 @@ export default async function RootPage() {
   if (!user || !user.id) {
     redirect('/login');
   } else {
-    redirect("/homes");
+    redirect("/home");
   }
 }

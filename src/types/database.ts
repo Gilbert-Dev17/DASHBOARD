@@ -2,12 +2,14 @@
 
 export interface User {
     id: string; // UUID from auth.users
+    name?: string;
     first_name: string;
     last_name: string;
     email: string;
     avatar_url?: string;
     status: string; // e.g. 'on_boarding'
     created_at: string;
+    activeCurrency: string;
 }
 
 export interface TaskCategory {
@@ -34,6 +36,15 @@ export interface Subtask {
     subtask_name: string;
     is_done: boolean;
     created_at: string;
+}
+
+export interface DailyNote {
+    id: string; // UUID
+    user_id: string; // UUID
+    date: string; // YYYY-MM-DD
+    content: string;
+    created_at: string;
+    updated_at: string;
 }
 
 // * Expenses
@@ -71,15 +82,32 @@ export interface WalletSnapshot {
     recorded_at: string; // Timestamp
 }
 
+export type TransactionType = 'income' | 'expense' | 'transfer';
+
 export interface Transaction {
     id: string; // UUID
     user_id: string; // UUID
     wallet_id: string; // UUID
+    to_wallet_id?: string | null; // UUID
     category_id: string | null; // UUID
     title: string;
     amount: number;
-    type: 'income' | 'expense' | 'transfer';
+    type: TransactionType;
     transferFee: number;
     created_for_date: string; // YYYY-MM-DD
     created_at: string;
+}
+
+export interface TableCounts {
+  tasks: number
+  subtasks: number
+  daily_notes: number
+  transactions: number
+  wallets: number
+}
+
+export interface DatabaseMetrics {
+  size_bytes: number
+  size_mb: number
+  size_pretty: string
 }

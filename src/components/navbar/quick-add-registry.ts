@@ -1,11 +1,11 @@
 import { ComponentType } from 'react'
-import { QuickAddModal } from '../modals/planner-modals/quick-addModal/QuickAddModal'
-import { AddTransactionModal } from '@/components/modals/add-transaction/add-transaction-modal'
+import { QuickAddModal } from '../Modals/PlannerModals/quick-addModal/QuickAddModal'
+import { AddTransactionModal } from '@/components/Modals/AddTransaction/AddTransactionModal'
 
 export interface QuickAddRegistry {
     id: string
     match: (pathname: string) => boolean
-    Component: ComponentType<any>
+    Component: ComponentType<{ enableShortcut?: boolean }>
 }
 
 export const quickAddRegistry: QuickAddRegistry[] = [

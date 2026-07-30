@@ -8,7 +8,7 @@ const cardVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-card ring-1 ring-foreground/10",
+        default: "bg-card shadow-vercel",
         dashed: "border border-dashed bg-card/30 shadow-sm",
       },
     },

@@ -9,33 +9,41 @@ export async function addIncomeAction(data: {
   accountId: string
   source: string
   note?: string
+  date?: Date
 }) {
   const supabase = await createClient()
    const user = await getUser();
     if (!user) return { success: false, message: 'Not authenticated.' }
 
 
-  const { error } = await supabase
-    .from('transactions')
-    .insert({
-      user_id: user.id,
-      wallet_id: data.accountId,
-      category_id: null, // Income might not use expense categories
-      title: data.note || data.source || 'Income',
-      amount: data.amount, // Positive amount
-      type: 'income',
-      transferFee: 0,
-      created_for_date: new Date().toISOString().split('T')[0]
-    })
+  try {
+    const { error } = await supabase
+      .from('transactions')
+      .insert({
+        user_id: user.id,
+        wallet_id: data.accountId,
+        category_id: null, // Income might not use expense categories
+        title: data.note || data.source || 'Income',
+        amount: data.amount, // Positive amount
+        type: 'income',
+        transferFee: 0,
+        created_for_date: data.date
+          ? new Date(data.date.getTime() - (data.date.getTimezoneOffset() * 60000)).toISOString().split('T')[0]
+          : new Date().toISOString().split('T')[0]
+      })
 
-  if (error) {
-    console.error('Error inserting income:', error)
-    return { success: false, error: error.message }
+    if (error) {
+      console.error('Error inserting income:', error)
+      return { success: false, error: error.message }
+    }
+
+    updateTag(`wallets-${user.id}`);
+    updateTag(`categories-${user.id}`)
+    updateTag(`transactions-${user.id}`)
+
+    return { success: true }
+  } catch (error: unknown) {
+    console.error('Unexpected error in addIncomeAction:', error)
+    return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' }
   }
-
-  updateTag(`wallets-${user.id}`);
-  updateTag(`categories-${user.id}`)
-  updateTag(`transactions-${user.id}`)
-
-  return { success: true }
 }

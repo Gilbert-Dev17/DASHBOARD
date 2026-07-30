@@ -15,7 +15,7 @@ export async function toggleTask(taskId: string, isDone: boolean) {
         .eq("id", taskId)
         .select();
 
-    {process.env.NODE_ENV === 'development'
+    if (process.env.NODE_ENV === 'development') {
         console.log({
             taskId,
             isDone,

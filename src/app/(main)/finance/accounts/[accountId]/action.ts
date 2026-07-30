@@ -22,13 +22,16 @@ async function fetchWalletId(userId: string, accountId: string) {
     .single()
 
     if (error) {
+        if (error.code === 'PGRST116') {
+            return null;
+        }
         console.error("Error fetching walletId:", error.message)
         throw error;
     }
 
     if (data && data.transactions) {
         // Sort transactions descending (newest first)
-        data.transactions.sort((a: any, b: any) =>
+        data.transactions.sort((a: TransactionHistory, b: TransactionHistory) =>
             new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
         );
     }

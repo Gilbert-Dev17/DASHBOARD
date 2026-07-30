@@ -13,31 +13,7 @@ import { HelpCircle } from "lucide-react"
 import type { CategorySummary } from "@/types/expenses"
 import { formatCurrency } from "@/utils/currency"
 
-import {DrumstickIcon, ShoppingBag, Tv, Heart, ShoppingBasket, BusFront, School} from 'lucide-react'
-
-const ICON_MAP: Record<string, React.ElementType> = {
-  'foods-drinks': DrumstickIcon,
-  'shopping': ShoppingBag,
-  'entertainment': Tv,
-  'date': Heart,
-  'groceries': ShoppingBasket,
-  'transport': BusFront,
-  'school': School,
-};
-
-interface ChartPieDonutTextProps {
-  categories: CategorySummary[];
-}
-
-const CHART_COLORS = [
-  "#6366f1",
-  "#ec4899",
-  "#f59e0b",
-  "#10b981",
-  "#22d3ee",
-  "#ef4444",
-  "#8b5cf6",
-]
+import { AVAILABLE_ICONS, AVAILABLE_COLORS } from '@/lib/constants/categories'
 
 const parseCategoryTotal = (total: string | number) => {
   if (typeof total === "number") {
@@ -47,13 +23,18 @@ const parseCategoryTotal = (total: string | number) => {
   return Number(String(total).replace(/[^0-9.-]/g, "")) || 0
 }
 
-export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
+interface ChartPieDonutTextProps {
+  categories: CategorySummary[];
+  currency: string;
+}
+
+export function ChartPieDonutText({ categories, currency }: ChartPieDonutTextProps) {
   const chartData = React.useMemo(
     () =>
       categories.map((category, index) => ({
         category: category.name,
         amount: parseCategoryTotal(category.total || 0),
-        fill: CHART_COLORS[index % CHART_COLORS.length],
+        fill: category.color || AVAILABLE_COLORS[index % AVAILABLE_COLORS.length],
         icon: category.icon,
       })),
     [categories]
@@ -61,16 +42,17 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
 
   const chartConfig = React.useMemo(
     () =>
-      categories.reduce<Record<string, { label: string; color: string; icon: React.ComponentType<any> }>>(
+      categories.reduce<Record<string, { label: string; color: string; icon: React.ComponentType<unknown> }>>(
         (acc, category, index) => {
+          const iconObj = category.icon ? AVAILABLE_ICONS.find(i => i.name === category.icon) : null;
           acc[category.name] = {
             label: category.name,
-            color: CHART_COLORS[index % CHART_COLORS.length],
-            icon: (category.icon ? (ICON_MAP[category.icon] || HelpCircle) : HelpCircle) as React.ComponentType<any>,
+            color: category.color || AVAILABLE_COLORS[index % AVAILABLE_COLORS.length],
+            icon: (iconObj?.icon || HelpCircle) as React.ComponentType<unknown>,
           }
           return acc
         },
-        {} as Record<string, { label: string; color: string; icon: React.ComponentType<any> }>
+        {} as Record<string, { label: string; color: string; icon: React.ComponentType<unknown> }>
       ) satisfies ChartConfig,
     [categories]
   )
@@ -97,41 +79,13 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
                 cornerRadius={8}
                 paddingAngle={4}
             >
-                <Label
-                    content={({ viewBox }) => {
-                    if (viewBox && "cx" in viewBox && "cy" in viewBox) {
-                        return (
-                        <text
-                            x={viewBox.cx}
-                            y={viewBox.cy}
-                            textAnchor="middle"
-                            dominantBaseline="middle"
-                        >
-                            <tspan
-                            x={viewBox.cx}
-                            y={(viewBox.cy || 0) - 12}
-                            className="fill-muted-foreground text-sm tracking-widest uppercase"
-                            >
-                            Total
-                            </tspan>
-                            <tspan
-                            x={viewBox.cx}
-                            y={(viewBox.cy || 0) + 16}
-                            className="fill-foreground text-lg font-mono"
-                            >
-                            {formatCurrency(totalAmount, 'PHP')}
-                            </tspan>
-                        </text>
-                        )
-                    }
-                    }}
-                />
             </Pie>
             <ChartTooltip
                 content={({ active, payload }: any) => {
                     if (active && payload && payload.length) {
                         const data = payload[0].payload;
-                        const Icon = ICON_MAP[data.icon] || HelpCircle;
+                        const iconObj = data.icon ? AVAILABLE_ICONS.find((i) => i.name === data.icon) : null;
+                        const Icon = iconObj?.icon || HelpCircle;
                         return (
                         <div className="bg-background/95 border border-border/50 p-3 rounded-lg shadow-xl backdrop-blur-sm flex items-center justify-between gap-4">
                             <div className="flex items-center gap-2">
@@ -141,7 +95,7 @@ export function ChartPieDonutText({ categories }: ChartPieDonutTextProps) {
                                 <span className="text-xs font-medium text-foreground">{data.category}</span>
                             </div>
                             <span className="text-sm font-mono font-bold text-foreground">
-                                {formatCurrency(data.amount || 0, 'PHP')}
+                                {formatCurrency(data.amount || 0, currency)}
                             </span>
                         </div>
                         )

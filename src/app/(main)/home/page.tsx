@@ -1,4 +1,4 @@
-import DashboardPage from '@/components/home/dashboard'
+import DashboardPage from './client';
 import { getHomeData, getWalletData, getHistoricalSnapshots } from './action'
 import { getUser } from '@/lib/auth/get-user'
 import { redirect } from 'next/navigation'

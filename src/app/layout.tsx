@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from 'react';
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Providers from './Providers'
@@ -33,9 +34,11 @@ export default function RootLayout({
     >
       <body className="min-h-full flex flex-col">
           <Providers>
-            <TooltipProvider>
-              {children}
-            </TooltipProvider>
+            <Suspense>
+              <TooltipProvider>
+                {children}
+              </TooltipProvider>
+            </Suspense>
           </Providers>
         <Toaster position={'top-center'} />
       </body>

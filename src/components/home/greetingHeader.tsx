@@ -13,6 +13,7 @@ import type { WeatherData, Coordinates } from '@/types/weather'
 import { toast } from 'sonner'
 
 interface userGreeting {
+    name?: string;
     firstName?: string;
     tasks?: TaskWithSubtasks[];
 }
@@ -63,7 +64,7 @@ const getGreeting = (time: Date) => {
   return pick(lateEvening)
 }
 
-export const GreetingHeader = ({firstName, tasks = []}: userGreeting) => {
+export const GreetingHeader = ({firstName, name, tasks = []}: userGreeting) => {
   const [currentTime, setCurrentTime] = useState(new Date());
 
   // ── Weather Data Fetching ──
@@ -115,7 +116,7 @@ export const GreetingHeader = ({firstName, tasks = []}: userGreeting) => {
         {/* ── Content Area (Text or Skeleton) ── */}
 
             <p className="text-2xl md:text-3xl lg:text-4xl leading-snug font-light max-w-5xl tracking-tight text-pretty whitespace-pre-wrap transition-all duration-300">
-              {greeting}, <span className="font-bold">{firstName}</span>. {parseBoldText(brief.message)}
+              {greeting}, <span className="font-bold">{firstName || name}</span>. {parseBoldText(brief.message)}
             </p>
 
             {/* ── Scannable Chips ── */}
