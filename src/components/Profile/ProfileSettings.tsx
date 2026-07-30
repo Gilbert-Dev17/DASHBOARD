@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import { Card, CardContent } from '@/components/ui/card'
-import { ThemeToggle } from './ThemeToggle'
+import { ThemeToggleButton } from './ThemeToggle'
 import { toast } from 'sonner'
 
 import { updateDefaultCurrency } from '@/app/(main)/profile/action'
@@ -75,7 +75,7 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
 
         <div className="flex flex-col sm:flex-row justify-between gap-4">
           {/* Theme */}
-          <ThemeToggle />
+          <ThemeToggleButton />
 
           {/* Currency */}
           <Card className='w-full'>

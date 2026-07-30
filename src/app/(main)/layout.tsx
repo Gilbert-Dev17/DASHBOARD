@@ -1,7 +1,6 @@
 import { ReactNode, Suspense } from 'react'
 import { RealtimeSync } from '@/components/Shared/RealTimeSync'
 
-
 import Sidebar from '@/components/Navbar/Sidebar'
 import { Mobilebar } from '@/components/Navbar/Mobilebar'
 
