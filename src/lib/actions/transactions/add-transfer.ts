@@ -10,7 +10,7 @@ export async function addTransferAction(data: {
   toAccountId: string
   transferFee?: number
   note?: string
-  date?: Date
+  date?: Date | string
 }) {
   const supabase = await createClient()
    const user = await getUser();
@@ -24,7 +24,7 @@ export async function addTransferAction(data: {
 
   try {
     const formattedDate = data.date
-      ? new Date(data.date.getTime() - (data.date.getTimezoneOffset() * 60000)).toISOString().split('T')[0]
+      ? (typeof data.date === 'string' ? data.date : new Date(data.date.getTime() - (data.date.getTimezoneOffset() * 60000)).toISOString().split('T')[0])
       : new Date().toISOString().split('T')[0]
 
     const { error } = await supabase.rpc('transfer_funds', {

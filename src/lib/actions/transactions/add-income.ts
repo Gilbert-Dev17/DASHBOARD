@@ -9,7 +9,7 @@ export async function addIncomeAction(data: {
   accountId: string
   source: string
   note?: string
-  date?: Date
+  date?: Date | string
 }) {
   const supabase = await createClient()
    const user = await getUser();
@@ -28,7 +28,7 @@ export async function addIncomeAction(data: {
         type: 'income',
         transferFee: 0,
         created_for_date: data.date
-          ? new Date(data.date.getTime() - (data.date.getTimezoneOffset() * 60000)).toISOString().split('T')[0]
+          ? (typeof data.date === 'string' ? data.date : new Date(data.date.getTime() - (data.date.getTimezoneOffset() * 60000)).toISOString().split('T')[0])
           : new Date().toISOString().split('T')[0]
       })
 

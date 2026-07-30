@@ -9,7 +9,7 @@ export async function addExpenseAction(data: {
   accountId: string
   categoryId: string
   note?: string
-  date?: Date
+  date?: Date | string
 }) {
   const supabase = await createClient()
 
@@ -29,7 +29,7 @@ export async function addExpenseAction(data: {
         type: 'expense',
         transferFee: 0,
         created_for_date: data.date 
-          ? new Date(data.date.getTime() - (data.date.getTimezoneOffset() * 60000)).toISOString().split('T')[0]
+          ? (typeof data.date === 'string' ? data.date : new Date(data.date.getTime() - (data.date.getTimezoneOffset() * 60000)).toISOString().split('T')[0])
           : new Date().toISOString().split('T')[0]
       })
 

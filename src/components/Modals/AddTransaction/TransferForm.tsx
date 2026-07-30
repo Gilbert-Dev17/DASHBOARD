@@ -85,7 +85,7 @@ export const TransferForm = () => {
       toAccountId: data.toAccountId,
       transferFee: data.transferFee,
       note: data.note,
-      date: data.date,
+      date: data.date ? format(data.date, 'yyyy-MM-dd') : undefined,
     })
   }
 

@@ -67,7 +67,7 @@ export const IncomeForm = () => {
       accountId: data.accountId,
       source: data.source,
       note: data.note,
-      date: data.date,
+      date: data.date ? format(data.date, 'yyyy-MM-dd') : undefined,
     })
   }
 
