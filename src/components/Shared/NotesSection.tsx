@@ -20,6 +20,7 @@ interface NotesProps {
     dateStr: string;
     isExpanded: boolean;
     onExpand: () => void;
+    onCollapse?: () => void;
 }
 
 const UpdateNotesSchema = z.object({
@@ -28,7 +29,7 @@ const UpdateNotesSchema = z.object({
 
 type UpdateDailyNotes = z.infer<typeof UpdateNotesSchema>
 
-export const NotesSection = ({ note, dateStr, isExpanded, onExpand }: NotesProps) => {
+export const NotesSection = ({ note, dateStr, isExpanded, onExpand, onCollapse }: NotesProps) => {
 
   const router = useRouter()
   const [optimisticContent, setOptimisticContent] = useState(note?.content || '')
@@ -124,18 +125,31 @@ if (!isExpanded) {
             </span>
           </div>
 
-          <Button
-            type="submit"
-            disabled={isPending || !isDirty}
-            variant="ghost"
-            size="sm"
-            className="text-xs uppercase tracking-widest font-semibold text-muted-foreground hover:text-foreground gap-2 disabled:opacity-30"
-          >
-            <Save className="w-3 h-3" />
-            {isPending
-                ? <span className='flex items-center gap-4'>Save <Spinner /></span>
-                : 'Save'}
-          </Button>
+          <div className="flex items-center gap-2">
+            {onCollapse && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={onCollapse}
+                className="text-xs uppercase tracking-widest font-semibold text-muted-foreground hover:text-foreground"
+              >
+                Close
+              </Button>
+            )}
+            <Button
+              type="submit"
+              disabled={isPending || !isDirty}
+              variant="ghost"
+              size="sm"
+              className="text-xs uppercase tracking-widest font-semibold text-muted-foreground hover:text-foreground gap-2 disabled:opacity-30"
+            >
+              <Save className="w-3 h-3" />
+              {isPending
+                  ? <span className='flex items-center gap-4'>Save <Spinner /></span>
+                  : 'Save'}
+            </Button>
+          </div>
         </div>
 
         {/* Textarea — full height, flush, no border */}
