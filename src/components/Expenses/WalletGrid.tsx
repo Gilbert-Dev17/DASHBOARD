@@ -2,9 +2,10 @@ import { Wallet as WalletIcon, ArrowRight } from 'lucide-react';
 import { AddWalletModal } from '../Modals/AddWallet/AddWalletModal';
 import { WalletCard } from './WalletCard';
 import type { WalletSummary } from '@/types/dashboard';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '../ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
 import Link from 'next/link'
+import { Empty, EmptyContent, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty';
 
 import { TransactionHistory } from '@/types/expenses';
 
@@ -38,7 +39,7 @@ export function WalletGrid({ wallets, transactions = [], isLoading = false }: Wa
           Accounts
         </CardTitle>
         <div className="flex items-center gap-2">
-          <AddWalletModal />
+          {wallets.length > 0 && <AddWalletModal />}
         </div>
       </CardHeader>
 
@@ -52,10 +53,18 @@ export function WalletGrid({ wallets, transactions = [], isLoading = false }: Wa
         </CardContent>
       ) : wallets.length === 0 ? (
         <CardContent>
-          <div className="flex w-full flex-col items-center justify-center rounded-xl border border-dashed py-16 bg-card/30">
-            <WalletIcon className="mb-3 h-8 w-8 text-muted-foreground" aria-hidden="true" />
-            <p className="mb-4 text-sm text-muted-foreground">No accounts found.</p>
-          </div>
+          <Empty className="py-12 bg-card/30">
+            <EmptyContent>
+              <EmptyMedia variant="icon">
+                <WalletIcon className="h-6 w-6" aria-hidden="true" />
+              </EmptyMedia>
+              <EmptyTitle>No accounts yet</EmptyTitle>
+              <EmptyDescription className="mb-4">
+                Get started by adding your first wallet or bank account.
+              </EmptyDescription>
+              <AddWalletModal />
+            </EmptyContent>
+          </Empty>
         </CardContent>
       ) : (
         <CardContent>

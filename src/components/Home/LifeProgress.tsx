@@ -52,7 +52,7 @@ useEffect(() => {
           <div key={label} className="flex items-center gap-3 w-full">
               <span className="w-12 text-right">{label}</span>
               <Progress value={value} className="h-0.5 flex-1 bg-border/40" />
-              <span className="w-10">{value.toFixed(0)}%</span>
+              <span className="w-10">{value.toFixed(1)}%</span>
           </div>
         ))}
     </div>

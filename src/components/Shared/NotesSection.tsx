@@ -12,7 +12,8 @@ import { upsertDailyNote } from '@/lib/actions/daily-notes'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { format, parseISO } from 'date-fns'
-import { Save } from 'lucide-react'
+import { Save, FileText } from 'lucide-react'
+import { Empty, EmptyContent, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
 
 interface NotesProps {
     note: Notes | null;
@@ -87,9 +88,22 @@ if (!isExpanded) {
 
       {/* Preview content */}
       <div className="px-4 py-3">
-        <p className={`text-xs leading-relaxed line-clamp-2 font-mono ${hasContent ? 'text-foreground/60' : 'text-muted-foreground/40 italic'}`}>
-          {optimisticContent || 'No entry for this date.'}
-        </p>
+        {hasContent ? (
+          <p className="text-xs leading-relaxed line-clamp-2 font-mono text-foreground/60">
+            {optimisticContent}
+          </p>
+        ) : (
+          <Empty className="py-6 border-none">
+            <EmptyContent className="max-w-xs mx-auto">
+              <EmptyMedia variant="icon" className="mb-0 [&_svg]:size-4">
+                <FileText aria-hidden="true" />
+              </EmptyMedia>
+              <EmptyDescription className="mt-2 text-xs">
+                No entry for this date.
+              </EmptyDescription>
+            </EmptyContent>
+          </Empty>
+        )}
       </div>
     </div>
   )

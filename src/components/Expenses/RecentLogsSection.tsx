@@ -5,8 +5,9 @@ import {
 } from '@/components/ui/timeline'
 import { formatSignedCurrency, getSignedAmount } from '@/utils/currency'
 import { TransactionHistory } from '@/types/expenses'
-import { ArrowRight } from 'lucide-react'
+import { ArrowRight, Receipt } from 'lucide-react'
 import { Separator } from '../ui/separator'
+import { Empty, EmptyContent, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
 
  interface RecentLogsSectionProps {
    transactions: TransactionHistory[];
@@ -24,9 +25,17 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
         </Button>
       </header>
       {transactions.length === 0 ? (
-        <div className="flex flex-col items-center justify-center py-16 text-muted-foreground text-sm">
-          No Transactions yet.
-        </div>
+        <Empty className="py-8">
+          <EmptyContent>
+            <EmptyMedia variant="icon">
+              <Receipt className="h-6 w-6" aria-hidden="true" />
+            </EmptyMedia>
+            <EmptyTitle>No transactions yet</EmptyTitle>
+            <EmptyDescription>
+              Your recent activity will appear here.
+            </EmptyDescription>
+          </EmptyContent>
+        </Empty>
       ) : (
         <div className="min-h-0 max-h-110 pr-4 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
 

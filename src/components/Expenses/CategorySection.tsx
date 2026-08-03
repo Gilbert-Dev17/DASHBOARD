@@ -11,6 +11,8 @@ import { HelpCircle } from 'lucide-react'
 import { Button } from '../ui/button'
 import Link from 'next/link'
 import { Badge } from '../ui/badge'
+import { Tags } from 'lucide-react'
+import { Empty, EmptyContent, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
 
 interface CategorySectionProps {
   transactions: TransactionHistory[];
@@ -48,7 +50,7 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
       <Card className="bg-card/3 gap-0"  aria-labelledby="categories-heading">
         <CardHeader className="flex justify-between items-center shrink-0">
           <CardTitle id="categories-heading" className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Categories</CardTitle>
-          <AddCategoryModal />
+          {allCategories.length > 0 && <AddCategoryModal />}
         </CardHeader>
         <CardContent className={`${allCategories.length > 0 ? 'grid grid-cols-1 xl:grid-cols-2 items-center min-h-75 py-0' : 'flex flex-col items-center justify-center text-center'}`}>
 
@@ -76,14 +78,22 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
                 </table>
               </div>
             ) : (
-              <div className="flex flex-col items-center justify-center text-center h-full">
-                <p className="text-sm text-muted-foreground mb-4">
-                  {allCategories.length > 0
-                    ? "No expenses yet for your categories."
-                    : "No current categories or expenses."}
-                </p>
-                <AddCategoryModal />
-              </div>
+              <Empty className="py-8">
+                <EmptyContent>
+                  <EmptyMedia variant="icon">
+                    <Tags className="h-6 w-6" aria-hidden="true" />
+                  </EmptyMedia>
+                  <EmptyTitle>
+                    {allCategories.length > 0 ? "No expenses yet" : "No categories yet"}
+                  </EmptyTitle>
+                  <EmptyDescription className="mb-4">
+                    {allCategories.length > 0
+                      ? "Start logging expenses to see your breakdown."
+                      : "Create a category to start tracking where your money goes."}
+                  </EmptyDescription>
+                  {allCategories.length === 0 && <AddCategoryModal />}
+                </EmptyContent>
+              </Empty>
             )}
           </div>
 
