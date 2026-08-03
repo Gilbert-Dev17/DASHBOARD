@@ -37,10 +37,11 @@ export const DeleteTaskButton = ({ task, onDeleted }: DeleteTaskButtonProps) => 
 
     // 4. Show the undo toast using Sonner's native API
     toast(`"${task.task_name}" deleted`, {
+      icon: <Trash2 size={16} className="text-destructive" />,
       description: <UndoCountdown />,
       duration: UNDO_DURATION + 200, // slight buffer so toast outlasts the timer
       action: {
-        label: <span className='flex items-center'>Undo {<Undo2 size={12} />}</span>,
+        label: <span className='flex items-center gap-1.5 font-semibold text-xs tracking-wider uppercase'>Undo <Undo2 size={14} /></span>,
         onClick: () => {
           cancelled = true
           clearTimeout(timer)
