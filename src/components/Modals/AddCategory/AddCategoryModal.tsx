@@ -2,14 +2,14 @@
 
 import { Plus } from 'lucide-react'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog'
+  ResponsiveDialog as Dialog,
+  ResponsiveDialogContent as DialogContent,
+  ResponsiveDialogHeader as DialogHeader,
+  ResponsiveDialogTitle as DialogTitle,
+  ResponsiveDialogTrigger as DialogTrigger,
+  ResponsiveDialogDescription as DialogDescription,
+  ResponsiveDialogFooter as DialogFooter
+} from '@/components/ui/responsive-dialog'
 import { FieldError, FieldGroup, FieldLabel, Field } from "@/components/ui/field"
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'

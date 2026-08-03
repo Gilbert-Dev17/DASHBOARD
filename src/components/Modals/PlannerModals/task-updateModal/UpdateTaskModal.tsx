@@ -11,9 +11,13 @@ import { TaskWithSubtasks } from '@/types/dashboard'
 import { editTaskSchema, type EditTaskFormValues } from './schemas'
 import { Kbd } from '@/components/ui/kbd'
 import {
-  Dialog, DialogContent, DialogDescription,
-  DialogHeader, DialogTitle, DialogFooter
-} from '@/components/ui/dialog'
+  ResponsiveDialog as Dialog,
+  ResponsiveDialogContent as DialogContent,
+  ResponsiveDialogDescription as DialogDescription,
+  ResponsiveDialogHeader as DialogHeader,
+  ResponsiveDialogTitle as DialogTitle,
+  ResponsiveDialogFooter as DialogFooter
+} from '@/components/ui/responsive-dialog'
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'

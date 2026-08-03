@@ -2,8 +2,11 @@
 
 import { Edit, Wallet as WalletIcon } from 'lucide-react'
 import {
-   Dialog, DialogContent, DialogHeader, DialogTitle,
-} from '@/components/ui/dialog'
+  ResponsiveDialog as Dialog,
+  ResponsiveDialogContent as DialogContent,
+  ResponsiveDialogHeader as DialogHeader,
+  ResponsiveDialogTitle as DialogTitle
+} from '@/components/ui/responsive-dialog'
 import { Field, FieldGroup, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'

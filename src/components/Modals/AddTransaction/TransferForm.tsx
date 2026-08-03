@@ -125,7 +125,7 @@ export const TransferForm = () => {
       </FieldGroup>
 
       {/* From → To accounts */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FieldGroup>
           <div className="flex justify-between items-center">
             <FieldLabel className="mb-0">From</FieldLabel>
@@ -239,7 +239,7 @@ export const TransferForm = () => {
         />
       </FieldGroup>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FieldGroup>
           <FieldLabel>Date</FieldLabel>
           <Controller
