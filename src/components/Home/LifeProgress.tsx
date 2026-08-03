@@ -58,46 +58,42 @@ const dayProgress = useMemo(() => {
   )
 }, [now])
 
+// * Week Progress
+const weekProgress = useMemo(() => {
+  const currentDay = now.getDay()
+  const diff = now.getDate() - currentDay + (currentDay === 0 ? -6 : 1) // start on Monday
+  const start = new Date(now.getFullYear(), now.getMonth(), diff)
+  const end = new Date(start.getTime() + 7 * 24 * 60 * 60 * 1000)
+  
   return (
-    <section aria-labelledby="progress-heading">
-        <h2
-            id="progress-heading"
-            className="text-xs font-semibold uppercase tracking-[0.2em] mb-6 lg:mb-8 transition-colors duration-500"
-        >
-            Life Progress
-        </h2>
+    ((now.getTime() - start.getTime()) /
+      (end.getTime() - start.getTime())) *
+    100
+  )
+}, [now])
 
-        <div className="space-y-6 lg:space-y-8">
-            <div className="space-y-2">
-            <div className="flex items-center justify-between">
-                <span>Year</span>
-                <span className="text-sm text-muted-foreground">
-                {yearProgress.toFixed(1)}%
-                </span>
-            </div>
-            <Progress value={yearProgress} aria-label="Year Progress" />
-            </div>
-
-            <div className="space-y-2">
-            <div className="flex items-center justify-between">
-                <span>Month</span>
-                <span className="text-sm text-muted-foreground">
-                {monthProgress.toFixed(1)}%
-                </span>
-            </div>
-            <Progress value={monthProgress} aria-label="Month Progress" />
-            </div>
-
-            <div className="space-y-2">
-            <div className="flex items-center justify-between">
-                <span>Day</span>
-                <span className="text-sm text-muted-foreground">
-                {dayProgress.toFixed(1)}%
-                </span>
-            </div>
-            <Progress value={dayProgress} aria-label="Day Progress" />
-            </div>
+  return (
+    <div className="w-full flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8 text-[10px] sm:text-xs text-muted-foreground uppercase tracking-widest font-mono">
+        <div className="flex items-center gap-3 w-full">
+            <span className="w-12 text-right">Day</span>
+            <Progress value={dayProgress} className="h-[2px] flex-1 bg-border/40" />
+            <span className="w-10">{dayProgress.toFixed(0)}%</span>
         </div>
-    </section>
+        <div className="flex items-center gap-3 w-full">
+            <span className="w-12 text-right">Week</span>
+            <Progress value={weekProgress} className="h-[2px] flex-1 bg-border/40" />
+            <span className="w-10">{weekProgress.toFixed(0)}%</span>
+        </div>
+        <div className="flex items-center gap-3 w-full">
+            <span className="w-12 text-right">Month</span>
+            <Progress value={monthProgress} className="h-[2px] flex-1 bg-border/40" />
+            <span className="w-10">{monthProgress.toFixed(0)}%</span>
+        </div>
+        <div className="flex items-center gap-3 w-full">
+            <span className="w-12 text-right">Year</span>
+            <Progress value={yearProgress} className="h-[2px] flex-1 bg-border/40" />
+            <span className="w-10">{yearProgress.toFixed(0)}%</span>
+        </div>
+    </div>
   )
 }
