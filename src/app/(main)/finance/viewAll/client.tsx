@@ -217,7 +217,7 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
 
                       rows.push(
                         <TableRow key={`header-${groupKey}`} className="bg-muted/10 hover:bg-muted/10 border-b-border/50">
-                          <TableCell colSpan={5} className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground py-2 pl-4">
+                          <TableCell colSpan={5} className="text-xs font-semibold uppercase tracking-widest text-muted-foreground py-2 pl-4">
                             {groupKey}
                           </TableCell>
                           <TableCell className={`text-right text-xs font-bold tabular-nums py-2 pr-4 ${groupTotal > 0 ? 'text-emerald-500' : groupTotal < 0 ? 'text-rose-500' : 'text-muted-foreground'}`}>
@@ -272,9 +272,9 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
 
                         <TableCell>
                           {isTransfer ? (
-                            <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-semibold">Transfer</span>
+                            <span className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">Transfer</span>
                           ) : transaction.type === 'income' ? (
-                            <span className="text-[10px] uppercase tracking-widest text-emerald-500 font-semibold">Income</span>
+                            <span className="text-xs uppercase tracking-widest text-emerald-500 font-semibold">Income</span>
                           ) : (
                             <CategoryBadge
                               name={transaction.expense_categories?.name}

@@ -115,7 +115,7 @@ export const EditWalletModal = ({ wallet, isOpen, setIsOpen }: EditWalletModalPr
             <Field>
               <FieldLabel
                 htmlFor="wallet-name"
-                className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground"
+                className="mb-2 block text-xs text-muted-foreground"
               >
                 ACCOUNT NAME
               </FieldLabel>
@@ -137,7 +137,7 @@ export const EditWalletModal = ({ wallet, isOpen, setIsOpen }: EditWalletModalPr
             <div className="grid grid-cols-2 gap-4">
               {/* Wallet Type */}
               <Field>
-                <FieldLabel className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                <FieldLabel className="mb-2 block text-xs text-muted-foreground">
                   ACCOUNT TYPE
                 </FieldLabel>
                 <Controller
@@ -163,7 +163,7 @@ export const EditWalletModal = ({ wallet, isOpen, setIsOpen }: EditWalletModalPr
 
               {/* Currency */}
               <Field>
-                <FieldLabel className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                <FieldLabel className="mb-2 block text-xs text-muted-foreground">
                   CURRENCY
                 </FieldLabel>
                  <Controller
@@ -194,7 +194,7 @@ export const EditWalletModal = ({ wallet, isOpen, setIsOpen }: EditWalletModalPr
             <Field>
               <FieldLabel
                 htmlFor="wallet-balance"
-                className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground"
+                className="mb-2 block text-xs text-muted-foreground"
               >
                 {currentType === 'Credit' || currentType === 'Loans' ? 'CURRENT BALANCE (OWED)' : 'CURRENT BALANCE'}
               </FieldLabel>

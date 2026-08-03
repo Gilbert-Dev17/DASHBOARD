@@ -49,7 +49,7 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
   return (
       <Card className="bg-card/3 gap-0"  aria-labelledby="categories-heading">
         <CardHeader className="flex justify-between items-center shrink-0">
-          <CardTitle id="categories-heading" className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Categories</CardTitle>
+          <CardTitle id="categories-heading" className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Categories</CardTitle>
           {allCategories.length > 0 && <AddCategoryModal />}
         </CardHeader>
         <CardContent className={`${allCategories.length > 0 ? 'grid grid-cols-1 xl:grid-cols-2 items-center min-h-75 py-0' : 'flex flex-col items-center justify-center text-center'}`}>
@@ -103,7 +103,7 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
 
               {chartCategories.length > 0 && (
                 <div className="flex flex-col gap-2">
-                  <span className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                  <span className="text-xs text-muted-foreground">
                     Total
                   </span>
                   <div className="text-3xl lg:text-4xl font-mono text-foreground tracking-tighter flex items-baseline gap-1">
@@ -115,7 +115,7 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
 
 
               <div className="flex flex-col gap-4">
-                <h3 className="text-[10px] font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+                <h3 className="text-xs text-muted-foreground">
                   Available Categories
                 </h3>
                 <div className="flex flex-wrap gap-2">

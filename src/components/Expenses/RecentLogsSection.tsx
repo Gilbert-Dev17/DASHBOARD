@@ -17,7 +17,7 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
   return (
     <section className="flex flex-col flex-1" aria-labelledby="logs-heading">
       <header className="flex flex-row justify-between items-center pb-4 mb-2 shrink-0">
-        <h2 id="logs-heading" className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">Transactions</h2>
+        <h2 id="logs-heading" className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Transactions</h2>
         <Button variant="link" size="sm" className="group px-0 flex flex-row text-muted-foreground hover:text-foreground items-center gap-1" asChild>
           <Link href="/finance/viewAll">
             View All <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
@@ -69,7 +69,7 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
                         {formatSignedCurrency(signedAmount, txn.wallets?.currency, !isTransfer)}
                       </span>
                     </div>
-                    <span className="text-[10px] uppercase tracking-wider text-muted-foreground/80 mt-1 flex items-center gap-2">
+                    <span className="text-xs uppercase tracking-wider text-muted-foreground/80 mt-1 flex items-center gap-2">
                       <span>{txn.expense_categories?.name || txn.type}</span>
                       {txn.wallets?.name && (
                         <>

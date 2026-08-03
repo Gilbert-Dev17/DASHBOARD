@@ -40,7 +40,7 @@ export default function ProfileClientPage({ user, dbSize, tableCounts }: Profile
   return (
     <PageComponent>
       {/* HEADER */}
-      <header className="mb-16 lg:mb-20">
+      <header>
         <div className="flex items-center gap-6 mb-8 lg:mb-12">
           <Avatar className="w-20 h-20 lg:w-24 lg:h-24 border-2 border-border shrink-0">
             <AvatarImage src={user.avatar_url || undefined} alt="Profile" className="object-cover" />
@@ -66,7 +66,7 @@ export default function ProfileClientPage({ user, dbSize, tableCounts }: Profile
         {/* System */}
         {dbSize && tableCounts && (
           <section aria-labelledby="system-heading">
-            <h2 id="system-heading" className="text-xs font-semibold uppercase tracking-[0.2em] mb-6 lg:mb-8">
+            <h2 id="system-heading" className="text-xs font-semibold uppercase tracking-widest mb-6 lg:mb-8">
               System
             </h2>
             <DatabaseMetricsCard

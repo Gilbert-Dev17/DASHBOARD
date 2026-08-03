@@ -140,7 +140,7 @@ export const UpdateTaskModal = ({ task, open, onOpenChange }: UpdateTaskModalPro
     }}>
       <DialogContent className="sm:max-w-lg">
         <DialogHeader>
-          <DialogTitle className="font-bold">Edit Task</DialogTitle>
+          <DialogTitle className="text-base font-semibold">Edit Task</DialogTitle>
           <DialogDescription>
             Update the task details below.
           </DialogDescription>

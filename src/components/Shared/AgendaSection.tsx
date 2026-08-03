@@ -202,7 +202,7 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
     <section className="lg:col-span-7 flex flex-col h-full overflow-hidden" aria-labelledby="agenda-heading">
       {showTitle && (
         <div className="flex justify-between items-end mb-6 lg:mb-8 shrink-0">
-          <h2 id="agenda-heading" className="text-xs font-semibold uppercase tracking-[0.2em] transition-colors duration-500">
+          <h2 id="agenda-heading" className="text-xs font-semibold uppercase tracking-widest transition-colors text-muted-foreground duration-500">
             Today&apos;s Agenda
           </h2>
         </div>
@@ -243,7 +243,7 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
                         <span className={`font-medium text-sm tracking-wide ${task.is_done ? 'line-through text-muted-foreground' : 'text-foreground/90 group-hover:text-foreground'}`}>
                           {task.task_name}
                         </span>
-                        <span className="text-[10px] font-semibold uppercase tracking-wider text-accent">
+                        <span className="text-xs font-semibold uppercase tracking-wider text-accent">
                           {task.task_category?.name}
                         </span>
                       </div>

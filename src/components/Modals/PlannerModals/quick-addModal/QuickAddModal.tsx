@@ -250,7 +250,7 @@ export const QuickAddModal = ({ enableShortcut = true }: { enableShortcut?: bool
       </DialogTrigger>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="font-bold">Quick Add</DialogTitle>
+          <DialogTitle className="text-base font-semibold">Quick Add</DialogTitle>
           <DialogDescription>
             One task per line. Use{' '}
             <Kbd className="px-1.5 py-0.5 rounded bg-muted font-mono text-xs">@</Kbd>{' '}

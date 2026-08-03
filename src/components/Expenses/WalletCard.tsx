@@ -55,7 +55,7 @@ export function WalletCard({ wallet }: WalletCardProps) {
 
             <CardTitle className="min-w-0">
               <p className="truncate text-sm font-medium text-foreground/90">{wallet.name}</p>
-              <p className="text-[10px] uppercase tracking-wider text-muted-foreground">
+              <p className="text-xs uppercase tracking-wider text-muted-foreground">
                 {wallet.type} &bull; {wallet.currency}
               </p>
             </CardTitle>

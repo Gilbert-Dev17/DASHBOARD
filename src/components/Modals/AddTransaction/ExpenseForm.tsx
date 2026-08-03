@@ -120,7 +120,7 @@ export const ExpenseForm = () => {
           <div className="flex justify-between items-center">
             <FieldLabel className="mb-0">Account</FieldLabel>
             {selectedWallet && (
-              <span className="text-[10px] text-muted-foreground font-medium">
+              <span className="text-xs text-muted-foreground font-medium">
                 Bal: {formatCurrency(selectedWallet.balance, selectedWallet.currency || 'PHP')}
               </span>
             )}

@@ -78,10 +78,10 @@ if (!isExpanded) {
     >
       {/* Header row */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-border">
-        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
+        <span className="text-xs font-bold uppercase tracking-widest text-accent">
           Daily Journal
         </span>
-        <span className="text-[10px] uppercase tracking-widest text-muted-foreground/50 group-hover:text-foreground/60 transition-colors">
+        <span className="text-xs uppercase tracking-widest text-muted-foreground/50 group-hover:text-foreground/60 transition-colors">
           Edit →
         </span>
       </div>
@@ -116,7 +116,7 @@ if (!isExpanded) {
         {/* Header */}
         <div className="shrink-0 flex items-end justify-between px-5 pt-5 pb-4 border-b border-border">
           <div className="flex flex-col gap-1">
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
+            <span className="text-xs font-bold uppercase tracking-widest text-accent">
               Daily Journal
             </span>
             <span className="text-base font-medium tracking-tight text-foreground">
@@ -159,7 +159,7 @@ if (!isExpanded) {
 
         {/* Footer meta */}
         <div className="shrink-0 flex items-center justify-between px-5 py-2 border-t border-border">
-          <span className={`text-[10px] uppercase tracking-widest ${isDirty ? 'text-destructive' : 'text-muted-foreground/50'}`}>
+          <span className={`text-xs uppercase tracking-widest ${isDirty ? 'text-destructive' : 'text-muted-foreground/50'}`}>
             {isDirty ? 'Unsaved changes' : 'All changes saved'}
           </span>
         </div>

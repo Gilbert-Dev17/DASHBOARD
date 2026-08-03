@@ -6,7 +6,7 @@ export default function ProfileLoading() {
   return (
     <PageComponent>
       {/* HEADER */}
-      <header className="mb-16 lg:mb-20">
+      <header>
         <div className="flex items-center gap-6 mb-8 lg:mb-12">
           <Skeleton className="w-20 h-20 lg:w-24 lg:h-24 rounded-full shrink-0" />
           <Skeleton className="h-14 lg:h-20 w-64 md:w-96 rounded-md" />
@@ -15,7 +15,7 @@ export default function ProfileLoading() {
 
       {/* MAIN GRID */}
       <div className="space-y-8">
-        
+
         {/* Account & Preferences (ProfileSettings) */}
         <div className="space-y-8">
           {/* Account */}

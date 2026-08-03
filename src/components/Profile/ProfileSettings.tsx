@@ -43,7 +43,7 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
     <React.Fragment>
       {/* Account */}
       <section aria-labelledby="account-heading">
-        <h2 id="account-heading" className="text-xs font-semibold uppercase tracking-[0.2em] mb-6 lg:mb-8 transition-colors duration-500">
+        <h2 id="account-heading" className="text-xs font-semibold uppercase tracking-widest mb-6 lg:mb-8 transition-colors duration-500">
           Account
         </h2>
 
@@ -62,14 +62,14 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
                   <p className="text-xs text-muted-foreground font-mono">{user.email}</p>
                 </div>
               </div>
-              <span className="text-[10px] font-semibold uppercase tracking-wider text-accent sm:block hidden">Active</span>
+              <span className="text-xs font-semibold uppercase tracking-wider text-accent sm:block hidden">Active</span>
             </CardContent>
           </Card>
       </section>
 
       {/* Preferences */}
       <section aria-labelledby="preferences-heading">
-        <h2 id="preferences-heading" className="text-xs font-semibold uppercase tracking-[0.2em] mb-6 lg:mb-8 transition-colors duration-500">
+        <h2 id="preferences-heading" className="text-xs font-semibold uppercase tracking-widest mb-6 lg:mb-8 transition-colors duration-500">
           Preferences
         </h2>
 

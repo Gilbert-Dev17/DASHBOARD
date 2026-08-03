@@ -41,7 +41,7 @@ export function AddTransactionModal({ enableShortcut = true }: { enableShortcut?
 
       <DialogContent aria-describedby={undefined} className="sm:max-w-lg">
        <DialogHeader>
-          <DialogTitle className="font-bold">Finance Form</DialogTitle>
+          <DialogTitle className="text-base font-semibold">Finance Form</DialogTitle>
          <DialogDescription>
            Add Expense, Income or Transfer Cash to your wallets.
          </DialogDescription>

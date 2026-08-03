@@ -90,7 +90,7 @@ export const AddWalletModal = () => {
       <DialogContent className="sm:max-w-md">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader >
-            <DialogTitle className="font-bold">
+            <DialogTitle className="text-base font-semibold">
               Add Wallet
             </DialogTitle>
             <DialogDescription >
@@ -120,11 +120,11 @@ export const AddWalletModal = () => {
               <div className="flex justify-between items-center mb-1">
                 <FieldLabel
                   htmlFor="wallet-name"
-                  className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-0"
+                  className="block text-xs text-muted-foreground mb-0"
                 >
                   ACCOUNT NAME
                 </FieldLabel>
-                <span className="text-[10px] text-muted-foreground font-medium">
+                <span className="text-xs text-muted-foreground font-medium">
                   {currentName.length}/30
                 </span>
               </div>
@@ -147,7 +147,7 @@ export const AddWalletModal = () => {
             <div className="grid grid-cols-2 gap-4">
               {/* Wallet Type */}
               <Field>
-                <FieldLabel className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                <FieldLabel className="block text-xs text-muted-foreground">
                   ACCOUNT TYPE
                 </FieldLabel>
                 <Controller
@@ -173,7 +173,7 @@ export const AddWalletModal = () => {
 
               {/* Currency */}
               <Field>
-                <FieldLabel className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                <FieldLabel className="block text-xs text-muted-foreground">
                   CURRENCY
                 </FieldLabel>
                  <Controller
@@ -204,7 +204,7 @@ export const AddWalletModal = () => {
             <Field>
               <FieldLabel
                 htmlFor="wallet-balance"
-                className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground"
+                className="block text-xs text-muted-foreground"
               >
                 {currentType === 'Credit' || currentType === 'Loans' ? 'CURRENT BALANCE (OWED)' : 'INITIAL BALANCE'}
               </FieldLabel>

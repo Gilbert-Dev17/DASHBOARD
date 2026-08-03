@@ -130,7 +130,7 @@ export const TransferForm = () => {
           <div className="flex justify-between items-center">
             <FieldLabel className="mb-0">From</FieldLabel>
             {selectedFromWallet && (
-              <span className="text-[10px] text-muted-foreground font-medium">
+              <span className="text-xs text-muted-foreground font-medium">
                 Bal: {formatCurrency(selectedFromWallet.balance, selectedFromWallet.currency || 'PHP')}
               </span>
             )}

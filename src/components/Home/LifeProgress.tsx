@@ -47,7 +47,7 @@ useEffect(() => {
   }, [now])
 
   return (
-    <div className="w-full flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8 text-[10px] sm:text-xs text-muted-foreground uppercase tracking-widest font-mono">
+    <div className="w-full flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8 text-xs sm:text-xs text-muted-foreground uppercase tracking-widest font-mono">
         {progressData.map(({ label, value }) => (
           <div key={label} className="flex items-center gap-3 w-full">
               <span className="w-12 text-right">{label}</span>

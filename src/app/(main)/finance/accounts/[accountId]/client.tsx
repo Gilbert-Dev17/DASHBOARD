@@ -115,14 +115,14 @@ export function AccountStatement({accountData} : AccountStatementProps) {
             </div>
             <div>
               <h1 className="text-3xl font-light tracking-tight">{accountData.name}</h1>
-              <span className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold">
+              <span className="text-xs uppercase tracking-wider text-muted-foreground font-semibold">
                 {accountData.type}
               </span>
             </div>
           </div>
 
           <div className="flex flex-col md:text-right">
-            <span className="text-[10px] uppercase tracking-[0.2em] text-muted-foreground font-semibold mb-1">Current Balance</span>
+            <span className="text-xs uppercase tracking-widest text-muted-foreground font-semibold mb-1">Current Balance</span>
             <div className={`text-4xl tabular-nums font-mono tracking-tighter flex md:justify-end items-baseline`}>
               {formatCurrency(accountData.balance, accountData.currency)}
             </div>
@@ -132,7 +132,7 @@ export function AccountStatement({accountData} : AccountStatementProps) {
 
       {/* TRANSACTIONS SECTION */}
       <section className="bg-card/30 border border-dashed border-border/50 rounded-3xl p-6 md:p-8">
-        <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground mb-8">Statement Activity</h2>
+        <h2 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground mb-8">Statement Activity</h2>
 
         {transactions.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-16 text-muted-foreground text-sm">
@@ -170,7 +170,7 @@ export function AccountStatement({accountData} : AccountStatementProps) {
                             {formatSignedCurrency(signedAmount, txn.wallets?.currency, !isTransfer)}
                           </span>
                         </div>
-                        <div className="text-[10px] uppercase tracking-wider text-muted-foreground/80 mt-1.5 flex items-center gap-2">
+                        <div className="text-xs uppercase tracking-wider text-muted-foreground/80 mt-1.5 flex items-center gap-2">
                           <span>{txn.expense_categories?.name || txn.type}</span>
                         </div>
                       </div>

@@ -35,7 +35,7 @@ export function WalletGrid({ wallets, transactions = [], isLoading = false }: Wa
   return (
     <Card aria-label="Your Accounts" className="bg-card/30">
       <CardHeader className="flex flex-row items-center justify-between space-y-0">
-        <CardTitle className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+        <CardTitle className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
           Accounts
         </CardTitle>
         <div className="flex items-center gap-2">
