@@ -5,6 +5,10 @@ import { redirect } from "next/navigation";
 
 
 const getURL = () => {
+  if (process.env.NODE_ENV === 'development') {
+    return 'http://localhost:3000/'
+  }
+
   let url =
     process?.env?.NEXT_PUBLIC_SITE_URL ?? 
     process?.env?.NEXT_PUBLIC_VERCEL_URL ?? 
