@@ -11,6 +11,8 @@ import { Card, CardContent, } from '@/components/ui/card'
 import { toggleTask, toggleSubTask } from '@/lib/actions/toggleTasks'
 import { UpdateTaskModal } from '../Modals/PlannerModals/task-updateModal/UpdateTaskModal'
 import type { ParsedTask } from '@/utils/parseTaskLines'
+import { CheckSquare } from 'lucide-react'
+import { Empty, EmptyContent, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
 
 interface TasksProps {
   initialTasks: TaskWithSubtasks[]
@@ -200,14 +202,24 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
     <section className="lg:col-span-7 flex flex-col h-full overflow-hidden" aria-labelledby="agenda-heading">
       {showTitle && (
         <div className="flex justify-between items-end mb-6 lg:mb-8 shrink-0">
-          <h2 id="agenda-heading" className="text-xs font-semibold uppercase tracking-[0.2em] transition-colors duration-500">
+          <h2 id="agenda-heading" className="text-xs font-semibold uppercase tracking-widest transition-colors text-muted-foreground duration-500">
             Today&apos;s Agenda
           </h2>
         </div>
       )}
 
       {tasks.length === 0 ? (
-        <p className="text-muted-foreground py-4">No tasks for today.</p>
+        <Empty className="py-12">
+          <EmptyContent>
+            <EmptyMedia variant="icon">
+              <CheckSquare className="h-6 w-6" aria-hidden="true" />
+            </EmptyMedia>
+            <EmptyTitle>No tasks for today</EmptyTitle>
+            <EmptyDescription>
+              You're all caught up! Enjoy your day.
+            </EmptyDescription>
+          </EmptyContent>
+        </Empty>
       ) : (
         <div className="flex-1 min-h-0 max-h-162 pr-4 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
           <Timeline className="space-y-8">
@@ -231,7 +243,7 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
                         <span className={`font-medium text-sm tracking-wide ${task.is_done ? 'line-through text-muted-foreground' : 'text-foreground/90 group-hover:text-foreground'}`}>
                           {task.task_name}
                         </span>
-                        <span className="text-[10px] font-semibold uppercase tracking-wider text-accent">
+                        <span className="text-xs font-semibold uppercase tracking-wider text-accent">
                           {task.task_category?.name}
                         </span>
                       </div>

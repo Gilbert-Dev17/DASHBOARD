@@ -1,5 +1,5 @@
 import DashboardPage from './client';
-import { getHomeData, getWalletData, getHistoricalSnapshots } from './action'
+import { getHomeData } from './action'
 import { getUser } from '@/lib/auth/get-user'
 import { redirect } from 'next/navigation'
 
@@ -11,13 +11,9 @@ export default async function page() {
     redirect('/login');
   }
 
-  const [tasks, wallet, snapshots] = await Promise.all([
-    getHomeData(user.id),
-    getWalletData(user.id),
-    getHistoricalSnapshots(user.id)
-  ])
+  const tasks = await getHomeData(user.id);
 
   return (
-    <DashboardPage initialTasks={tasks} wallets={wallet} user={user} historicalSnapshots={snapshots} />
+    <DashboardPage initialTasks={tasks} user={user} />
   )
 }

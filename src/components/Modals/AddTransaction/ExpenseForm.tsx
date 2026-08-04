@@ -114,13 +114,13 @@ export const ExpenseForm = () => {
         )}
       </FieldGroup>
 
-      {/* Account & Category side-by-side */}
-      <div className="grid grid-cols-2 gap-4">
+      {/* Account & Category side-by-side on desktop, stacked on mobile */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FieldGroup>
           <div className="flex justify-between items-center">
             <FieldLabel className="mb-0">Account</FieldLabel>
             {selectedWallet && (
-              <span className="text-[10px] text-muted-foreground font-medium">
+              <span className="text-xs text-muted-foreground font-medium">
                 Bal: {formatCurrency(selectedWallet.balance, selectedWallet.currency || 'PHP')}
               </span>
             )}
@@ -190,7 +190,7 @@ export const ExpenseForm = () => {
 
       <FieldSeparator />
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FieldGroup>
           <FieldLabel>Date</FieldLabel>
           <Controller

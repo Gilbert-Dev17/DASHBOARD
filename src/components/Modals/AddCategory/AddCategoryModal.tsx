@@ -2,14 +2,14 @@
 
 import { Plus } from 'lucide-react'
 import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogDescription,
-  DialogFooter,
-} from '@/components/ui/dialog'
+  ResponsiveDialog as Dialog,
+  ResponsiveDialogContent as DialogContent,
+  ResponsiveDialogHeader as DialogHeader,
+  ResponsiveDialogTitle as DialogTitle,
+  ResponsiveDialogTrigger as DialogTrigger,
+  ResponsiveDialogDescription as DialogDescription,
+  ResponsiveDialogFooter as DialogFooter
+} from '@/components/ui/responsive-dialog'
 import { FieldError, FieldGroup, FieldLabel, Field } from "@/components/ui/field"
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -85,7 +85,7 @@ export const AddCategoryModal = () => {
       <DialogContent className="sm:max-w-md">
         <form onSubmit={handleSubmit(onSubmit)}>
           <DialogHeader>
-            <DialogTitle className="font-bold">
+            <DialogTitle className="text-base font-semibold">
               Add Category
             </DialogTitle>
             <DialogDescription>
@@ -114,11 +114,11 @@ export const AddCategoryModal = () => {
             <div className="flex justify-between items-center mb-1">
               <FieldLabel
                 htmlFor="category-name"
-                className="block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground mb-0"
+                className="block text-xs text-muted-foreground mb-0"
               >
                 CATEGORY NAME
               </FieldLabel>
-              <span className="text-[10px] text-muted-foreground font-medium">
+              <span className="text-xs text-muted-foreground font-medium">
                 {currentName.length}/30
               </span>
             </div>
@@ -141,7 +141,7 @@ export const AddCategoryModal = () => {
           </Field>
 
           <Field>
-            <FieldLabel className="mb-3 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+            <FieldLabel className="mb-3 block text-xs text-muted-foreground">
               Select Icon
             </FieldLabel>
             <Controller
@@ -172,7 +172,7 @@ export const AddCategoryModal = () => {
           </Field>
 
           <Field>
-            <FieldLabel className="mb-3 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+            <FieldLabel className="mb-3 block text-xs text-muted-foreground">
               Select Color
             </FieldLabel>
             {/* Tight Color Grid */}

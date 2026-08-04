@@ -125,12 +125,12 @@ export const TransferForm = () => {
       </FieldGroup>
 
       {/* From → To accounts */}
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FieldGroup>
           <div className="flex justify-between items-center">
             <FieldLabel className="mb-0">From</FieldLabel>
             {selectedFromWallet && (
-              <span className="text-[10px] text-muted-foreground font-medium">
+              <span className="text-xs text-muted-foreground font-medium">
                 Bal: {formatCurrency(selectedFromWallet.balance, selectedFromWallet.currency || 'PHP')}
               </span>
             )}
@@ -239,7 +239,7 @@ export const TransferForm = () => {
         />
       </FieldGroup>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <FieldGroup>
           <FieldLabel>Date</FieldLabel>
           <Controller

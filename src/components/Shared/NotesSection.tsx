@@ -12,13 +12,15 @@ import { upsertDailyNote } from '@/lib/actions/daily-notes'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { format, parseISO } from 'date-fns'
-import { Save } from 'lucide-react'
+import { Save, FileText } from 'lucide-react'
+import { Empty, EmptyContent, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
 
 interface NotesProps {
     note: Notes | null;
     dateStr: string;
     isExpanded: boolean;
     onExpand: () => void;
+    onCollapse?: () => void;
 }
 
 const UpdateNotesSchema = z.object({
@@ -27,7 +29,7 @@ const UpdateNotesSchema = z.object({
 
 type UpdateDailyNotes = z.infer<typeof UpdateNotesSchema>
 
-export const NotesSection = ({ note, dateStr, isExpanded, onExpand }: NotesProps) => {
+export const NotesSection = ({ note, dateStr, isExpanded, onExpand, onCollapse }: NotesProps) => {
 
   const router = useRouter()
   const [optimisticContent, setOptimisticContent] = useState(note?.content || '')
@@ -77,19 +79,32 @@ if (!isExpanded) {
     >
       {/* Header row */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-border">
-        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
+        <span className="text-xs font-bold uppercase tracking-widest text-accent">
           Daily Journal
         </span>
-        <span className="text-[10px] uppercase tracking-widest text-muted-foreground/50 group-hover:text-foreground/60 transition-colors">
+        <span className="text-xs uppercase tracking-widest text-muted-foreground/50 group-hover:text-foreground/60 transition-colors">
           Edit →
         </span>
       </div>
 
       {/* Preview content */}
       <div className="px-4 py-3">
-        <p className={`text-xs leading-relaxed line-clamp-2 font-mono ${hasContent ? 'text-foreground/60' : 'text-muted-foreground/40 italic'}`}>
-          {optimisticContent || 'No entry for this date.'}
-        </p>
+        {hasContent ? (
+          <p className="text-xs leading-relaxed line-clamp-2 font-mono text-foreground/60">
+            {optimisticContent}
+          </p>
+        ) : (
+          <Empty className="py-6 border-none">
+            <EmptyContent className="max-w-xs mx-auto">
+              <EmptyMedia variant="icon" className="mb-0 [&_svg]:size-4">
+                <FileText aria-hidden="true" />
+              </EmptyMedia>
+              <EmptyDescription className="mt-2 text-xs">
+                No entry for this date.
+              </EmptyDescription>
+            </EmptyContent>
+          </Empty>
+        )}
       </div>
     </div>
   )
@@ -102,7 +117,7 @@ if (!isExpanded) {
         {/* Header */}
         <div className="shrink-0 flex items-end justify-between px-5 pt-5 pb-4 border-b border-border">
           <div className="flex flex-col gap-1">
-            <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">
+            <span className="text-xs font-bold uppercase tracking-widest text-accent">
               Daily Journal
             </span>
             <span className="text-base font-medium tracking-tight text-foreground">
@@ -110,18 +125,31 @@ if (!isExpanded) {
             </span>
           </div>
 
-          <Button
-            type="submit"
-            disabled={isPending || !isDirty}
-            variant="ghost"
-            size="sm"
-            className="text-xs uppercase tracking-widest font-semibold text-muted-foreground hover:text-foreground gap-2 disabled:opacity-30"
-          >
-            <Save className="w-3 h-3" />
-            {isPending
-                ? <span className='flex items-center gap-4'>Save <Spinner /></span>
-                : 'Save'}
-          </Button>
+          <div className="flex items-center gap-2">
+            {onCollapse && (
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                onClick={onCollapse}
+                className="text-xs uppercase tracking-widest font-semibold text-muted-foreground hover:text-foreground"
+              >
+                Close
+              </Button>
+            )}
+            <Button
+              type="submit"
+              disabled={isPending || !isDirty}
+              variant="ghost"
+              size="sm"
+              className="text-xs uppercase tracking-widest font-semibold text-muted-foreground hover:text-foreground gap-2 disabled:opacity-30"
+            >
+              <Save className="w-3 h-3" />
+              {isPending
+                  ? <span className='flex items-center gap-4'>Save <Spinner /></span>
+                  : 'Save'}
+            </Button>
+          </div>
         </div>
 
         {/* Textarea — full height, flush, no border */}
@@ -145,7 +173,7 @@ if (!isExpanded) {
 
         {/* Footer meta */}
         <div className="shrink-0 flex items-center justify-between px-5 py-2 border-t border-border">
-          <span className={`text-[10px] uppercase tracking-widest ${isDirty ? 'text-destructive' : 'text-muted-foreground/50'}`}>
+          <span className={`text-xs uppercase tracking-widest ${isDirty ? 'text-destructive' : 'text-muted-foreground/50'}`}>
             {isDirty ? 'Unsaved changes' : 'All changes saved'}
           </span>
         </div>

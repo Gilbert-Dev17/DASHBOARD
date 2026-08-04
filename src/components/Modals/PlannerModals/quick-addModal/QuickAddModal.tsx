@@ -9,9 +9,13 @@ import { TASK_CATEGORIES, CATEGORY_LABELS, type TaskCategory } from '../../../..
 import { parseTaskLines, sortParsedTasks, type ParsedTask } from '@/utils/parseTaskLines'
 import { submitQuickAddTasks } from '@/lib/actions/quick-add'
 import {
-  Dialog, DialogContent, DialogDescription,
-   DialogHeader, DialogTitle, DialogTrigger,
-} from '@/components/ui/dialog'
+  ResponsiveDialog as Dialog,
+  ResponsiveDialogContent as DialogContent,
+  ResponsiveDialogDescription as DialogDescription,
+  ResponsiveDialogHeader as DialogHeader,
+  ResponsiveDialogTitle as DialogTitle,
+  ResponsiveDialogTrigger as DialogTrigger
+} from '@/components/ui/responsive-dialog'
 import { Spinner } from '@/components/ui/spinner'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '../../../ui/textarea'
@@ -250,7 +254,7 @@ export const QuickAddModal = ({ enableShortcut = true }: { enableShortcut?: bool
       </DialogTrigger>
       <DialogContent className="sm:max-w-2xl">
         <DialogHeader>
-          <DialogTitle className="font-bold">Quick Add</DialogTitle>
+          <DialogTitle className="text-base font-semibold">Quick Add</DialogTitle>
           <DialogDescription>
             One task per line. Use{' '}
             <Kbd className="px-1.5 py-0.5 rounded bg-muted font-mono text-xs">@</Kbd>{' '}

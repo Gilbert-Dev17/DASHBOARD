@@ -26,7 +26,7 @@ export const NetWorthOverview = ({ wallets, historicalSnapshots = [], activeCurr
         return (
           <section key={currency} aria-labelledby={`finances-heading-${currency}`} className="flex flex-col gap-4">
             <div className="flex items-center gap-4 mb-2">
-              <h2 id={`finances-heading-${currency}`} className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground">
+              <h2 id={`finances-heading-${currency}`} className="text-xs font-semibold uppercase tracking-widest text-foreground">
                 Net Worth ({currency})
               </h2>
             </div>
@@ -40,7 +40,7 @@ export const NetWorthOverview = ({ wallets, historicalSnapshots = [], activeCurr
               ) : trendPercentage >= 0 ? (
                 <span className="inline-flex items-center flex-wrap gap-x-1.5">
                   Up
-                  <span className="flex items-center gap-1.5 text-[10px] font-medium text-emerald-500 ">
+                  <span className="flex items-center gap-1.5 text-xs font-medium text-emerald-500 ">
                     <TrendingUp size={12} /> {trendPercentage}%
                   </span>
                   from last month&apos;s snapshots.
@@ -48,7 +48,7 @@ export const NetWorthOverview = ({ wallets, historicalSnapshots = [], activeCurr
               ) : (
                 <span className="inline-flex items-center flex-wrap gap-x-1.5">
                   Down
-                  <Badge variant="secondary" className="flex items-center gap-1.5 text-[10px] font-medium text-rose-500">
+                  <Badge variant="secondary" className="flex items-center gap-1.5 text-xs font-medium text-rose-500">
                     <TrendingDown size={12} /> {Math.abs(trendPercentage)}%
                   </Badge>
                   from last month&apos;s snapshots.

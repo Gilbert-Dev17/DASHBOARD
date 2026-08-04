@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button"
 import { getActiveQuickAdds } from './quick-add-registry'
 import { Separator } from '../ui/separator'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { SyncIndicator } from '../Shared/SyncIndicator'
 
 import type { UserSummary } from '@/types/dashboard'
 
@@ -122,6 +123,11 @@ const Sidebar = ({ user }: SidebarProps) => {
             </div>
           </Link>
         </Button>
+
+        {/* Realtime Sync Indicator */}
+        <div className="absolute -bottom-1 -right-1 z-50">
+          <SyncIndicator />
+        </div>
 
       </nav>
     </aside>

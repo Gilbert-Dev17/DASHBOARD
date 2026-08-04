@@ -5,14 +5,16 @@ import { useRouter } from 'next/navigation'
 import { format, parseISO } from 'date-fns'
 import { Card } from '@/components/ui/card'
 import { Calendar } from '@/components/ui/calendar'
+import { cn } from '@/lib/utils'
 
 interface CustomCalendarProps {
   initialDate?: Date;
   datesWithTasks?: { date: string; count: number }[];
   startTransition?: TransitionStartFunction;
+  hideNavigation?: boolean;
 }
 
-export const CustomCalendar = ({ initialDate = new Date(), datesWithTasks = [], startTransition }: CustomCalendarProps) => {
+export const CustomCalendar = ({ initialDate = new Date(), datesWithTasks = [], startTransition, hideNavigation = false }: CustomCalendarProps) => {
   const router = useRouter()
 
   const handleSelect = (date: Date | undefined) => {
@@ -58,7 +60,10 @@ export const CustomCalendar = ({ initialDate = new Date(), datesWithTasks = [], 
         }}
         classNames={{
           month_caption: "flex h-8 w-full items-center justify-start",
-          nav: "absolute right-0 top-0 flex items-center gap-1",
+          nav: cn(
+            "absolute right-0 top-0 flex items-center gap-1 transition-opacity duration-300",
+            hideNavigation ? "opacity-0 pointer-events-none" : "opacity-100"
+          ),
 
           button_previous: "static h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",
           button_next: "static h-7 w-7 bg-transparent p-0 opacity-50 hover:opacity-100",

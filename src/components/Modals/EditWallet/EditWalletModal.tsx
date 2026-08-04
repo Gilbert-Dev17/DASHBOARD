@@ -2,8 +2,11 @@
 
 import { Edit, Wallet as WalletIcon } from 'lucide-react'
 import {
-   Dialog, DialogContent, DialogHeader, DialogTitle,
-} from '@/components/ui/dialog'
+  ResponsiveDialog as Dialog,
+  ResponsiveDialogContent as DialogContent,
+  ResponsiveDialogHeader as DialogHeader,
+  ResponsiveDialogTitle as DialogTitle
+} from '@/components/ui/responsive-dialog'
 import { Field, FieldGroup, FieldError, FieldLabel } from '@/components/ui/field'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -115,7 +118,7 @@ export const EditWalletModal = ({ wallet, isOpen, setIsOpen }: EditWalletModalPr
             <Field>
               <FieldLabel
                 htmlFor="wallet-name"
-                className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground"
+                className="mb-2 block text-xs text-muted-foreground"
               >
                 ACCOUNT NAME
               </FieldLabel>
@@ -137,7 +140,7 @@ export const EditWalletModal = ({ wallet, isOpen, setIsOpen }: EditWalletModalPr
             <div className="grid grid-cols-2 gap-4">
               {/* Wallet Type */}
               <Field>
-                <FieldLabel className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                <FieldLabel className="mb-2 block text-xs text-muted-foreground">
                   ACCOUNT TYPE
                 </FieldLabel>
                 <Controller
@@ -163,7 +166,7 @@ export const EditWalletModal = ({ wallet, isOpen, setIsOpen }: EditWalletModalPr
 
               {/* Currency */}
               <Field>
-                <FieldLabel className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
+                <FieldLabel className="mb-2 block text-xs text-muted-foreground">
                   CURRENCY
                 </FieldLabel>
                  <Controller
@@ -194,7 +197,7 @@ export const EditWalletModal = ({ wallet, isOpen, setIsOpen }: EditWalletModalPr
             <Field>
               <FieldLabel
                 htmlFor="wallet-balance"
-                className="mb-2 block text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground"
+                className="mb-2 block text-xs text-muted-foreground"
               >
                 {currentType === 'Credit' || currentType === 'Loans' ? 'CURRENT BALANCE (OWED)' : 'CURRENT BALANCE'}
               </FieldLabel>

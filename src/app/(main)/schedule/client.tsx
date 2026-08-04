@@ -13,6 +13,7 @@ import { HeaderTitle } from '@/components/Shared/HeaderTitle'
 import {NotesSection} from '@/components/Shared/NotesSection'
 
 import { Spinner } from '@/components/ui/spinner'
+import { MobileScheduleCalendar } from '@/components/Shared/MobileScheduleCalendar'
 
 interface PageProps {
   agendaTitle: string
@@ -37,7 +38,38 @@ export function PlannerPage({ agendaTitle, initialTasks, note, dateObj, datesWit
           desc='Organize your tasks and capture daily reflections.'/>
       </div>
 
-       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:h-[calc(100vh-7rem)]">
+      {/* MOBILE LAYOUT (< 1024px) */}
+      <div className="lg:hidden flex flex-col relative">
+        <MobileScheduleCalendar
+          initialDate={dateObj}
+          datesWithTasks={datesWithTasks}
+          startTransition={startTransition}
+        />
+
+        <div className="flex flex-col mt-6 min-h-125">
+          <div className="flex justify-between items-center mb-4">
+            <Label className="text-xl font-medium tracking-tight text-accent" >
+                {agendaTitle}
+            </Label>
+            <div className="flex items-center gap-2">
+              {isPending && <Spinner className="w-4 h-4 text-primary animate-spin" /> }
+              {!isToday && (
+                <Button variant="link" size="sm" onClick={() => startTransition(() => router.push('/schedule'))} className="text-xs uppercase tracking-wider font-semibold text-accent">
+                  Today
+                </Button>
+              )}
+            </div>
+          </div>
+          <AgendaSection initialTasks={initialTasks} selectedDateStr={finalDate} showTitle={false} />
+        </div>
+
+        <div className="mt-8 mb-4">
+          <NotesSection note={note} dateStr={finalDate} isExpanded={showNotes} onExpand={() => setShowNotes(true)} onCollapse={() => setShowNotes(false)} />
+        </div>
+      </div>
+
+      {/* DESKTOP LAYOUT (>= 1024px) */}
+       <div className="hidden lg:grid grid-cols-12 gap-10 lg:h-[calc(100vh-7rem)]">
 
         <div className='lg:col-span-4 flex flex-col h-full space-y-4 min-h-0'>
           <div className="flex justify-between items-center shrink-0">

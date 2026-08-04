@@ -3,8 +3,13 @@
 import { useCallback, useState } from 'react'
 import { Plus } from 'lucide-react'
 import {
-  Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogDescription
-} from '@/components/ui/dialog'
+  ResponsiveDialog as Dialog,
+  ResponsiveDialogContent as DialogContent,
+  ResponsiveDialogHeader as DialogHeader,
+  ResponsiveDialogTitle as DialogTitle,
+  ResponsiveDialogTrigger as DialogTrigger,
+  ResponsiveDialogDescription as DialogDescription
+} from '@/components/ui/responsive-dialog'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { Button } from '@/components/ui/button'
 
@@ -41,7 +46,7 @@ export function AddTransactionModal({ enableShortcut = true }: { enableShortcut?
 
       <DialogContent aria-describedby={undefined} className="sm:max-w-lg">
        <DialogHeader>
-          <DialogTitle className="font-bold">Finance Form</DialogTitle>
+          <DialogTitle className="text-base font-semibold">Finance Form</DialogTitle>
          <DialogDescription>
            Add Expense, Income or Transfer Cash to your wallets.
          </DialogDescription>

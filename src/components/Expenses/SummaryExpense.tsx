@@ -65,7 +65,7 @@ export const SummaryExpense = ({
               <div>
                 <h3
                   id={`finances-heading-${currency}`}
-                  className="text-xs font-semibold uppercase tracking-[0.2em] text-foreground"
+                  className="text-xs font-semibold uppercase tracking-widest text-foreground"
                 >
                   Net Worth ({currency})
                 </h3>
@@ -86,7 +86,7 @@ export const SummaryExpense = ({
                 ) : direction === 'up' ? (
                   <span className="inline-flex items-center flex-wrap gap-x-1.5">
                     Up
-                    <span className="flex items-center gap-1.5 text-[10px] font-medium text-emerald-500">
+                    <span className="flex items-center gap-1.5 text-xs font-medium text-emerald-500">
                       <TrendingUp size={12} /> {trendPercentage}%
                     </span>
                     from last month&apos;s snapshots.
@@ -94,7 +94,7 @@ export const SummaryExpense = ({
                 ) : (
                   <span className="inline-flex items-center flex-wrap gap-x-1.5">
                     Down
-                    <span className="flex items-center gap-1.5 text-[10px] font-medium text-rose-500">
+                    <span className="flex items-center gap-1.5 text-xs font-medium text-rose-500">
                       <TrendingDown size={12} /> {Math.abs(trendPercentage)}%
                     </span>
                     from last month&apos;s snapshots.

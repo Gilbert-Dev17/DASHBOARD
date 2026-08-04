@@ -1,25 +1,41 @@
 "use client"
 
+import { useEffect } from "react"
+import { useSearchParams, useRouter } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
-import { GalleryVerticalEndIcon } from "lucide-react"
+import { LayoutDashboardIcon } from "lucide-react"
 import { GoogleLogIn } from "@/app/(auth)/login/action"
+import { toast } from "sonner"
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
+  const searchParams = useSearchParams()
+  const router = useRouter()
+
+  useEffect(() => {
+    const error = searchParams.get('error')
+    if (error) {
+      toast.error(error)
+      // Clean the URL so the toast doesn't re-fire on refresh
+      router.replace('/login', { scroll: false })
+    }
+  }, [searchParams, router])
   return (
-    <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <div className="flex flex-col items-center gap-1.5 text-center mb-2">
+    <div className={cn("flex flex-col gap-8 w-full", className)} {...props}>
+      <div className="flex flex-col items-center gap-2 text-center mb-2">
         <a
           href="#"
-          className="flex flex-col items-center gap-2 font-medium"
+          className="flex flex-col items-center gap-3 font-medium"
         >
-          <div className="flex size-10 items-center justify-center rounded-md bg-secondary">
-            <GalleryVerticalEndIcon className="size-5" />
+          <div className="flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+            <LayoutDashboardIcon className="size-6" />
           </div>
           <span className="sr-only">DASHBOARD</span>
         </a>
-        <h1 className="text-lg font-bold mt-2">Welcome to DASHBOARD</h1>
-        <p className="text-xs text-muted-foreground">Sign in to manage your finances seamlessly</p>
+        <h1 className="text-2xl font-bold tracking-tight mt-2 text-foreground">Welcome Back</h1>
+        <p className="text-sm text-muted-foreground/80 leading-relaxed max-w-[340px]">
+          Track your finances, plan your schedule, and own your day.
+        </p>
       </div>
 
       <Button

@@ -15,89 +15,46 @@ useEffect(() => {
   return () => clearInterval(interval)
 }, [])
 
-// * Year Progress
-const yearProgress = useMemo(() => {
-  const start = new Date(now.getFullYear(), 0, 1)
-  const end = new Date(now.getFullYear() + 1, 0, 1)
+  const progressData = useMemo(() => {
+    const currentYear = now.getFullYear()
+    const currentMonth = now.getMonth()
+    const currentDate = now.getDate()
+
+    // Calculate start and end dates
+    const yearStart = new Date(currentYear, 0, 1)
+    const yearEnd = new Date(currentYear + 1, 0, 1)
+
+    const monthStart = new Date(currentYear, currentMonth, 1)
+    const monthEnd = new Date(currentYear, currentMonth + 1, 1)
+
+    const currentDay = now.getDay()
+    const weekStart = new Date(currentYear, currentMonth, currentDate - currentDay)
+    const weekEnd = new Date(weekStart.getTime() + 7 * 24 * 60 * 60 * 1000)
+
+    const dayStart = new Date(currentYear, currentMonth, currentDate)
+    const dayEnd = new Date(currentYear, currentMonth, currentDate + 1)
+
+    // Helper to calculate percentage
+    const getPercent = (start: Date, end: Date) =>
+      ((now.getTime() - start.getTime()) / (end.getTime() - start.getTime())) * 100
+
+    return [
+      { label: 'Day', value: getPercent(dayStart, dayEnd) },
+      { label: 'Week', value: getPercent(weekStart, weekEnd) },
+      { label: 'Month', value: getPercent(monthStart, monthEnd) },
+      { label: 'Year', value: getPercent(yearStart, yearEnd) },
+    ]
+  }, [now])
 
   return (
-    ((now.getTime() - start.getTime()) /
-      (end.getTime() - start.getTime())) *
-    100
-  )
-}, [now])
-// * Month Progress
-const monthProgress = useMemo(() => {
-  const start = new Date(now.getFullYear(), now.getMonth(), 1)
-  const end = new Date(now.getFullYear(), now.getMonth() + 1, 1)
-
-  return (
-    ((now.getTime() - start.getTime()) /
-      (end.getTime() - start.getTime())) *
-    100
-  )
-}, [now])
-// * Day Progress
-const dayProgress = useMemo(() => {
-  const start = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate()
-  )
-
-  const end = new Date(
-    now.getFullYear(),
-    now.getMonth(),
-    now.getDate() + 1
-  )
-
-  return (
-    ((now.getTime() - start.getTime()) /
-      (end.getTime() - start.getTime())) *
-    100
-  )
-}, [now])
-
-  return (
-    <section aria-labelledby="progress-heading">
-        <h2
-            id="progress-heading"
-            className="text-xs font-semibold uppercase tracking-[0.2em] mb-6 lg:mb-8 transition-colors duration-500"
-        >
-            Life Progress
-        </h2>
-
-        <div className="space-y-6 lg:space-y-8">
-            <div className="space-y-2">
-            <div className="flex items-center justify-between">
-                <span>Year</span>
-                <span className="text-sm text-muted-foreground">
-                {yearProgress.toFixed(1)}%
-                </span>
-            </div>
-            <Progress value={yearProgress} aria-label="Year Progress" />
-            </div>
-
-            <div className="space-y-2">
-            <div className="flex items-center justify-between">
-                <span>Month</span>
-                <span className="text-sm text-muted-foreground">
-                {monthProgress.toFixed(1)}%
-                </span>
-            </div>
-            <Progress value={monthProgress} aria-label="Month Progress" />
-            </div>
-
-            <div className="space-y-2">
-            <div className="flex items-center justify-between">
-                <span>Day</span>
-                <span className="text-sm text-muted-foreground">
-                {dayProgress.toFixed(1)}%
-                </span>
-            </div>
-            <Progress value={dayProgress} aria-label="Day Progress" />
-            </div>
-        </div>
-    </section>
+    <div className="w-full flex flex-col md:flex-row items-center justify-between gap-4 md:gap-8 text-xs sm:text-xs text-muted-foreground uppercase tracking-widest font-mono">
+        {progressData.map(({ label, value }) => (
+          <div key={label} className="flex items-center gap-3 w-full">
+              <span className="w-12 text-right">{label}</span>
+              <Progress value={value} className="h-0.5 flex-1 bg-border/40" />
+              <span className="w-10">{value.toFixed(1)}%</span>
+          </div>
+        ))}
+    </div>
   )
 }

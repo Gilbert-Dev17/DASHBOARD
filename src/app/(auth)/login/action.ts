@@ -5,6 +5,10 @@ import { redirect } from "next/navigation";
 
 
 const getURL = () => {
+  if (process.env.NODE_ENV === 'development') {
+    return 'http://localhost:3000/'
+  }
+
   let url =
     process?.env?.NEXT_PUBLIC_SITE_URL ?? 
     process?.env?.NEXT_PUBLIC_VERCEL_URL ?? 
@@ -23,6 +27,9 @@ export async function GoogleLogIn() {
         options: {
         redirectTo: `${getURL()}callback`,
         skipBrowserRedirect: false,
+        queryParams: {
+          prompt: 'select_account' // Forces Google to show the account picker
+        }
     },
     })
 

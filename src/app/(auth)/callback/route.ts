@@ -26,8 +26,12 @@ export async function GET(request: Request) {
         return NextResponse.redirect(`${origin}${next}`)
       }
     }
+
+    // Redirect back to login with the error message so the client can show a toast
+    const errorMessage = error.message || 'Authentication failed'
+    return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(errorMessage)}`)
   }
 
-  // return the user to an error page with instructions
-  return NextResponse.redirect(`${origin}/auth/auth-code-error`)
+  // return the user to login with an error
+  return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent('Authentication failed. Please try again.')}`)
 }

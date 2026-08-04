@@ -41,7 +41,7 @@ export function DatabaseMetricsCard({ size_mb, size_pretty, tableCounts }: Datab
       <div>
           <div className="flex items-center gap-2 mb-1">
             <Database size={14} className="text-accent shrink-0" />
-            <h3 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground">
+            <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               Database Storage
             </h3>
           </div>
@@ -62,7 +62,7 @@ export function DatabaseMetricsCard({ size_mb, size_pretty, tableCounts }: Datab
           {usagePercent.toFixed(1)}%
         </span>
         <div className="flex items-center gap-1.5 rounded-md border border-border/60 px-2 py-0.5">
-          <span className="text-[10px] font-semibold text-muted-foreground">
+          <span className="text-xs font-semibold text-muted-foreground">
             ↑ {size_pretty}
           </span>
         </div>
@@ -75,7 +75,7 @@ export function DatabaseMetricsCard({ size_mb, size_pretty, tableCounts }: Datab
       </div>
 
       {/* Footer */}
-      <p className="text-[10px] text-muted-foreground font-mono">
+      <p className="text-xs text-muted-foreground font-mono">
         {totalRows.toLocaleString()} total records across {tableLabels.length} tables
       </p>
 
@@ -85,7 +85,7 @@ export function DatabaseMetricsCard({ size_mb, size_pretty, tableCounts }: Datab
             <Badge
               key={label}
               variant="secondary"
-              className="text-[10px] font-semibold uppercase tracking-wider rounded-md px-2 py-0.5"
+              className="text-xs font-semibold uppercase tracking-wider rounded-md px-2 py-0.5"
             >
               {label} · {count}
             </Badge>

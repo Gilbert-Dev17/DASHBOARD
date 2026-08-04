@@ -25,7 +25,7 @@ const TimelineTime = React.forwardRef<HTMLTimeElement, React.TimeHTMLAttributes<
     <div className="absolute left-0 top-3 w-20 flex items-center justify-end">
       <time
         ref={ref}
-        className={cn("text-[10px] font-mono tabular-nums text-muted-foreground mr-4 leading-none tracking-widest uppercase", className)}
+        className={cn("text-xs font-mono tabular-nums text-muted-foreground mr-4 leading-none tracking-widest uppercase", className)}
         {...props}
       />
       <div className="absolute -right-1 h-2 w-2 rounded-md bg-accent ring-4 ring-background z-10 transition-colors duration-300" />
