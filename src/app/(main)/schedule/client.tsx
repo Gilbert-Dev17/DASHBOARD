@@ -46,7 +46,7 @@ export function PlannerPage({ agendaTitle, initialTasks, note, dateObj, datesWit
           startTransition={startTransition}
         />
 
-        <div className="flex flex-col mt-6 min-h-[500px]">
+        <div className="flex flex-col mt-6 min-h-125">
           <div className="flex justify-between items-center mb-4">
             <Label className="text-xl font-medium tracking-tight text-accent" >
                 {agendaTitle}
@@ -90,7 +90,7 @@ export function PlannerPage({ agendaTitle, initialTasks, note, dateObj, datesWit
             />
           )}
 
-          <NotesSection note={note} dateStr={finalDate} isExpanded={showNotes} onExpand={() => setShowNotes(true)} onCollapse={() => setShowNotes(false)} />
+          <NotesSection note={note} dateStr={finalDate} isExpanded={showNotes} onExpand={() => setShowNotes(true)} />
         </div>
 
 

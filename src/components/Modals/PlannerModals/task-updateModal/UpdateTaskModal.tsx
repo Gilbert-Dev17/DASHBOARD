@@ -57,7 +57,6 @@ export const UpdateTaskModal = ({ task, open, onOpenChange }: UpdateTaskModalPro
     name: 'subtasks',
   })
 
-  // Reset form when task prop changes (different task clicked)
   useEffect(() => {
     reset({
       task_name: task.task_name,

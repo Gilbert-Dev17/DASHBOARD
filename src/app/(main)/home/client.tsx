@@ -3,8 +3,7 @@
 import dynamic from 'next/dynamic'
 
 import PageComponent from '@/components/Shared/PageComponent'
-import { TaskWithSubtasks, UserSummary, WalletSummary } from '@/types/dashboard'
-import { WalletSnapshot } from '@/types/database'
+import { TaskWithSubtasks, UserSummary } from '@/types/dashboard'
 import { GreetingHeader } from '@/components/Home/GreetingHeader'
 
 import { Skeleton } from "@/components/ui/skeleton"
@@ -30,8 +29,6 @@ const LifeProgress = dynamic(
 interface DashboardPageProps {
   initialTasks: TaskWithSubtasks[];
   user: UserSummary;
-  wallets: WalletSummary[];
-  historicalSnapshots?: WalletSnapshot[];
 }
 
 export default function DashboardPage({ initialTasks, user}: DashboardPageProps) {

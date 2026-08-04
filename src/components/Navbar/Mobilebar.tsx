@@ -7,6 +7,7 @@ import { Home, CheckSquare, PiggyBank } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getActiveQuickAdds } from './quick-add-registry'
+import { SyncIndicator } from '../Shared/SyncIndicator'
 
 import type { UserSummary } from '@/types/dashboard'
 
@@ -31,7 +32,12 @@ export const Mobilebar = ({ user }: MobilebarProps) => {
   return (
     <>
       <aside className="fixed bottom-4 left-1/2 z-50 -translate-x-1/2 flex flex-row items-center gap-4">
-        <nav className="flex items-center gap-2 rounded-2xl border bg-background/80 p-2 backdrop-blur-xl shadow-lg">
+        <nav className="relative flex items-center gap-2 rounded-2xl border bg-background/80 p-2 backdrop-blur-xl shadow-lg">
+
+          {/* Realtime Sync Indicator */}
+          <div className="absolute -top-1 -right-1 z-50">
+            <SyncIndicator />
+          </div>
 
           {navItems.map(({ icon: Icon, label, href }) => {
             const active = pathname === href
