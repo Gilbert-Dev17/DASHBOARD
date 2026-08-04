@@ -27,6 +27,9 @@ export async function GoogleLogIn() {
         options: {
         redirectTo: `${getURL()}callback`,
         skipBrowserRedirect: false,
+        queryParams: {
+          prompt: 'select_account' // Forces Google to show the account picker
+        }
     },
     })
 
