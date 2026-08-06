@@ -63,11 +63,11 @@ export function ChartPieDonutText({ categories, currency }: ChartPieDonutTextPro
   )
 
   return (
-    <section className="flex flex-col border-0">
-      <div className="flex-1 pb-0 border-0">
+    <section className="flex flex-col">
+      <div className="flex-1 pb-0 ">
         <ChartContainer
           config={chartConfig}
-          className="mx-auto aspect-square max-h-62.5"
+          className="aspect-square max-h-62.5"
         >
           <PieChart>
             <Pie
@@ -76,9 +76,38 @@ export function ChartPieDonutText({ categories, currency }: ChartPieDonutTextPro
                 nameKey="category"
                 innerRadius={60}
                 strokeWidth={5}
-                cornerRadius={8}
+                cornerRadius={4}
                 paddingAngle={4}
             >
+              <Label
+                content={({ viewBox }) => {
+                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                    return (
+                      <text
+                        x={viewBox.cx}
+                        y={viewBox.cy}
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                      >
+                        <tspan
+                          x={viewBox.cx}
+                          y={viewBox.cy}
+                          className="fill-foreground text-3xl font-mono"
+                        >
+                          {totalAmount.toLocaleString()}
+                        </tspan>
+                        {/* <tspan
+                          x={viewBox.cx}
+                          y={(viewBox.cy || 0) + 24}
+                          className="fill-muted-foreground"
+                        >
+                          Total
+                        </tspan> */}
+                      </text>
+                    )
+                  }
+                }}
+              />
             </Pie>
             <ChartTooltip
                 content={({ active, payload }: any) => {

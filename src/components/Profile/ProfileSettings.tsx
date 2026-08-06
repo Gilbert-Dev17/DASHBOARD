@@ -43,7 +43,7 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
     <React.Fragment>
       {/* Account */}
       <section aria-labelledby="account-heading">
-        <h2 id="account-heading" className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground mb-6 lg:mb-8 transition-colors duration-500">
+        <h2 id="account-heading" className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground mb-2 transition-colors duration-500">
           Account
         </h2>
 
@@ -69,7 +69,7 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
 
       {/* Preferences */}
       <section aria-labelledby="preferences-heading">
-        <h2 id="preferences-heading" className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground mb-6 lg:mb-8 transition-colors duration-500">
+        <h2 id="preferences-heading" className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground mb-2 transition-colors duration-500">
           Preferences
         </h2>
 

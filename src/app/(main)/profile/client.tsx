@@ -55,17 +55,17 @@ export default function ProfileClientPage({ user, dbSize, tableCounts }: Profile
       </header>
 
       {/* MAIN GRID */}
-      <div className="space-y-8">
+      <div className="space-y-6">
 
         {/* Preferences */}
-        <div className="space-y-8">
+        <div className="space-y-6">
           <ProfileSettings user={user} />
         </div>
 
         {/* System */}
         {dbSize && tableCounts && (
           <section aria-labelledby="system-heading">
-            <h2 id="system-heading" className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground mb-6 lg:mb-8">
+            <h2 id="system-heading" className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground mb-2">
               System
             </h2>
             <DatabaseMetricsCard

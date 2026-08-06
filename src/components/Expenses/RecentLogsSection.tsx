@@ -40,7 +40,7 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
         <div className="min-h-0 max-h-110 pr-4 overflow-y-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
 
         <Timeline>
-          {transactions.map((txn) => {
+          {transactions.slice(0, 3).map((txn) => {
             const dateObj = new Date(txn.created_for_date || new Date());
             const signedAmount = getSignedAmount({
               amount: Number(txn.amount),
