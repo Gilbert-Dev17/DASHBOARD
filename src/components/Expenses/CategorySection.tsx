@@ -5,7 +5,6 @@ import { ExpenseCategory } from '@/types/database'
 import { formatCurrency } from '@/utils/currency'
 import { CategoryBadge } from '@/components/Shared/CategoryBadge'
 import { ArrowRight } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
 import { AVAILABLE_ICONS } from '@/lib/constants/categories'
 import { HelpCircle } from 'lucide-react'
 import { Button } from '../ui/button'
@@ -47,12 +46,12 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
   const totalExpenses = chartCategories.reduce((acc, cat) => acc + (cat.total || 0), 0);
 
   return (
-      <Card className="bg-card/3 gap-0"  aria-labelledby="categories-heading">
-        <CardHeader className="flex justify-between items-center shrink-0">
-          <CardTitle id="categories-heading" className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Categories</CardTitle>
+      <section className="flex flex-col gap-0" aria-labelledby="categories-heading">
+        <div className="flex justify-between items-center pb-4 shrink-0">
+          <h2 id="categories-heading" className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">Categories</h2>
           {allCategories.length > 0 && <AddCategoryModal />}
-        </CardHeader>
-        <CardContent className={`${allCategories.length > 0 ? 'grid grid-cols-1 xl:grid-cols-2 items-center min-h-75 py-0' : 'flex flex-col items-center justify-center text-center'}`}>
+        </div>
+        <div className={`${allCategories.length > 0 ? 'grid grid-cols-1 xl:grid-cols-2 items-center min-h-75 py-0' : 'flex flex-col items-center justify-center text-center'}`}>
 
           <div className={allCategories.length > 0 ? 'flex justify-center items-center w-full' : 'flex flex-col items-center justify-center text-center w-full'}>
             {chartCategories.length > 0 ? (
@@ -103,7 +102,7 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
 
               {chartCategories.length > 0 && (
                 <div className="flex flex-col gap-2">
-                  <span className="text-xs text-muted-foreground">
+                  <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
                     Total
                   </span>
                   <div className="text-3xl lg:text-4xl font-mono text-foreground tracking-tighter flex items-baseline gap-1">
@@ -115,7 +114,7 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
 
 
               <div className="flex flex-col gap-4">
-                <h3 className="text-xs text-muted-foreground">
+                <h3 className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
                   Available Categories
                 </h3>
                 <div className="flex flex-wrap gap-2">
@@ -152,9 +151,9 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
               </div>
             </div>
           )}
-        </CardContent>
+        </div>
         {allCategories.length > 0 &&
-          <div className='flex flex-row justify-end px-6'>
+          <div className='flex flex-row justify-end mt-4'>
             <Button asChild variant={'link'} className="group px-0 text-muted-foreground hover:text-foreground flex items-center gap-1">
               <Link href='/finance/viewAllCategories'>
                 View All<ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
@@ -162,6 +161,6 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
             </Button>
           </div>
         }
-      </Card>
+      </section>
   )
 }

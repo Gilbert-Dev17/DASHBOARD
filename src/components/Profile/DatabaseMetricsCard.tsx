@@ -40,7 +40,7 @@ export function DatabaseMetricsCard({ size_mb, size_pretty, tableCounts }: Datab
 
       <div>
           <div className="flex items-center gap-2 mb-1">
-            <Database size={14} className="text-accent shrink-0" />
+            <Database size={14} className="text-foreground shrink-0" />
             <h3 className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               Database Storage
             </h3>

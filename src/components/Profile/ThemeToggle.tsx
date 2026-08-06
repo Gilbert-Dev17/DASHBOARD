@@ -21,7 +21,7 @@ export function ThemeToggleButton() {
     <Card className='w-full'>
       <CardContent className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          {resolvedTheme === 'dark' ? <Moon size={16} className="text-accent shrink-0" /> : <Sun size={16} className="text-accent shrink-0" />}
+          {resolvedTheme === 'dark' ? <Moon size={16} className="text-foreground shrink-0" /> : <Sun size={16} className="text-foreground shrink-0" />}
           <div>
             <span className="text-sm font-medium">Appearance</span>
             <p className="text-xs text-muted-foreground">{resolvedTheme === 'dark' ? 'Dark' : 'Light'} mode</p>

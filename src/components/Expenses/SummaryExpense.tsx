@@ -65,7 +65,7 @@ export const SummaryExpense = ({
               <div>
                 <h3
                   id={`finances-heading-${currency}`}
-                  className="text-xs font-semibold uppercase tracking-widest text-foreground"
+                  className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground"
                 >
                   Net Worth ({currency})
                 </h3>
@@ -73,7 +73,7 @@ export const SummaryExpense = ({
 
               <div
                 className={`text-4xl md:text-5xl font-mono tracking-tighter tabular-nums flex items-baseline gap-1 ${
-                  isNegative ? 'text-rose-400' : 'text-accent'
+                  isNegative ? 'text-rose-400' : 'text-foreground'
                 }`}
               >
                 {nwDollars}
@@ -188,7 +188,7 @@ export const IncomeExpenseCard = ({ transactions, currency }: { transactions: Tr
                 <div className={`w-6 h-6 rounded-full ${item.bgClass} flex items-center justify-center shrink-0`}>
                   {item.icon}
                 </div>
-                <p className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">{item.label}</p>
+                <p className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">{item.label}</p>
               </div>
 
               <div className="text-xl md:text-2xl font-mono font-medium text-foreground tracking-tight">

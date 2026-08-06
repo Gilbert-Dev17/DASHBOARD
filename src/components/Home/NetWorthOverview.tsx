@@ -30,7 +30,7 @@ export const NetWorthOverview = ({ wallets, historicalSnapshots = [], activeCurr
                 Net Worth ({currency})
               </h2>
             </div>
-            <div className="text-4xl md:text-5xl font-mono text-accent tracking-tighter tabular-nums flex items-baseline gap-1">
+            <div className="text-4xl md:text-5xl font-mono text-foreground tracking-tighter tabular-nums flex items-baseline gap-1">
               {nwDollars}
               {nwCents && <span className="text-xl md:text-2xl text-muted-foreground">.{nwCents}</span>}
             </div>

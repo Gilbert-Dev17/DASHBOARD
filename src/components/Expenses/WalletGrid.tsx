@@ -2,9 +2,8 @@ import { Wallet as WalletIcon, ArrowRight } from 'lucide-react';
 import { AddWalletModal } from '../Modals/AddWallet/AddWalletModal';
 import { WalletCard } from './WalletCard';
 import type { WalletSummary } from '@/types/dashboard';
-import { Card, CardContent, CardHeader, CardTitle } from '../ui/card';
 import { Button } from '../ui/button';
-import Link from 'next/link'
+import Link from 'next/link';
 import { Empty, EmptyContent, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty';
 
 import { TransactionHistory } from '@/types/expenses';
@@ -33,41 +32,37 @@ export function WalletGrid({ wallets, transactions = [], isLoading = false }: Wa
   });
 
   return (
-    <Card aria-label="Your Accounts" className="bg-card/30">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0">
-        <CardTitle className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+    <section aria-label="Your Accounts" className="flex flex-col">
+      <div className="flex flex-row items-center justify-between space-y-0 pb-4">
+        <h2 className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
           Accounts
-        </CardTitle>
+        </h2>
         <div className="flex items-center gap-2">
           {wallets.length > 0 && <AddWalletModal />}
         </div>
-      </CardHeader>
+      </div>
 
       {isLoading ? (
-        <CardContent>
-          <div className="flex flex-col gap-2">
-            {Array.from({ length: 3 }).map((_, i) => (
-              <WalletCardSkeleton key={`skeleton-${i}`} />
-            ))}
-          </div>
-        </CardContent>
+        <div className="flex flex-col gap-2">
+          {Array.from({ length: 3 }).map((_, i) => (
+            <WalletCardSkeleton key={`skeleton-${i}`} />
+          ))}
+        </div>
       ) : wallets.length === 0 ? (
-        <CardContent>
-          <Empty className="py-12 bg-card/30">
-            <EmptyContent>
-              <EmptyMedia variant="icon">
-                <WalletIcon className="h-6 w-6" aria-hidden="true" />
-              </EmptyMedia>
-              <EmptyTitle>No accounts yet</EmptyTitle>
-              <EmptyDescription className="mb-4">
-                Get started by adding your first wallet or bank account.
-              </EmptyDescription>
-              <AddWalletModal />
-            </EmptyContent>
-          </Empty>
-        </CardContent>
+        <Empty className="py-12 bg-card/30">
+          <EmptyContent>
+            <EmptyMedia variant="icon">
+              <WalletIcon className="h-6 w-6" aria-hidden="true" />
+            </EmptyMedia>
+            <EmptyTitle>No accounts yet</EmptyTitle>
+            <EmptyDescription className="mb-4">
+              Get started by adding your first wallet or bank account.
+            </EmptyDescription>
+            <AddWalletModal />
+          </EmptyContent>
+        </Empty>
       ) : (
-        <CardContent>
+        <div>
           <div className="flex flex-col gap-2">
             {sortedWallets.slice(0, 3).map((wallet) => (
               <Link key={wallet.id} href={`/finance/accounts/${wallet.id}`} className="block w-full">
@@ -75,15 +70,15 @@ export function WalletGrid({ wallets, transactions = [], isLoading = false }: Wa
               </Link>
             ))}
           </div>
-            <div className='flex flex-row justify-end items-center mt-4'>
-              <Button asChild variant={'link'} className="group px-0 flex flex-row text-muted-foreground hover:text-foreground items-center gap-1">
-                <Link href='/finance/viewAllAccounts'>
-                  View All<ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
-                </Link>
-              </Button>
-            </div>
-        </CardContent>
+          <div className='flex flex-row justify-end items-center mt-4'>
+            <Button asChild variant={'link'} className="group px-0 flex flex-row text-muted-foreground hover:text-foreground items-center gap-1">
+              <Link href='/finance/viewAllAccounts'>
+                View All<ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
+              </Link>
+            </Button>
+          </div>
+        </div>
       )}
-    </Card>
+    </section>
   );
 }

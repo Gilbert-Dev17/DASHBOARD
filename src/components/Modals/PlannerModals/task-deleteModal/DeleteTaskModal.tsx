@@ -55,7 +55,7 @@ export const DeleteTaskModal = ({taskId, taskName, onDeleted }: DeleteModalProps
           </AlertDialogMedia>
           <AlertDialogTitle className="flex flex-col gap-1.5 items-center text-center mt-2">
             <span className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">Delete Task</span>
-            <span className='text-accent font-bold text-lg'>{taskName}</span>
+            <span className='text-foreground font-bold text-lg'>{taskName}</span>
           </AlertDialogTitle>
           <AlertDialogDescription className="text-center text-sm mt-2">
             This action cannot be undone.

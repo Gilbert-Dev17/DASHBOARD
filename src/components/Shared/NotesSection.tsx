@@ -79,10 +79,10 @@ if (!isExpanded) {
     >
       {/* Header row */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-border">
-        <span className="text-xs font-bold uppercase tracking-widest text-accent">
+        <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
           Daily Journal
         </span>
-        <span className="text-xs uppercase tracking-widest text-muted-foreground/50 group-hover:text-foreground/60 transition-colors">
+        <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground/50 group-hover:text-foreground/60 transition-colors">
           Edit →
         </span>
       </div>
@@ -117,7 +117,7 @@ if (!isExpanded) {
         {/* Header */}
         <div className="shrink-0 flex items-end justify-between px-5 pt-5 pb-4 border-b border-border">
           <div className="flex flex-col gap-1">
-            <span className="text-xs font-bold uppercase tracking-widest text-accent">
+            <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
               Daily Journal
             </span>
             <span className="text-base font-medium tracking-tight text-foreground">
@@ -132,7 +132,7 @@ if (!isExpanded) {
                 variant="ghost"
                 size="sm"
                 onClick={onCollapse}
-                className="text-xs uppercase tracking-widest font-semibold text-muted-foreground hover:text-foreground"
+                className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
               >
                 Close
               </Button>
@@ -142,7 +142,7 @@ if (!isExpanded) {
               disabled={isPending || !isDirty}
               variant="ghost"
               size="sm"
-              className="text-xs uppercase tracking-widest font-semibold text-muted-foreground hover:text-foreground gap-2 disabled:opacity-30"
+              className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground gap-2 disabled:opacity-30"
             >
               <Save className="w-3 h-3" />
               {isPending
@@ -173,7 +173,7 @@ if (!isExpanded) {
 
         {/* Footer meta */}
         <div className="shrink-0 flex items-center justify-between px-5 py-2 border-t border-border">
-          <span className={`text-xs uppercase tracking-widest ${isDirty ? 'text-destructive' : 'text-muted-foreground/50'}`}>
+          <span className={`font-mono text-[11px] uppercase tracking-wider ${isDirty ? 'text-destructive' : 'text-muted-foreground/50'}`}>
             {isDirty ? 'Unsaved changes' : 'All changes saved'}
           </span>
         </div>

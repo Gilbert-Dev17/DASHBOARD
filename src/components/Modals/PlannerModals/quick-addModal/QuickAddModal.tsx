@@ -293,8 +293,8 @@ export const QuickAddModal = ({ enableShortcut = true }: { enableShortcut?: bool
                   data-index={i}
                   className={`w-full text-sm font-medium ${
                     i === selectedIndex
-                      ? 'bg-accent text-accent-foreground'
-                      : 'hover:bg-accent/50'
+                      ? 'bg-foreground text-background'
+                      : 'hover:bg-muted'
                   }`}
                   onMouseDown={(e) => { e.preventDefault(); insertCategory(cat) }}
                   onMouseEnter={() => setSelectedIndex(i)}

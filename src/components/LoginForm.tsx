@@ -27,20 +27,19 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
           href="#"
           className="flex flex-col items-center gap-3 font-medium"
         >
-          <div className="flex size-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+          <div className="flex size-12 items-center justify-center rounded-xl bg-foreground text-background shadow-sm">
             <LayoutDashboardIcon className="size-6" />
           </div>
-          <span className="sr-only">DASHBOARD</span>
+          <span className="micro-label text-muted-foreground">DASHBOARD</span>
         </a>
         <h1 className="text-2xl font-bold tracking-tight mt-2 text-foreground">Welcome Back</h1>
-        <p className="text-sm text-muted-foreground/80 leading-relaxed max-w-[340px]">
+        <p className="text-sm text-muted-foreground leading-relaxed max-w-[340px]">
           Track your finances, plan your schedule, and own your day.
         </p>
       </div>
 
       <Button
-        variant="outline"
-        className="w-full relative text-sm font-medium h-10"
+        className="w-full relative text-sm font-medium h-10 bg-foreground text-background hover:bg-foreground/80"
         type="button"
         onClick={async () => {
           await GoogleLogIn();
