@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from 'react';
 import { Geist, Geist_Mono, Source_Serif_4, Geist_Pixel} from "next/font/google";
+// import { GeistPixelSquare, GeistPixelGrid, GeistPixelCircle, GeistPixelTriangle, GeistPixelLine } from 'geist/font/pixel';
 import "./globals.css";
 import Providers from './Providers'
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -25,7 +26,7 @@ const sourceSerif = Source_Serif_4({
 
 export const geistPixel = Geist_Pixel({
   subsets: ['latin'],
-  axes: ['ELSH'], // keep the shape axis variable
+  axes: ['ELSH'],
   variable: '--font-geist-pixel',
   display: 'swap',
 });
@@ -43,7 +44,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} ${sourceSerif.variable} h-full antialiased`}
+      className={`${geistSans.variable} ${geistMono.variable} ${sourceSerif.variable} ${geistPixel.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">

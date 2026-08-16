@@ -106,7 +106,7 @@ export const GreetingHeader = ({firstName, name, tasks = []}: userGreeting) => {
   return (
     <>
         <div className="flex justify-between items-center mb-8 lg:mb-12">
-          <h1 className="text-6xl md:text-8xl lg:text-[9rem] font-bold font-pixel tracking-tighter leading-none flex items-end text-foreground" >
+          <h1 className="text-6xl md:text-8xl lg:text-[9rem] font-pixel-circle leading-none flex items-end text-foreground" >
             {dayOfWeek}
           </h1>
         </div>
