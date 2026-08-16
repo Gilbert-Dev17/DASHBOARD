@@ -55,7 +55,7 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
 
   return (
     <>
-      <section className="border border-border rounded-xl overflow-hidden shadow-vercel" aria-labelledby="categories-heading">
+      <section className="border border-border rounded-md overflow-hidden shadow-vercel" aria-labelledby="categories-heading">
         {allCategories.length === 0 ? (
           <Empty className="py-8">
             <EmptyContent>

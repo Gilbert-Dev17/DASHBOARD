@@ -50,6 +50,16 @@ export const formatSignedCurrency = (amount: number, currencyCode: string = 'PHP
   return formatted;
 }
 
+export const formatCompactCurrency = (amount: number, currencyCode: string = 'PHP'): string => {
+  const locale = LOCALE_MAP[currencyCode] || undefined;
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currencyCode,
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(amount);
+};
+
 export const formatInputAmount = (value: string): string => {
   if (!value) return ''
   const parts = value.split('.')
