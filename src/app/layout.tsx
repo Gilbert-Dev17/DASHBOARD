@@ -29,6 +29,7 @@ export const geistPixel = Geist_Pixel({
   axes: ['ELSH'],
   variable: '--font-geist-pixel',
   display: 'swap',
+  adjustFontFallback: false,
 });
 
 export const metadata: Metadata = {

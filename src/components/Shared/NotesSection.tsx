@@ -9,18 +9,16 @@ import {z} from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { upsertDailyNote } from '@/lib/actions/daily-notes'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { format, parseISO } from 'date-fns'
 import { Save, FileText } from 'lucide-react'
-import { Empty, EmptyContent, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
+import { Drawer, DrawerContent, DrawerTrigger, DrawerClose, DrawerHeader, DrawerFooter } from '@/components/ui/drawer'
+import { Empty, EmptyContent, EmptyMedia, EmptyDescription } from '@/components/ui/empty'
 
 interface NotesProps {
     note: Notes | null;
     dateStr: string;
-    isExpanded: boolean;
-    onExpand: () => void;
-    onCollapse?: () => void;
 }
 
 const UpdateNotesSchema = z.object({
@@ -29,7 +27,8 @@ const UpdateNotesSchema = z.object({
 
 type UpdateDailyNotes = z.infer<typeof UpdateNotesSchema>
 
-export const NotesSection = ({ note, dateStr, isExpanded, onExpand, onCollapse }: NotesProps) => {
+export const NotesSection = ({ note, dateStr }: NotesProps) => {
+  const [isOpen, setIsOpen] = useState(false)
 
   const router = useRouter()
   const [optimisticContent, setOptimisticContent] = useState(note?.content || '')
@@ -70,12 +69,12 @@ export const NotesSection = ({ note, dateStr, isExpanded, onExpand, onCollapse }
       saveNote(data)
   }
 
-if (!isExpanded) {
   const hasContent = !!optimisticContent.trim()
-  return (
-    <div
-      onClick={onExpand}
-      className="shrink-0 group cursor-pointer rounded-md border border-border bg-card hover:bg-secondary/40 transition-colors overflow-hidden"
+
+  const previewUi = (
+    <button
+      type="button"
+      className="w-full text-left shrink-0 group cursor-pointer rounded-md border border-border bg-card hover:bg-secondary/40 transition-colors overflow-hidden"
     >
       {/* Header row */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-border">
@@ -106,79 +105,83 @@ if (!isExpanded) {
           </Empty>
         )}
       </div>
-    </div>
+    </button>
   )
-}
 
-  return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 min-h-0 h-full">
-      <div className="flex flex-col flex-1 h-full min-h-0 rounded-md border border-border bg-card overflow-hidden">
-
-        {/* Header */}
-        <div className="shrink-0 flex items-end justify-between px-5 pt-5 pb-4 border-b border-border">
-          <div className="flex flex-col gap-1">
-            <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-              Daily Journal
-            </span>
-            <span className="text-base font-medium tracking-tight text-foreground">
-              {dateStr ? format(parseISO(dateStr), 'EEEE, MMMM do') : 'Notes'}
-            </span>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {onCollapse && (
-              <Button
-                type="button"
-                variant="ghost"
-                size="sm"
-                onClick={onCollapse}
-                className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
-              >
-                Close
-              </Button>
-            )}
-            <Button
-              type="submit"
-              disabled={isPending || !isDirty}
-              variant="ghost"
-              size="sm"
-              className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground gap-2 disabled:opacity-30"
-            >
-              <Save className="w-3 h-3" />
-              {isPending
-                  ? <span className='flex items-center gap-4'>Save <Spinner /></span>
-                  : 'Save'}
-            </Button>
-          </div>
-        </div>
-
-        {/* Textarea — full height, flush, no border */}
-        <div className="flex-1 min-h-[300px] lg:min-h-0 relative">
-          <Controller
-            control={control}
-            name="content"
-            render={({ field }) => (
-              <textarea
-                {...field}
-                value={field.value || ''}
-                className="absolute inset-0 w-full h-full resize-none px-5 py-4 text-sm bg-transparent text-foreground/80 placeholder:text-muted-foreground/30 outline-none font-mono"
-                placeholder="Capture your thoughts, plans, or reflections for the day..."
-                spellCheck={true}
-                autoFocus
-                style={{ lineHeight: '1.25' }}
-              />
-            )}
-          />
-        </div>
-
-        {/* Footer meta */}
-        <div className="shrink-0 flex items-center justify-between px-5 py-2 border-t border-border">
-          <span className={`font-mono text-[11px] uppercase tracking-wider ${isDirty ? 'text-destructive' : 'text-muted-foreground/50'}`}>
-            {isDirty ? 'Unsaved changes' : 'All changes saved'}
+  const editorUi = (
+    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col flex-1 h-full min-h-0 bg-background">
+      {/* Header */}
+      <div className="shrink-0 flex items-end justify-between px-5 pt-5 pb-4 border-b border-border">
+        <div className="flex flex-col gap-1">
+          <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+            Daily Journal
+          </span>
+          <span className="text-base font-medium tracking-tight text-foreground">
+            {dateStr ? format(parseISO(dateStr), 'EEEE, MMMM do') : 'Notes'}
           </span>
         </div>
 
+        <div className="flex items-center gap-2">
+          <DrawerClose render={
+            <Button
+              type="button"
+              variant="ghost"
+              size="sm"
+              className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground"
+            >
+              Close
+            </Button>
+          } />
+
+          <Button
+            type="submit"
+            disabled={isPending || !isDirty}
+            variant="ghost"
+            size="sm"
+            className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground gap-2 disabled:opacity-30"
+          >
+            <Save className="w-3 h-3" />
+            {isPending
+                ? <span className='flex items-center gap-4'>Save <Spinner /></span>
+                : 'Save'}
+          </Button>
+        </div>
+      </div>
+
+      {/* Textarea — full height, flush, no border */}
+      <div className="flex-1 min-h-0 relative">
+        <Controller
+          control={control}
+          name="content"
+          render={({ field }) => (
+            <textarea
+              {...field}
+              value={field.value || ''}
+              className="absolute inset-0 w-full h-full resize-none px-5 py-4 text-sm bg-transparent text-foreground/80 placeholder:text-muted-foreground/30 outline-none font-mono"
+              placeholder="Capture your thoughts, plans, or reflections for the day..."
+              spellCheck={true}
+              autoFocus
+              style={{ lineHeight: '1.25' }}
+            />
+          )}
+        />
+      </div>
+
+      {/* Footer meta */}
+      <div className="shrink-0 flex items-center justify-between px-5 py-3 border-t border-border bg-muted/20">
+        <span className={`font-mono text-[11px] uppercase tracking-wider ${isDirty ? 'text-destructive' : 'text-muted-foreground/50'}`}>
+          {isDirty ? 'Unsaved changes' : 'All changes saved'}
+        </span>
       </div>
     </form>
+  )
+
+  return (
+    <Drawer open={isOpen} onOpenChange={setIsOpen} swipeDirection="right">
+      <DrawerTrigger render={previewUi} />
+      <DrawerContent className="w-full sm:w-115 rounded-md">
+        {editorUi}
+      </DrawerContent>
+    </Drawer>
   )
 }

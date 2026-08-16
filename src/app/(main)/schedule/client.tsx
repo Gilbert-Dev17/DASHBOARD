@@ -24,7 +24,7 @@ interface PageProps {
 }
 
 export function PlannerPage({ agendaTitle, initialTasks, note, dateObj, datesWithTasks, finalDate }: PageProps) {
-  const [showNotes, setShowNotes] = useState(false)
+  // Notes state is now handled internally by NotesSection
   const router = useRouter()
   const [isPending, startTransition] = useTransition();
   const isToday = finalDate === getTodayInTimezone()
@@ -58,7 +58,7 @@ export function PlannerPage({ agendaTitle, initialTasks, note, dateObj, datesWit
         </div>
 
         <div className="mt-6 mb-4">
-          <NotesSection note={note} dateStr={finalDate} isExpanded={showNotes} onExpand={() => setShowNotes(true)} onCollapse={() => setShowNotes(false)} />
+          <NotesSection note={note} dateStr={finalDate} />
         </div>
       </div>
 
@@ -68,23 +68,17 @@ export function PlannerPage({ agendaTitle, initialTasks, note, dateObj, datesWit
         <div className='lg:col-span-4 flex flex-col h-full space-y-4 min-h-0'>
           <div className="flex justify-between items-center shrink-0">
             <h2 className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
-              {showNotes ? 'Daily Notes' : 'Calendar'}
+              Calendar
             </h2>
-
-            <Button variant="ghost" size="sm" onClick={() => setShowNotes(!showNotes)} className="text-xs">
-              {showNotes ? 'Show Calendar' : ''}
-            </Button>
           </div>
 
-          {!showNotes && (
-            <CustomCalendar
-              initialDate={dateObj}
-              datesWithTasks={datesWithTasks}
-              startTransition={startTransition}
-            />
-          )}
+          <CustomCalendar
+            initialDate={dateObj}
+            datesWithTasks={datesWithTasks}
+            startTransition={startTransition}
+          />
 
-          <NotesSection note={note} dateStr={finalDate} isExpanded={showNotes} onExpand={() => setShowNotes(true)} />
+          <NotesSection note={note} dateStr={finalDate} />
         </div>
 
           <div className="lg:col-span-8 flex flex-col h-full overflow-hidden">

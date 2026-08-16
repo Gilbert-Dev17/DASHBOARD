@@ -42,15 +42,19 @@ export function ResponsiveDialog({
 
 export function ResponsiveDialogTrigger({
   children,
+  asChild,
   ...props
-}: React.ComponentProps<typeof DialogTrigger> & React.ComponentProps<typeof DrawerTrigger>) {
+}: any) {
   const isMobile = useIsMobile()
 
   if (isMobile) {
+    if (asChild && React.isValidElement(children)) {
+      return <DrawerTrigger render={children} {...props} />
+    }
     return <DrawerTrigger {...props}>{children}</DrawerTrigger>
   }
 
-  return <DialogTrigger {...props}>{children}</DialogTrigger>
+  return <DialogTrigger asChild={asChild} {...props}>{children}</DialogTrigger>
 }
 
 export function ResponsiveDialogContent({
@@ -165,13 +169,17 @@ export function ResponsiveDialogFooter({
 
 export function ResponsiveDialogClose({
   children,
+  asChild,
   ...props
-}: React.ComponentProps<typeof DialogClose> & React.ComponentProps<typeof DrawerClose>) {
+}: any) {
   const isMobile = useIsMobile()
 
   if (isMobile) {
+    if (asChild && React.isValidElement(children)) {
+      return <DrawerClose render={children} {...props} />
+    }
     return <DrawerClose {...props}>{children}</DrawerClose>
   }
 
-  return <DialogClose {...props}>{children}</DialogClose>
+  return <DialogClose asChild={asChild} {...props}>{children}</DialogClose>
 }
