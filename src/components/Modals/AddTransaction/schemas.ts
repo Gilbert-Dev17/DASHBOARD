@@ -31,7 +31,7 @@ export const transferSchema = z.object({
   amount: amountField,
   fromAccountId: z.string().min(1, 'Please select the source'),
   toAccountId: z.string().min(1, 'Please select the destination'),
-  transferFee: z.coerce.number().min(0).optional(),
+  transfer_fee: z.coerce.number().min(0).optional(),
   note: noteField,
   date: z.date().optional(),
 }).refine((data) => data.fromAccountId !== data.toAccountId, {

@@ -93,7 +93,7 @@ export interface Transaction {
     title: string;
     amount: number;
     type: TransactionType;
-    transferFee: number;
+    transfer_fee: number;
     created_for_date: string; // YYYY-MM-DD
     created_at: string;
 }

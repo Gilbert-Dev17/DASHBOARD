@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from 'react';
-import { Geist, Geist_Mono, Source_Serif_4 } from "next/font/google";
+import { Geist, Geist_Mono, Source_Serif_4, Geist_Pixel} from "next/font/google";
 import "./globals.css";
 import Providers from './Providers'
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -21,6 +21,13 @@ const sourceSerif = Source_Serif_4({
   subsets: ["latin"],
   weight: ["400", "600"],
   style: ["normal", "italic"],
+});
+
+export const geistPixel = Geist_Pixel({
+  subsets: ['latin'],
+  axes: ['ELSH'], // keep the shape axis variable
+  variable: '--font-geist-pixel',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {

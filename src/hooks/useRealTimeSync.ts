@@ -3,29 +3,25 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
-import { toast } from 'sonner'
-import { useSyncStatus } from '@/contexts/SyncStatusContext'
+import { useQueryClient } from '@tanstack/react-query'
+import {useSyncStore} from '@/hooks/syncStore'
 
 export function useRealTimeSync() {
   const [supabase] = useState(() => createClient());
   const router = useRouter();
-  const { setSyncStatus, setLastSyncedAt } = useSyncStatus()
+  const queryClient = useQueryClient();
+  const { setSyncing, setSynced } = useSyncStore()
 
   useEffect(() => {
-    let syncTimeout: NodeJS.Timeout;
-
     const handleSync = () => {
-      setSyncStatus('syncing')
-      setLastSyncedAt(new Date())
-      router.refresh()
-      
-      // Clear any existing timeout so rapid events don't cancel the pulse prematurely
-      if (syncTimeout) clearTimeout(syncTimeout)
-      
-      // Reset back to idle after a brief pulse
-      syncTimeout = setTimeout(() => {
-        setSyncStatus('idle')
-      }, 1500)
+      setSyncing();
+
+      router.refresh();
+      queryClient.invalidateQueries();
+
+      setTimeout(() => {
+        setSynced();
+      }, 1500);
     }
 
     const channel = supabase
@@ -41,20 +37,12 @@ export function useRealTimeSync() {
       .on('postgres_changes', {event: '*', schema: 'public', table: 'expense_categories'}, handleSync)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'wallets' }, handleSync)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'wallet_snapshots' }, handleSync)
-      .subscribe((status) => {
-        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-          console.error('Dashboard realtime channel failed:', status);
-          setSyncStatus('error')
-          toast.error('Realtime connection lost', {
-            description: 'Live updates are currently unavailable. Please refresh the page if this persists.',
-          });
-        }
-      });
+      .subscribe();
 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [supabase, router, setSyncStatus, setLastSyncedAt]);
+  }, [supabase, router, queryClient]);
 
   // The "Midnight Refresh" Pattern
   // Automatically fetches the next day's data the exact second the clock strikes 12:00 AM

@@ -4,6 +4,13 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* globals.css with Tailwind CSS */
+@utility font-pixel-square   { font-family: var(--font-geist-pixel); font-variation-settings: "ELSH" 1;  }
+@utility font-pixel-circle   { font-family: var(--font-geist-pixel); font-variation-settings: "ELSH" 20; }
+@utility font-pixel-grid     { font-family: var(--font-geist-pixel); font-variation-settings: "ELSH" 40; }
+@utility font-pixel-triangle { font-family: var(--font-geist-pixel); font-variation-settings: "ELSH" 60; }
+@utility font-pixel-line     { font-family: var(--font-geist-pixel); font-variation-settings: "ELSH" 80; }
+
 /* Geist Pixel — loaded via CSS @font-face (avoids next/font/local issues) */
 @font-face {
   font-family: 'Geist Pixel';

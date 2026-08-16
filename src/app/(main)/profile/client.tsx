@@ -42,7 +42,7 @@ export default function ProfileClientPage({ user, dbSize, tableCounts }: Profile
       {/* HEADER */}
       <header>
         <div className="flex items-center gap-6 mb-8 lg:mb-12">
-          <Avatar className="w-20 h-20 lg:w-24 lg:h-24 border-2 border-border shrink-0">
+          <Avatar className="w-20 h-20 lg:w-24 lg:h-24 shrink-0">
             <AvatarImage src={user.avatar_url || undefined} alt="Profile" className="object-cover" />
             <AvatarFallback className="text-2xl lg:text-3xl font-light text-muted-foreground">{initials}</AvatarFallback>
           </Avatar>

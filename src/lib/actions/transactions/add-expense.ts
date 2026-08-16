@@ -27,8 +27,8 @@ export async function addExpenseAction(data: {
         title: data.note || 'Expense',
         amount: data.amount,
         type: 'expense',
-        transferFee: 0,
-        created_for_date: data.date 
+        transfer_fee: 0,
+        created_for_date: data.date
           ? (typeof data.date === 'string' ? data.date : new Date(data.date.getTime() - (data.date.getTimezoneOffset() * 60000)).toISOString().split('T')[0])
           : new Date().toISOString().split('T')[0]
       })

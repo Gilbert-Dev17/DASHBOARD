@@ -48,7 +48,7 @@ interface Transaction {
     title: string;
     amount: number;
     type: TransactionType;
-    transferFee: number;
+    transfer_fee: number;
     created_for_date: string;
     created_at: string;
 }
@@ -157,7 +157,7 @@ export async function seedDummyData() {
         title: type === 'expense' ? titles[Math.floor(Math.random() * (titles.length - 2))] : "Salary Deposit",
         amount: type === 'expense' ? parseFloat((Math.random() * 150 + 5).toFixed(2)) : parseFloat((Math.random() * 2000 + 500).toFixed(2)),
         type: type as TransactionType,
-        transferFee: 0,
+        transfer_fee: 0,
         created_for_date: dateString,
         created_at: transactionDate.toISOString(),
       });

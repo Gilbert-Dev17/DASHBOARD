@@ -38,7 +38,7 @@ export const TransferForm = () => {
       amount: '' as unknown as number,
       fromAccountId: '',
       toAccountId: '',
-      transferFee: '' as unknown as number,
+      transfer_fee: '' as unknown as number,
       note: '',
       date: undefined,
     }
@@ -72,7 +72,7 @@ export const TransferForm = () => {
 
   function onSubmit(data: TransferFormValues) {
     if (selectedFromWallet) {
-      const totalDeduction = Number(data.amount) + (Number(data.transferFee) || 0)
+      const totalDeduction = Number(data.amount) + (Number(data.transfer_fee) || 0)
       if (totalDeduction > selectedFromWallet.balance) {
         setError('amount', { type: 'manual', message: 'Insufficient balance in source wallet (including fee)' })
         return
@@ -83,7 +83,7 @@ export const TransferForm = () => {
       amount: data.amount,
       fromAccountId: data.fromAccountId,
       toAccountId: data.toAccountId,
-      transferFee: data.transferFee,
+      transfer_fee: data.transfer_fee,
       note: data.note,
       date: data.date ? format(data.date, 'yyyy-MM-dd') : undefined,
     })
@@ -215,7 +215,7 @@ export const TransferForm = () => {
         <FieldLabel>Transfer Fee <span className="text-muted-foreground">(optional)</span></FieldLabel>
         <Controller
           control={control}
-          name="transferFee"
+          name="transfer_fee"
           render={({ field }) => (
             <Input
               type="text"

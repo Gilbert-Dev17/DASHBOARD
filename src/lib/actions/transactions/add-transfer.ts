@@ -8,7 +8,7 @@ export async function addTransferAction(data: {
   amount: number
   fromAccountId: string
   toAccountId: string
-  transferFee?: number
+  transfer_fee?: number
   note?: string
   date?: Date | string
 }) {
@@ -16,7 +16,7 @@ export async function addTransferAction(data: {
    const user = await getUser();
     if (!user) return { success: false, message: 'Not authenticated.' }
 
-  const fee = data.transferFee || 0
+  const fee = data.transfer_fee || 0
 
   // Since the Transaction table only has one `wallet_id`,
   // a standard way to represent a transfer is to create two records:

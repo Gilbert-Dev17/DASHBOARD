@@ -9,7 +9,6 @@ import { CustomCalendar } from '@/components/Shared/CustomCalendar'
 import { TaskWithSubtasks, Notes } from '@/types/dashboard'
 import { getTodayInTimezone } from '@/utils/timezone'
 import { useRouter } from 'next/navigation'
-import { HeaderTitle } from '@/components/Shared/HeaderTitle'
 import {NotesSection} from '@/components/Shared/NotesSection'
 
 import { Spinner } from '@/components/ui/spinner'
@@ -88,7 +87,6 @@ export function PlannerPage({ agendaTitle, initialTasks, note, dateObj, datesWit
           <NotesSection note={note} dateStr={finalDate} isExpanded={showNotes} onExpand={() => setShowNotes(true)} />
         </div>
 
-
           <div className="lg:col-span-8 flex flex-col h-full overflow-hidden">
             <div className="flex justify-between items-center">
               <Label className="text-2xl font-medium tracking-tight text-foreground" >
@@ -109,7 +107,6 @@ export function PlannerPage({ agendaTitle, initialTasks, note, dateObj, datesWit
                   </Button>
                 )}
               </div>
-
             </div>
 
             <AgendaSection initialTasks={initialTasks} selectedDateStr={finalDate} showTitle={false} />
