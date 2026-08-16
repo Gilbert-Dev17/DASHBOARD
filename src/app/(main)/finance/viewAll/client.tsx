@@ -1,7 +1,7 @@
 'use client';
 
-import { useMemo, useState, useEffect } from 'react';
-import { ArrowLeft, Search, ArrowDown, ArrowUp, ArrowRightLeft } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { ArrowLeft, Search } from 'lucide-react';
 import PageComponent from '@/components/Shared/PageComponent';
 import { HeaderTitle } from '@/components/Shared/HeaderTitle';
 import { Button } from '@/components/ui/button';
@@ -23,6 +23,7 @@ import { CurrencySwitcher } from '@/components/Shared/CurrencySwitcher';
 import { WalletSummary, UserSummary } from '@/types/dashboard';
 import { useCurrencyFilter } from '@/hooks/useCurrencyFilter';
 import { CategoryBadge } from '@/components/Shared/CategoryBadge';
+import { TransactionIcon } from '@/components/Shared/TransactionIcon';
 
 const LOG_FILTERS = [
   { name: 'All', value: 'all' },
@@ -63,7 +64,6 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
 
   const { availableCurrencies, activeCurrency, setActiveCurrency, filteredTransactions } = useCurrencyFilter({ wallets, user, transactions });
 
-  // Reset page when filters change
   const [prevDeps, setPrevDeps] = useState([selectedFilter, typeFilter, searchQuery, activeCurrency]);
   if (
     prevDeps[0] !== selectedFilter ||
@@ -78,12 +78,10 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
   const finalTransactions = useMemo(() => {
     let result = filteredTransactions;
 
-    // 2. Type Filter
     if (typeFilter !== 'all') {
       result = result.filter(tx => tx.type === typeFilter);
     }
 
-    // 3. Search Filter
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       result = result.filter(tx =>
@@ -93,7 +91,6 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
       );
     }
 
-    // Sort newest first
     return result.sort((a, b) => new Date(b.created_for_date || b.created_at).getTime() - new Date(a.created_for_date || a.created_at).getTime());
   }, [filteredTransactions, typeFilter, searchQuery]);
 
@@ -102,8 +99,6 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
 
   return (
     <PageComponent>
-      <section className='mt-5'>
-        {/* HEADER */}
         <header className="flex flex-col md:flex-row md:items-end justify-between items-start gap-6 mb-8">
           <div className="flex flex-row items-center">
              <Button
@@ -124,7 +119,6 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
           />
         </header>
 
-        {/* TABLE CONTROLS */}
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full lg:w-auto">
             <div className="relative w-full items-center sm:w-64">
@@ -139,7 +133,7 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
             </div>
 
             <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-full sm:w-[140px] bg-card border-border/50">
+              <SelectTrigger className="w-full sm:w-35 bg-card border-border/50">
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
               <SelectContent>
@@ -148,6 +142,7 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
                   <SelectItem value="expense">Expense</SelectItem>
                   <SelectItem value="income">Income</SelectItem>
                   <SelectItem value="transfer">Transfer</SelectItem>
+                  <SelectItem value="adjustment">Adjustment</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -172,17 +167,17 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
           </Tabs>
         </div>
 
-        {/* DATA TABLE */}
-        <div className="rounded-xl border border-border/50 bg-card/50 overflow-hidden shadow-sm">
+        <div className="rounded-md border border-border/50 bg-card/50 overflow-hidden shadow-sm">
           <Table>
             <TableHeader className="bg-muted/30 hover:bg-muted/30">
               <TableRow className="hover:bg-transparent">
                 <TableHead className="w-12 text-center"></TableHead>
+                <TableHead className="text-xs font-semibold text-muted-foreground">Date</TableHead>
                 <TableHead className="text-xs font-semibold text-muted-foreground">Note</TableHead>
                 <TableHead className="text-xs font-semibold text-muted-foreground">Category</TableHead>
                 <TableHead className="text-xs font-semibold text-muted-foreground">Wallet</TableHead>
-                <TableHead className="text-xs font-semibold text-muted-foreground">Date</TableHead>
-                <TableHead className="text-xs font-semibold text-muted-foreground text-right">Amount</TableHead>
+                <TableHead className="text-xs font-semibold text-muted-foreground">Amount</TableHead>
+                <TableHead className="w-12 font-semibold text-muted-foreground">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -240,30 +235,17 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
 
                     const amountColor = isTransfer ? 'text-muted-foreground' : isPositive ? 'text-emerald-500' : 'text-rose-500';
 
-                    // Render Type Icon
-                    let TypeIcon = ArrowDown;
-                    let iconColor = 'text-rose-500';
-                    let iconBg = 'bg-rose-500/10';
-
-                    if (isTransfer) {
-                      TypeIcon = ArrowRightLeft;
-                      iconColor = 'text-yellow-500';
-                      iconBg = 'bg-yellow-500/10';
-                    } else if (transaction.type === 'income') {
-                      TypeIcon = ArrowUp;
-                      iconColor = 'text-emerald-500';
-                      iconBg = 'bg-emerald-500/10';
-                    }
-
                     // Render Wallet Name
                     const walletName = wallets.find(w => w.id === transaction.wallet_id)?.name || 'Unknown Wallet';
 
                     rows.push(
                       <TableRow key={transaction.id} className="group transition-colors hover:bg-secondary/20 border-b-border/50">
                         <TableCell className="w-12">
-                          <div className={`h-8 w-8 rounded-full flex items-center justify-center ${iconBg} ${iconColor}`}>
-                            <TypeIcon size={14} strokeWidth={2.5} />
-                          </div>
+                          <TransactionIcon type={transaction.type} />
+                        </TableCell>
+
+                        <TableCell className="font-medium text-[11px] text-muted-foreground/60 whitespace-nowrap">
+                          {dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </TableCell>
 
                         <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate font-medium">
@@ -273,6 +255,9 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
                         <TableCell>
                           {isTransfer ? (
                             <span className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">Transfer</span>
+                          ) : (
+                            transaction.type === 'adjustment' ? (
+                              <span className="text-xs uppercase tracking-widest text-muted-foreground font-semibold">Adjustment</span>
                           ) : transaction.type === 'income' ? (
                             <span className="text-xs uppercase tracking-widest text-emerald-500 font-semibold">Income</span>
                           ) : (
@@ -281,19 +266,19 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
                               icon={transaction.expense_categories?.icon}
                               color={transaction.expense_categories?.color}
                             />
-                          )}
+                          ))}
                         </TableCell>
 
                         <TableCell className="text-xs font-medium text-muted-foreground">
                           {walletName}
                         </TableCell>
 
-                        <TableCell className="font-medium text-[11px] text-muted-foreground/60 whitespace-nowrap">
-                          {dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                        <TableCell className={`text-xs tabular-nums font-semibold ${amountColor}`}>
+                          {formatSignedCurrency(signedAmount, activeCurrency, !isTransfer)}
                         </TableCell>
 
-                        <TableCell className={`text-right tabular-nums font-semibold ${amountColor}`}>
-                          {formatSignedCurrency(signedAmount, activeCurrency, !isTransfer)}
+                        <TableCell className='w-12 text-center'>
+                          ...
                         </TableCell>
                       </TableRow>
                     );
@@ -339,7 +324,6 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
             </Pagination>
           </div>
         )}
-      </section>
     </PageComponent>
   );
 }

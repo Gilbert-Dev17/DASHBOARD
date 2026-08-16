@@ -18,8 +18,9 @@ export const getSignedAmount = (
     case 'expense':
       return -magnitude;
     case 'transfer':
-      // Transfers are already signed correctly in the DB:
-      // Transfer Out is negative, Transfer In is positive.
+    case 'adjustment':
+      // Transfers and Adjustments are already signed correctly in the DB:
+      // Negative means out/loss, Positive means in/gain.
       return Number(txn.amount);
     default:
       return magnitude;
