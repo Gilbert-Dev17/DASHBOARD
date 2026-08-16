@@ -5,7 +5,8 @@ import { useSearchParams } from 'next/navigation'
 import { useGlobalShortcut } from '@/hooks/useGlobalShortcut'
 import { useMutation } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
-import { TASK_CATEGORIES, CATEGORY_LABELS, type TaskCategory } from '../../../../lib/constants/tasks'
+import { CATEGORY_LABELS, type TaskCategory } from '../../../../lib/constants/tasks'
+import { TASK_CATEGORY_OPTIONS } from '../../../../lib/constants/options'
 import { parseTaskLines, sortParsedTasks, type ParsedTask } from '@/utils/parseTaskLines'
 import { submitQuickAddTasks } from '@/lib/actions/quick-add'
 import {
@@ -55,7 +56,7 @@ export const QuickAddModal = ({ enableShortcut = true }: { enableShortcut?: bool
   const handleTrigger = useCallback(() => setOpen((prev) => !prev), [])
   useGlobalShortcut({ key: 'k', onTrigger: handleTrigger, enabled: enableShortcut })
 
-  const filteredCategories = TASK_CATEGORIES.filter(cat =>
+  const filteredCategories = TASK_CATEGORY_OPTIONS.filter(cat =>
     cat.toLowerCase().startsWith(menuFilter.toLowerCase())
   )
 

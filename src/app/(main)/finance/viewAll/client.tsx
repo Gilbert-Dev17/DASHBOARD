@@ -24,14 +24,8 @@ import { WalletSummary, UserSummary } from '@/types/dashboard';
 import { useCurrencyFilter } from '@/hooks/useCurrencyFilter';
 import { CategoryBadge } from '@/components/Shared/CategoryBadge';
 import { TransactionIcon } from '@/components/Shared/TransactionIcon';
-
-const LOG_FILTERS = [
-  { name: 'All', value: 'all' },
-  { name: 'Day', value: 'day' },
-  { name: 'Week', value: 'week' },
-  { name: 'Month', value: 'month' },
-  { name: 'Year', value: 'year' },
-];
+import { TransactionActionsMenu } from '@/components/Shared/TransactionActionsMenu';
+import { TIME_FILTERS, TRANSACTION_TYPE_OPTIONS } from '@/lib/constants/options';
 
 function getWeekKey(date: Date) {
   const start = new Date(date);
@@ -63,7 +57,6 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
   const itemsPerPage = 30;
 
   const { availableCurrencies, activeCurrency, setActiveCurrency, filteredTransactions } = useCurrencyFilter({ wallets, user, transactions });
-
   const [prevDeps, setPrevDeps] = useState([selectedFilter, typeFilter, searchQuery, activeCurrency]);
   if (
     prevDeps[0] !== selectedFilter ||
@@ -138,11 +131,9 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
-                  <SelectItem value="all">All Types</SelectItem>
-                  <SelectItem value="expense">Expense</SelectItem>
-                  <SelectItem value="income">Income</SelectItem>
-                  <SelectItem value="transfer">Transfer</SelectItem>
-                  <SelectItem value="adjustment">Adjustment</SelectItem>
+                  {TRANSACTION_TYPE_OPTIONS.map((opt) => (
+                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                  ))}
                 </SelectGroup>
               </SelectContent>
             </Select>
@@ -154,7 +145,7 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
             className="w-full sm:w-fit"
           >
             <TabsList className="w-full sm:w-auto bg-card border border-border/50">
-              {LOG_FILTERS.map((filter) => (
+              {TIME_FILTERS.map((filter) => (
                 <TabsTrigger
                   key={filter.value}
                   value={filter.value}

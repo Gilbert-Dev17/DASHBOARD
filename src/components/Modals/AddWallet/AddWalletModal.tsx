@@ -24,7 +24,8 @@ import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'sonner'
 import { addWalletAction } from '@/lib/actions/transactions'
 import { WalletType } from '@/types/database'
-import { WALLET_TYPES, WALLET_STYLES, AVAILABLE_CURRENCIES } from '@/lib/constants/currencies'
+import { WALLET_STYLES } from '@/lib/constants/currencies'
+import { WALLET_TYPE_OPTIONS, CURRENCY_OPTIONS } from '@/lib/constants/options'
 import { formatInputAmount } from '@/utils/currency'
 
 const walletSchema = z.object({
@@ -171,7 +172,7 @@ export const AddWalletModal = () => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          {WALLET_TYPES.map((wallet) => (
+                          {WALLET_TYPE_OPTIONS.map((wallet) => (
                           <SelectItem key={wallet.value} value={wallet.value} >{wallet.label}</SelectItem>
                           ))}
                         </SelectGroup>
@@ -197,7 +198,7 @@ export const AddWalletModal = () => {
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          {AVAILABLE_CURRENCIES.map((curr) => (
+                          {CURRENCY_OPTIONS.map((curr) => (
                             <SelectItem key={curr.code} value={curr.code}>
                               {curr.code} ({curr.symbol}) - {curr.name}
                             </SelectItem>

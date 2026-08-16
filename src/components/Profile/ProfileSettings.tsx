@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { UserSummary } from '@/types/dashboard'
-import { AVAILABLE_CURRENCIES } from '@/lib/constants/currencies'
+import { CURRENCY_OPTIONS } from '@/lib/constants/options'
 
 interface ProfileSettingsProps {
   user: UserSummary
@@ -89,7 +89,7 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
                   <SelectValue placeholder="Currency" />
                 </SelectTrigger>
                 <SelectContent>
-                  {AVAILABLE_CURRENCIES.map((c) => (
+                  {CURRENCY_OPTIONS.map((c) => (
                     <SelectItem key={c.code} value={c.code} className="text-xs">
                       {c.code} ({c.symbol})
                     </SelectItem>

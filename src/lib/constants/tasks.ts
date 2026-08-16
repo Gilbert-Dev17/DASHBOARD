@@ -1,28 +1,6 @@
-export const TASK_CATEGORIES = [
-  'routine',
-  'health',
-  'work',
-  'date',
-  'shopping',
-  'groceries',
-  'errands',
-  'education',
-  'finance',
-  'social',
-  'travel',
-  'home',
-  'maintenance',
-  'personal',
-  'hobbies',
-  'selfcare',
-  'family',
-  'pets',
-  'bills',
-  'appointments',
-  'school'
-] as const
+import { TASK_CATEGORY_OPTIONS } from './options';
 
-export type TaskCategory = (typeof TASK_CATEGORIES)[number]
+export type TaskCategory = (typeof TASK_CATEGORY_OPTIONS)[number];
 
 export const CATEGORY_LABELS: Record<TaskCategory, string> = {
   routine: 'Routine',
