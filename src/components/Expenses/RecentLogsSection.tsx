@@ -64,7 +64,7 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
                 <TimelineContent>
                   <div className="flex flex-col py-2 px-3 -ml-3 rounded-lg hover:bg-secondary/40 transition-colors">
                     <div className="flex justify-between items-start gap-4">
-                      <span className="font-medium text-sm leading-tight text-foreground/90 group-hover:text-foreground">{txn.title}</span>
+                      <span className="font-medium text-sm leading-tight text-foreground/90 group-hover:text-foreground">{txn.note}</span>
                       <span className={`tabular-nums font-mono shrink-0 ${colorClass}`}>
                         {formatSignedCurrency(signedAmount, txn.wallets?.currency, !isTransfer)}
                       </span>

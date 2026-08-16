@@ -35,7 +35,7 @@ export const transferSchema = z.object({
   note: noteField,
   date: z.date().optional(),
 }).refine((data) => data.fromAccountId !== data.toAccountId, {
-  message: 'Source and destination must be different accounts',
+  error: 'Source and destination must be different accounts',
   path: ['toAccountId'],
 })
 

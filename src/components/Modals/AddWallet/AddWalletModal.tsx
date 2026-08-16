@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Plus, Wallet} from 'lucide-react'
 import {
   ResponsiveDialog as Dialog,
@@ -49,6 +49,12 @@ export const AddWalletModal = () => {
       type: 'Debit',
     }
   })
+
+  useEffect(() => {
+    if (!isOpen) {
+      reset()
+    }
+  }, [isOpen, reset])
 
   const currentType = watch('type') as WalletType
   const currentName = watch('name')

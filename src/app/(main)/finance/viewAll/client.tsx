@@ -87,7 +87,7 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       result = result.filter(tx =>
-        tx.title?.toLowerCase().includes(q) ||
+        tx.note?.toLowerCase().includes(q) ||
         tx.expense_categories?.name?.toLowerCase().includes(q) ||
         new Date(tx.created_for_date || tx.created_at).toLocaleDateString().toLowerCase().includes(q)
       );
@@ -114,7 +114,7 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
             >
               <ArrowLeft size={14} className="mr-2 transition-transform duration-300 group-hover:-translate-x-1" />
             </Button>
-            <HeaderTitle title="All Transactions" desc="View and filter all your past logs and transactions." />
+            <HeaderTitle title="All Transactions" desc="" />
           </div>
 
           <CurrencySwitcher
@@ -267,7 +267,7 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
                         </TableCell>
 
                         <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate font-medium">
-                          {transaction.title || '-'}
+                          {transaction.note || '-'}
                         </TableCell>
 
                         <TableCell>

@@ -90,10 +90,10 @@ export interface Transaction {
     wallet_id: string; // UUID
     to_wallet_id?: string | null; // UUID
     category_id: string | null; // UUID
-    title: string;
+    note: string;
     amount: number;
     type: TransactionType;
-    transfer_fee: number;
+    transfer_fee: number | null;
     created_for_date: string; // YYYY-MM-DD
     created_at: string;
 }

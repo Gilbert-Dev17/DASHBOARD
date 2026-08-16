@@ -36,6 +36,8 @@ async function fetchWalletId(userId: string, accountId: string) {
         );
     }
 
+    console.log(data.transactions)
+
     return data as Wallets & { transactions: TransactionHistory[] }
 }
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { ArrowLeft, Wallet as WalletIcon, CreditCard, MoreHorizontal, Edit, Trash2 } from 'lucide-react';
+import { ArrowLeft, Wallet as WalletIcon, CreditCard, MoreHorizontal, Edit, Trash2, Scale } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { formatCurrency, formatSignedCurrency } from '@/utils/currency';
 import { useState, useEffect } from 'react';
@@ -20,6 +20,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { EditWalletModal } from '@/components/Modals/EditWallet/EditWalletModal';
 import { DeleteWalletModal } from '@/components/Modals/DeleteWallet/DeleteWalletModal';
+import { AdjustBalanceModal } from '@/components/Modals/AdjustBalance/AdjustBalanceModal';
 import PageComponent from '@/components/Shared/PageComponent';
 import { Wallets, TransactionHistory } from '@/types/expenses';
 import { getSignedAmount } from '@/utils/currency';
@@ -37,6 +38,7 @@ export function AccountStatement({accountData} : AccountStatementProps) {
   const itemsPerPage = 30;
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isAdjustModalOpen, setIsAdjustModalOpen] = useState(false);
   const router = useRouter();
 
   const [prevAccountId, setPrevAccountId] = useState(accountData?.id);
@@ -95,6 +97,10 @@ export function AccountStatement({accountData} : AccountStatementProps) {
               <DropdownMenuItem onClick={() => setIsEditModalOpen(true)} className="cursor-pointer">
                 <Edit className="mr-2 h-4 w-4" />
                 Edit Account
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => setIsAdjustModalOpen(true)} className="cursor-pointer">
+                <Scale className="mr-2 h-4 w-4" />
+                Adjust Balance
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => setIsDeleteModalOpen(true)} className="text-rose-500 focus:text-rose-500 cursor-pointer">
@@ -165,7 +171,7 @@ export function AccountStatement({accountData} : AccountStatementProps) {
                     <TimelineContent>
                       <div className="flex flex-col py-3 px-4 -ml-4 rounded-xl hover:bg-secondary/40 transition-colors group">
                         <div className="flex justify-between items-start gap-4">
-                          <span className="font-medium text-[15px] leading-tight text-foreground/90 group-hover:text-foreground">{txn.title}</span>
+                          <span className="font-medium text-[15px] leading-tight text-foreground/90 group-hover:text-foreground">{txn.note}</span>
                           <span className={`tabular-nums font-mono shrink-0 ${colorClass}`}>
                             {formatSignedCurrency(signedAmount, txn.wallets?.currency, !isTransfer)}
                           </span>
@@ -236,6 +242,11 @@ export function AccountStatement({accountData} : AccountStatementProps) {
         walletId={accountData.id}
         isOpen={isDeleteModalOpen}
         setIsOpen={setIsDeleteModalOpen}
+      />
+      <AdjustBalanceModal
+        wallet={accountData}
+        isOpen={isAdjustModalOpen}
+        setIsOpen={setIsAdjustModalOpen}
       />
     </div>
     </PageComponent>

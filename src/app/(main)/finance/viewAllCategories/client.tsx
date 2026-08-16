@@ -32,7 +32,7 @@ export function ViewAllCategoriesClient({ categories }: ViewAllCategoriesClientP
             >
               <ArrowLeft size={14} className="mr-2 transition-transform duration-300 group-hover:-translate-x-1" />
             </Button>
-            <HeaderTitle title="All Categories" desc="Manage and view all your custom expense categories." />
+            <HeaderTitle title="All Categories" desc="" />
           </div>
 
           <AddCategoryModal />
