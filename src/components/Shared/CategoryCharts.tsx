@@ -63,78 +63,74 @@ export function ChartPieDonutText({ categories, currency }: ChartPieDonutTextPro
   )
 
   return (
-    <section className="flex flex-col">
-      <div className="flex-1 pb-0 ">
-        <ChartContainer
-          config={chartConfig}
-          className="aspect-square max-h-62.5"
-        >
-          <PieChart>
-            <Pie
-                data={chartData}
-                dataKey="amount"
-                nameKey="category"
-                innerRadius={60}
-                strokeWidth={5}
-                cornerRadius={4}
-                paddingAngle={4}
-            >
-              <Label
-                content={({ viewBox }) => {
-                  if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+    <ChartContainer
+      config={chartConfig}
+      className="mx-auto aspect-auto! w-full h-62.5"
+    >
+      <PieChart>
+        <ChartTooltip
+            content={({ active, payload }: any) => {
+                if (active && payload && payload.length) {
+                    const data = payload[0].payload;
+                    const iconObj = data.icon ? AVAILABLE_ICONS.find((i) => i.name === data.icon) : null;
+                    const Icon = iconObj?.icon || HelpCircle;
                     return (
-                      <text
-                        x={viewBox.cx}
-                        y={viewBox.cy}
-                        textAnchor="middle"
-                        dominantBaseline="middle"
-                      >
-                        <tspan
-                          x={viewBox.cx}
-                          y={viewBox.cy}
-                          className="fill-foreground text-3xl font-mono"
-                        >
-                          {totalAmount.toLocaleString()}
-                        </tspan>
-                        {/* <tspan
-                          x={viewBox.cx}
-                          y={(viewBox.cy || 0) + 24}
-                          className="fill-muted-foreground"
-                        >
-                          Total
-                        </tspan> */}
-                      </text>
-                    )
-                  }
-                }}
-              />
-            </Pie>
-            <ChartTooltip
-                content={({ active, payload }: any) => {
-                    if (active && payload && payload.length) {
-                        const data = payload[0].payload;
-                        const iconObj = data.icon ? AVAILABLE_ICONS.find((i) => i.name === data.icon) : null;
-                        const Icon = iconObj?.icon || HelpCircle;
-                        return (
-                        <div className="bg-background/95 border border-border/50 p-3 rounded-lg shadow-xl backdrop-blur-sm flex items-center justify-between gap-4">
-                            <div className="flex items-center gap-2">
-                                <div className="w-6 h-6 rounded-full bg-secondary/30 flex items-center justify-center">
-                                    <Icon size={12} className="text-muted-foreground" />
-                                </div>
-                                <span className="text-xs font-medium text-foreground">{data.category}</span>
+                    <div className="bg-background/95 border border-border/50 p-3 rounded-lg shadow-xl backdrop-blur-sm flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-2">
+                            <div className="w-6 h-6 rounded-full bg-secondary/30 flex items-center justify-center">
+                                <Icon size={12} className="text-muted-foreground" />
                             </div>
-                            <span className="text-sm font-mono font-bold text-foreground">
-                                {formatCurrency(data.amount || 0, currency)}
-                            </span>
+                            <span className="text-xs font-medium text-foreground">{data.category}</span>
                         </div>
-                        )
-                    }
-                    return null
-                }}
-            />
-          </PieChart>
-        </ChartContainer>
-      </div>
-    </section>
+                        <span className="text-sm font-mono font-bold text-foreground">
+                            {formatCurrency(data.amount || 0, currency)}
+                        </span>
+                    </div>
+                    )
+                }
+                return null
+            }}
+        />
+        <Pie
+            data={chartData}
+            dataKey="amount"
+            nameKey="category"
+            innerRadius={60}
+            strokeWidth={5}
+            cornerRadius={4}
+            paddingAngle={4}
+        >
+          <Label
+            content={({ viewBox }) => {
+              if (viewBox && "cx" in viewBox && "cy" in viewBox) {
+                return (
+                  <text
+                    x={viewBox.cx}
+                    y={viewBox.cy}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                  >
+                    <tspan
+                      x={viewBox.cx}
+                      y={viewBox.cy}
+                      className="fill-foreground text-3xl font-mono"
+                    >
+                      {totalAmount.toLocaleString()}
+                    </tspan>
+                    {/* <tspan
+                      x={viewBox.cx}
+                      y={(viewBox.cy || 0) + 24}
+                      className="fill-muted-foreground"
+                    >
+                      Total
+                    </tspan> */}
+                  </text>
+                )
+              }
+            }}
+          />
+        </Pie>
+      </PieChart>
+    </ChartContainer>
   )
 }

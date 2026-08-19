@@ -32,7 +32,7 @@ export function ViewAllAccountsClient({ wallets }: ViewAllAccountsClientProps) {
             >
               <ArrowLeft size={14} className="transition-transform duration-300 group-hover:-translate-x-1" />
             </Button>
-            <HeaderTitle title="All Wallets" desc="Manage and view all your active wallets." />
+            <HeaderTitle title="All Wallets" desc="" />
           </div>
 
           <AddWalletModal />

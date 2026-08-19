@@ -20,7 +20,7 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
         <h2 id="logs-heading" className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">Transactions</h2>
         <Button variant="link" size="sm" className="group px-0 flex flex-row text-muted-foreground hover:text-foreground items-center gap-1" asChild>
           <Link href="/finance/viewAll">
-            View All <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
+            <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
         </Button>
       </header>

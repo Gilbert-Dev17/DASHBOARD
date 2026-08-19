@@ -49,7 +49,7 @@ interface ViewAllTransactionsProps {
 export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTransactionsProps) {
   const router = useRouter();
 
-  const [selectedFilter, setSelectedFilter] = useState('all');
+  const [selectedFilter, setSelectedFilter] = useState('day');
   const [typeFilter, setTypeFilter] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -102,7 +102,7 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
             >
               <ArrowLeft size={14} className="mr-2 transition-transform duration-300 group-hover:-translate-x-1" />
             </Button>
-            <HeaderTitle title="All Transactions" desc="" />
+            <HeaderTitle title="History" desc="" />
           </div>
 
           <CurrencySwitcher
@@ -269,7 +269,7 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
                         </TableCell>
 
                         <TableCell className='w-12 text-center'>
-                          ...
+                          <TransactionActionsMenu transaction={transaction} />
                         </TableCell>
                       </TableRow>
                     );

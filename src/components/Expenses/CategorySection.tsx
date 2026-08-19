@@ -6,14 +6,13 @@ import { TransactionHistory, CategorySummary } from '@/types/expenses'
 import { ExpenseCategory } from '@/types/database'
 import { formatCurrency } from '@/utils/currency'
 import { CategoryBadge } from '@/components/Shared/CategoryBadge'
-import { MoreHorizontal, Plus, ArrowRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { Button } from '../ui/button'
 import Link from 'next/link'
 import { Badge } from '../ui/badge'
 import { Tags } from 'lucide-react'
 import { Empty, EmptyContent, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
 import { Separator } from '@/components/ui/separator'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { useState } from 'react'
 
 interface CategorySectionProps {
@@ -54,8 +53,7 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
   ];
 
   return (
-    <>
-      <section className="border border-border rounded-md overflow-hidden shadow-vercel" aria-labelledby="categories-heading">
+      <section className="border border-border rounded-md shadow-vercel" aria-labelledby="categories-heading">
         {allCategories.length === 0 ? (
           <Empty className="py-8">
             <EmptyContent>
@@ -76,7 +74,7 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
                 <div aria-hidden="true" className="w-full max-w-60">
                   <ChartPieDonutText categories={chartCategories} currency={currency} />
 
-                  <table className="sr-only">
+                  <table className="sr-only hidden">
                     <caption>Category Breakdown</caption>
                     <thead>
                       <tr>
@@ -97,42 +95,28 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
               ) : (
                 <div className="flex flex-col items-center justify-center text-center py-8">
                   <Tags className="h-6 w-6 text-muted-foreground mb-2" />
-                  <p className="text-sm text-muted-foreground">No expenses yet</p>
+                  <p className="text-sm text-muted-foreground">No Expenses yet</p>
                 </div>
               )}
             </div>
 
-            {/* VERTICAL BORDER — partial height, centered */}
             <div className="flex items-center py-4">
-              <Separator orientation="vertical" className="h-64" />
+              <Separator orientation="vertical" className="h-full" />
             </div>
 
             <div className="flex-1 flex flex-col min-w-0">
               <div className="px-5 py-4 flex items-center justify-between">
                 <div>
                   <h2 id="categories-heading" className="text-base font-medium text-foreground">Categories</h2>
-
                 </div>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8 text-muted-foreground">
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem asChild>
-                      <AddCategoryModal />
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link href="/finance/viewAllCategories">
-                        View All
-                      </Link>
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                <Button asChild variant={'link'} className="group px-0 flex flex-row text-muted-foreground hover:text-foreground items-center gap-1">
+                  <Link href='/finance/viewAllCategories'>
+                    <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
+                  </Link>
+                </Button>
               </div>
 
-              <Separator orientation="horizontal" className='size-20'/>
+              <Separator orientation="horizontal" className="w-full" />
 
               {/* Stats rows (mapped) */}
               <section className="flex flex-col gap-2 py-3">
@@ -147,7 +131,7 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
               <Separator orientation="horizontal" />
 
               {/* Categories badges row */}
-              <div className="px-5 py-3 flex flex-wrap gap-1.5">
+              <div className="px-5 py-3 ">
                 {(() => {
                   const sortedCategories = [...allCategories].sort((a, b) => {
                     const totalA = categoryMap.get(a.id)?.total || 0;
@@ -155,11 +139,11 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
                     return totalB - totalA;
                   });
 
-                  const visibleCategories = sortedCategories.slice(0, 5);
-                  const hiddenCount = sortedCategories.length - 5;
+                  const visibleCategories = sortedCategories.slice(0, 10);
+                  const hiddenCount = sortedCategories.length - 10;
 
                   return (
-                    <>
+                    <div className="flex flex-wrap gap-1.5">
                       {visibleCategories.map(cat => (
                         <CategoryBadge
                           key={cat.id}
@@ -174,16 +158,15 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
                           +{hiddenCount} more
                         </Badge>
                       )}
-                    </>
+                    </div>
                   )
                 })()}
               </div>
-
 
             </div>
           </div>
         )}
       </section>
-    </>
+
   )
 }

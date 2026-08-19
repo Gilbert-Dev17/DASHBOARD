@@ -248,7 +248,7 @@ export const QuickAddModal = ({ enableShortcut = true }: { enableShortcut?: bool
           </div>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="sm:max-w-2xl rounded-md">
         <DialogHeader>
           <DialogTitle className="text-base font-semibold">Quick Add</DialogTitle>
           <DialogDescription>
@@ -269,7 +269,7 @@ export const QuickAddModal = ({ enableShortcut = true }: { enableShortcut?: bool
             onClick={handleClick}
             onKeyDown={handleKeyDown}
             placeholder={`Buy groceries @errands 10:00\n  Get milk\n  Get bread\nFinish report @work 3:00pm\nWalk the dog @pets`}
-            className="w-full min-h-50 max-h-80 p-4 rounded-lg border bg-transparent text-sm leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground/40"
+            className="w-full min-h-50 max-h-80 p-4 rounded-md border bg-transparent text-sm leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground/40"
             spellCheck={false}
             autoFocus
           />

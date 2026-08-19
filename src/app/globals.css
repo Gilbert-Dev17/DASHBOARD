@@ -11,6 +11,15 @@
 @utility font-pixel-triangle { font-family: var(--font-geist-pixel); font-variation-settings: "ELSH" 60; }
 @utility font-pixel-line     { font-family: var(--font-geist-pixel); font-variation-settings: "ELSH" 80; }
 
+/* Geist Pixel — loaded via CSS @font-face (avoids next/font/local issues) */
+@font-face {
+  font-family: 'Geist Pixel';
+  src: url('/fonts/GeistPixel-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* * {
   border: 1px solid red;
 } */

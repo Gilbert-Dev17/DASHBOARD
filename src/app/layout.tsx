@@ -30,6 +30,7 @@ export const geistPixel = Geist_Pixel({
   variable: '--font-geist-pixel',
   display: 'swap',
   adjustFontFallback: false,
+  fallback: ['system-ui', 'sans-serif'],
 });
 
 export const metadata: Metadata = {

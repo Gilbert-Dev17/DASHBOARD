@@ -1,5 +1,4 @@
 export const TIME_FILTERS = [
-  { name: 'All', value: 'all' },
   { name: 'Day', value: 'day' },
   { name: 'Week', value: 'week' },
   { name: 'Month', value: 'month' },

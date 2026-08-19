@@ -38,7 +38,13 @@ export function WalletGrid({ wallets, transactions = [], isLoading = false }: Wa
           Accounts
         </h2>
         <div className="flex items-center gap-2">
-          {wallets.length > 0 && <AddWalletModal />}
+          {wallets.length > 0 && (
+            <Button asChild variant={'link'} className="group px-0 flex flex-row text-muted-foreground hover:text-foreground items-center gap-1">
+              <Link href='/finance/viewAllAccounts'>
+                <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
+              </Link>
+            </Button>
+          )}
         </div>
       </div>
 
@@ -69,13 +75,6 @@ export function WalletGrid({ wallets, transactions = [], isLoading = false }: Wa
                 <WalletCard wallet={wallet} />
               </Link>
             ))}
-          </div>
-          <div className='flex flex-row justify-end items-center mt-4'>
-            <Button asChild variant={'link'} className="group px-0 flex flex-row text-muted-foreground hover:text-foreground items-center gap-1">
-              <Link href='/finance/viewAllAccounts'>
-                View All<ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
-              </Link>
-            </Button>
           </div>
         </div>
       )}

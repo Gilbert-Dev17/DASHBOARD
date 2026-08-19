@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import { Trash2, Undo2 } from 'lucide-react'
 import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { toast } from 'sonner'
@@ -12,12 +13,17 @@ const UNDO_DURATION = 5000
 interface DeleteTransactionItemProps {
   transaction: TransactionHistory
   onDeleted?: () => void
+  onClose?: () => void
 }
 
-export const DeleteTransactionItem = ({ transaction, onDeleted }: DeleteTransactionItemProps) => {
+export const DeleteTransactionItem = ({ transaction, onDeleted, onClose }: DeleteTransactionItemProps) => {
+  const [isPending, setIsPending] = useState(false)
 
-  const handleDelete = (e: React.MouseEvent) => {
+  const handleDelete = async (e: React.MouseEvent) => {
     e.preventDefault()
+    if (isPending) return
+
+    setIsPending(true)
     onDeleted?.()
 
     // 1. Dispatch custom event for optimistic UI removal
@@ -50,18 +56,26 @@ export const DeleteTransactionItem = ({ transaction, onDeleted }: DeleteTransact
         onClick: () => {
           cancelled = true
           clearTimeout(timer)
+          setIsPending(false)
           window.dispatchEvent(new CustomEvent('optimistic-transaction-restore', {
             detail: { transaction }
           }))
         },
       },
     })
+
+    // Close dropdown after deletion
+    onClose?.()
   }
 
   return (
-    <DropdownMenuItem onClick={handleDelete} className="text-rose-500 focus:text-rose-500 cursor-pointer w-full">
+    <DropdownMenuItem
+      onClick={handleDelete}
+      className="text-rose-500 focus:text-rose-500 cursor-pointer w-full"
+      disabled={isPending}
+    >
       <Trash2 className="mr-2 h-4 w-4" />
-      Delete Transaction
+      {isPending ? 'Deleting...' : 'Delete Transaction'}
     </DropdownMenuItem>
   )
 }

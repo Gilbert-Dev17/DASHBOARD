@@ -23,16 +23,16 @@ export function useRealTimeSync() {
         setSynced();
       }, 1500);
     }
+    const channelId = `dashboard-changes-${crypto.randomUUID()}`
 
     const channel = supabase
-      .channel('dashboard-changes')
+      .channel(channelId)
       // Profiles Table
       .on('postgres_changes', { event: '*', schema: 'public', table: 'profiles' }, handleSync)
       // Schedule & Home Tables
       .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, handleSync)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'subtasks' }, handleSync)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'daily_notes' }, handleSync)
-      // Finance Tables
       .on('postgres_changes', { event: '*', schema: 'public', table: 'transactions' }, handleSync)
       .on('postgres_changes', {event: '*', schema: 'public', table: 'expense_categories'}, handleSync)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'wallets' }, handleSync)
