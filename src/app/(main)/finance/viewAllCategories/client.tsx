@@ -1,13 +1,12 @@
 'use client'
 
-import { ArrowLeft, Tag, HelpCircle } from 'lucide-react'
+import { Tag, HelpCircle } from 'lucide-react'
 import PageComponent from '@/components/Shared/PageComponent'
-import { Button } from '@/components/ui/button'
+import { PageHeader } from '@/components/Shared/PageHeader'
 import { Card, CardContent } from '@/components/ui/card'
 import { AVAILABLE_ICONS } from '@/lib/constants/categories'
 import type { CategoryWithTotal } from '@/types/expenses'
 import { formatCurrency } from '@/utils/currency'
-import { HeaderTitle } from '@/components/Shared/HeaderTitle'
 import { useRouter } from 'next/navigation'
 
 import { AddCategoryModal } from '@/components/Modals/AddCategory/AddCategoryModal'
@@ -21,23 +20,9 @@ export function ViewAllCategoriesClient({ categories }: ViewAllCategoriesClientP
 
   return (
     <PageComponent>
-      <section className='mt-5'>
-        <header className="flex flex-col md:flex-row md:items-end justify-between items-start gap-6 mb-12">
-          <div className="flex flex-row items-center gap-2">
-             <Button
-              variant="link"
-              size="icon"
-              className="group h-8 px-2 text-muted-foreground hover:text-foreground mb-2 w-fit"
-              onClick={() => router.back()}
-            >
-              <ArrowLeft size={14} className="mr-2 transition-transform duration-300 group-hover:-translate-x-1" />
-            </Button>
-            <HeaderTitle title="All Categories" desc="" />
-          </div>
-
+        <PageHeader title="All Categories">
           <AddCategoryModal />
-        </header>
-
+        </PageHeader>
 
         {categories.length === 0 ? (
           <div className="flex w-full flex-col items-center justify-center rounded-xl border border-dashed py-12 bg-card/30">
@@ -87,7 +72,6 @@ export function ViewAllCategoriesClient({ categories }: ViewAllCategoriesClientP
             ))}
           </div>
         )}
-      </section>
     </PageComponent>
   )
 }

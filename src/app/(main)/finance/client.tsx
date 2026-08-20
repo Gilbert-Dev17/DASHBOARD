@@ -8,7 +8,6 @@ import { SummaryExpense, IncomeExpenseCard } from '@/components/Expenses/Summary
 import { CategorySection } from '@/components/Expenses/CategorySection'
 import { RecentLogsSection } from '@/components/Expenses/RecentLogsSection'
 import { WalletSnapshot, ExpenseCategory } from '@/types/database'
-import { HeaderTitle } from '@/components/Shared/HeaderTitle'
 import { CurrencySwitcher } from '@/components/Shared/CurrencySwitcher'
 import { useCurrencyFilter } from '@/hooks/useCurrencyFilter'
 
@@ -26,13 +25,13 @@ export default function ExpenseTrackerPage({ user, wallets, transactions, histor
 
   return (
     <PageComponent>
-      <div className="flex justify-end mb-4">
+      {/* <div className="flex justify-end mb-4">
         <CurrencySwitcher
           currencies={availableCurrencies}
           activeCurrency={activeCurrency}
           onCurrencyChange={setActiveCurrency}
         />
-      </div>
+      </div> */}
 
       <div className="flex flex-col gap-4">
         <SummaryExpense
@@ -40,6 +39,8 @@ export default function ExpenseTrackerPage({ user, wallets, transactions, histor
           historicalSnapshots={historicalSnapshots}
           transactions={filteredTransactions}
           activeCurrency={activeCurrency}
+          availableCurrencies={availableCurrencies}
+          setActiveCurrency={setActiveCurrency}
         />
 
         <div className="block lg:hidden">

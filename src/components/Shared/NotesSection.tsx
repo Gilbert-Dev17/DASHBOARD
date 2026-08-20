@@ -63,7 +63,6 @@ export const NotesSection = ({ note, dateStr }: NotesProps) => {
           if (getValues('content') === variables.content) {
             reset({ content: variables.content })
           }
-          router.refresh()
       },
       onError: (error: Error) => {
           toast.error(error.message || "Failed to save note")
@@ -72,7 +71,6 @@ export const NotesSection = ({ note, dateStr }: NotesProps) => {
   })
 
   const isPendingRef = useRef(isPending)
-  isPendingRef.current = isPending
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 

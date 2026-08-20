@@ -10,12 +10,15 @@ import { Area, AreaChart, XAxis, YAxis } from 'recharts';
 import { ChartContainer, ChartTooltip, ChartTooltipContent, type ChartConfig } from '@/components/ui/chart';
 import { buildNetWorthTrend, getTrendDirection, TREND_COLORS } from '@/lib/finance/net-worth-trend';
 import { Separator } from '../ui/separator';
+import { CurrencySwitcher } from '@/components/Shared/CurrencySwitcher'
 
 interface SummaryExpenseProps {
   wallets: WalletSummary[];
   historicalSnapshots?: WalletHistory[];
   transactions: TransactionHistory[];
   activeCurrency: string;
+  setActiveCurrency: (currency: string) => void;
+  availableCurrencies: string[]
 }
 
 export const SummaryExpense = ({
@@ -23,6 +26,8 @@ export const SummaryExpense = ({
   historicalSnapshots = [],
   transactions = [],
   activeCurrency,
+  setActiveCurrency,
+  availableCurrencies
 }: SummaryExpenseProps) => {
   const totalsByCurrency = calculateFinancialTotals(wallets, historicalSnapshots, transactions, activeCurrency);
   const currencyBlocks = Object.values(totalsByCurrency);
@@ -62,36 +67,44 @@ export const SummaryExpense = ({
             className="flex flex-col md:flex-col items-stretch p- shadow-vercel rounded-md overflow-hidden bg-transparent"
           >
             <div className="flex flex-col gap-4 p-4 ml-4 shrink-0 min-w-70">
+              <div className='flex flex-row items-center justify-between'>
+                <div className="flex gap-5 items-baseline">
+                  <div
+                    className={`text-3xl md:text-4xl font-mono tracking-tight tabular-nums flex items-baseline gap-1 ${
+                      isNegative ? 'text-rose-400' : 'text-foreground'
+                    }`}
+                  >
+                    {nwDollars}
+                    {nwCents && <span className="text-xl md:text-2xl text-muted-foreground">.{nwCents}</span>}
+                  </div>
 
-              <div className="flex gap-5 items-baseline">
-                <div
-                  className={`text-3xl md:text-4xl font-mono tracking-tight tabular-nums flex items-baseline gap-1 ${
-                    isNegative ? 'text-rose-400' : 'text-foreground'
-                  }`}
-                >
-                  {nwDollars}
-                  {nwCents && <span className="text-xl md:text-2xl text-muted-foreground">.{nwCents}</span>}
+                  <p className="text-xs lg:text-sm text-muted-foreground font-medium max-w-sm leading-relaxed">
+                    {trendPercentage === null ? (
+                      'Waiting for a day of data to calculate your first trend.'
+                    ) : direction === 'up' ? (
+                      <span className="inline-flex items-center flex-wrap gap-x-1.5">
+                        <span className="flex items-center gap-1.5 text-xs font-medium text-emerald-500">
+                          <TrendingUp size={12} /> {trendPercentage}%
+                        </span>
+                        From last month&apos;s snapshots.
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center flex-wrap gap-x-1.5">
+                        <span className="flex items-center gap-1.5 text-xs font-medium text-rose-500">
+                          <TrendingDown size={12} /> {Math.abs(trendPercentage)}%
+                        </span>
+                        From last month&apos;s snapshots.
+                      </span>
+                    )}
+                  </p>
                 </div>
 
-                <p className="text-xs lg:text-sm text-muted-foreground font-medium max-w-sm leading-relaxed">
-                  {trendPercentage === null ? (
-                    'Waiting for a day of data to calculate your first trend.'
-                  ) : direction === 'up' ? (
-                    <span className="inline-flex items-center flex-wrap gap-x-1.5">
-                      <span className="flex items-center gap-1.5 text-xs font-medium text-emerald-500">
-                        <TrendingUp size={12} /> {trendPercentage}%
-                      </span>
-                      From last month&apos;s snapshots.
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center flex-wrap gap-x-1.5">
-                      <span className="flex items-center gap-1.5 text-xs font-medium text-rose-500">
-                        <TrendingDown size={12} /> {Math.abs(trendPercentage)}%
-                      </span>
-                      From last month&apos;s snapshots.
-                    </span>
-                  )}
-                </p>
+                <CurrencySwitcher
+                    currencies={availableCurrencies}
+                    activeCurrency={activeCurrency}
+                    onCurrencyChange={setActiveCurrency}
+                  />
+
               </div>
             </div>
 

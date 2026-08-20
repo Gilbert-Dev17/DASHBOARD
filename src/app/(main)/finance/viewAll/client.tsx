@@ -1,14 +1,14 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ArrowLeft, Search } from 'lucide-react';
+import { Search } from 'lucide-react';
 import PageComponent from '@/components/Shared/PageComponent';
-import { HeaderTitle } from '@/components/Shared/HeaderTitle';
-import { Button } from '@/components/ui/button';
+import { PageHeader } from '@/components/Shared/PageHeader';
 import { getSignedAmount, formatSignedCurrency } from '@/utils/currency';
 import { TransactionHistory } from '@/types/expenses';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import {
   Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select';
@@ -92,47 +92,35 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
 
   return (
     <PageComponent>
-        <header className="flex flex-col md:flex-row md:items-end justify-between items-start gap-6 mb-8">
-          <div className="flex flex-row items-center">
-             <Button
-              variant="link"
-              size="icon"
-              className="group h-8 px-2 text-muted-foreground hover:text-foreground mb-2 w-fit"
-              onClick={() => router.back()}
-            >
-              <ArrowLeft size={14} className="mr-2 transition-transform duration-300 group-hover:-translate-x-1" />
-            </Button>
-            <HeaderTitle title="History" desc="" />
-          </div>
-
+        <PageHeader title="History">
           <CurrencySwitcher
             currencies={availableCurrencies}
             activeCurrency={activeCurrency}
             onCurrencyChange={setActiveCurrency}
           />
-        </header>
+        </PageHeader>
 
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-4 mb-4">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full lg:w-auto">
-            <div className="relative w-full items-center sm:w-64">
+            <div className="relative w-full items-center sm:w-64 rounded-none">
               <Search className="absolute left-2.5 top-2 h-4 w-4 text-muted-foreground" />
               <Input
                 type="text"
                 placeholder="Filter transactions..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-8 bg-card border-border/50 focus-visible:ring-1"
+                className="pl-8 bg-card border-border/50 focus-visible:ring-1 rounded-none"
               />
             </div>
 
             <Select value={typeFilter} onValueChange={setTypeFilter}>
-              <SelectTrigger className="w-full sm:w-35 bg-card border-border/50">
+              <SelectTrigger className="w-full sm:w-35 bg-card border-border/50 rounded-none">
                 <SelectValue placeholder="Type" />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="bg-card border-border/50 rounded-none">
                 <SelectGroup>
                   {TRANSACTION_TYPE_OPTIONS.map((opt) => (
-                    <SelectItem key={opt.value} value={opt.value}>{opt.label}</SelectItem>
+                    <SelectItem key={opt.value} value={opt.value} className='rounded-none'>{opt.label}</SelectItem>
                   ))}
                 </SelectGroup>
               </SelectContent>
@@ -158,17 +146,17 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
           </Tabs>
         </div>
 
-        <div className="rounded-md border border-border/50 bg-card/50 overflow-hidden shadow-sm">
+        <div className="rounded-none border border-border/50 bg-card/50 overflow-hidden shadow-sm">
           <Table>
             <TableHeader className="bg-muted/30 hover:bg-muted/30">
               <TableRow className="hover:bg-transparent">
                 <TableHead className="w-12 text-center"></TableHead>
-                <TableHead className="text-xs font-semibold text-muted-foreground">Date</TableHead>
-                <TableHead className="text-xs font-semibold text-muted-foreground">Note</TableHead>
-                <TableHead className="text-xs font-semibold text-muted-foreground">Category</TableHead>
-                <TableHead className="text-xs font-semibold text-muted-foreground">Wallet</TableHead>
-                <TableHead className="text-xs font-semibold text-muted-foreground">Amount</TableHead>
-                <TableHead className="w-12 font-semibold text-muted-foreground">Action</TableHead>
+                <TableHead className="text-xs text-muted-foreground">Date</TableHead>
+                <TableHead className="text-xs text-muted-foreground">Note</TableHead>
+                <TableHead className="text-xs text-muted-foreground">Category</TableHead>
+                <TableHead className="text-xs text-muted-foreground">Wallet</TableHead>
+                <TableHead className="text-xs text-muted-foreground">Amount</TableHead>
+                <TableHead className="w-12 text-xs text-muted-foreground">Action</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -206,7 +194,7 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
                           <TableCell colSpan={5} className="text-xs font-semibold uppercase tracking-widest text-muted-foreground py-2 pl-4">
                             {groupKey}
                           </TableCell>
-                          <TableCell className={`text-right text-xs font-bold tabular-nums py-2 pr-4 ${groupTotal > 0 ? 'text-emerald-500' : groupTotal < 0 ? 'text-rose-500' : 'text-muted-foreground'}`}>
+                          <TableCell className={`text-right text-xs font-mono tabular-nums py-2 pr-4 ${groupTotal > 0 ? 'text-emerald-500' : groupTotal < 0 ? 'text-rose-500' : 'text-muted-foreground'}`}>
                             {formatSignedCurrency(groupTotal, activeCurrency, true)}
                           </TableCell>
                         </TableRow>
@@ -226,7 +214,6 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
 
                     const amountColor = isTransfer ? 'text-muted-foreground' : isPositive ? 'text-emerald-500' : 'text-rose-500';
 
-                    // Render Wallet Name
                     const walletName = wallets.find(w => w.id === transaction.wallet_id)?.name || 'Unknown Wallet';
 
                     rows.push(
@@ -239,7 +226,7 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
                           {dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </TableCell>
 
-                        <TableCell className="text-sm text-muted-foreground max-w-[200px] truncate font-medium">
+                        <TableCell className="text-sm text-muted-foreground max-w-50 truncate font-medium">
                           {transaction.note || '-'}
                         </TableCell>
 
@@ -264,7 +251,7 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
                           {walletName}
                         </TableCell>
 
-                        <TableCell className={`text-xs tabular-nums font-semibold ${amountColor}`}>
+                        <TableCell className={`text-xs tabular-nums font-mono ${amountColor}`}>
                           {formatSignedCurrency(signedAmount, activeCurrency, !isTransfer)}
                         </TableCell>
 
