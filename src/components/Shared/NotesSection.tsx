@@ -1,3 +1,5 @@
+'use client'
+
 import { Notes } from '@/types/dashboard'
 import { Button } from '../ui/button'
 import { Spinner } from '../ui/spinner'
@@ -9,12 +11,13 @@ import {z} from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { upsertDailyNote } from '@/lib/actions/daily-notes'
-import { useState } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { format, parseISO } from 'date-fns'
 import { Save, FileText } from 'lucide-react'
 import { Drawer, DrawerContent, DrawerTrigger, DrawerClose, DrawerHeader, DrawerFooter } from '@/components/ui/drawer'
 import { Empty, EmptyContent, EmptyMedia, EmptyDescription } from '@/components/ui/empty'
+import { AUTOSAVE_DELAY } from '@/lib/constants/options'
 
 interface NotesProps {
     note: Notes | null;
@@ -33,7 +36,7 @@ export const NotesSection = ({ note, dateStr }: NotesProps) => {
   const router = useRouter()
   const [optimisticContent, setOptimisticContent] = useState(note?.content || '')
 
-  const { handleSubmit, control, reset, formState: { isDirty } } = useForm<UpdateDailyNotes>({
+  const { handleSubmit, control, reset, getValues, formState: { isDirty } } = useForm<UpdateDailyNotes>({
       resolver: zodResolver(UpdateNotesSchema) as any,
       defaultValues: {
           content: note?.content || ''
@@ -43,8 +46,10 @@ export const NotesSection = ({ note, dateStr }: NotesProps) => {
   const [prevNote, setPrevNote] = useState(note)
   if (note !== prevNote) {
     setPrevNote(note)
-    reset({ content: note?.content || '' })
-    setOptimisticContent(note?.content || '')
+    if (!isDirty) {
+      reset({ content: note?.content || '' })
+      setOptimisticContent(note?.content || '')
+    }
   }
 
   const { mutate: saveNote, isPending } = useMutation({
@@ -53,9 +58,11 @@ export const NotesSection = ({ note, dateStr }: NotesProps) => {
           if (!result.success) throw new Error(result.message)
           return result
       },
-      onSuccess: () => {
+      onSuccess: (_result, variables) => {
           toast.success("Note saved successfully")
-          reset(undefined, { keepValues: true })
+          if (getValues('content') === variables.content) {
+            reset({ content: variables.content })
+          }
           router.refresh()
       },
       onError: (error: Error) => {
@@ -64,7 +71,53 @@ export const NotesSection = ({ note, dateStr }: NotesProps) => {
       }
   })
 
+  const isPendingRef = useRef(isPending)
+  isPendingRef.current = isPending
+
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const triggerAutoSave = useCallback(() => {
+    if (isPendingRef.current) {
+      debounceRef.current = setTimeout(triggerAutoSave, AUTOSAVE_DELAY)
+      return
+    }
+    handleSubmit((data) => {
+      setOptimisticContent(data.content || '')
+      saveNote(data)
+    })()
+  }, [handleSubmit, saveNote])
+
+  const scheduleSave = useCallback(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current)
+    debounceRef.current = setTimeout(triggerAutoSave, AUTOSAVE_DELAY)
+  }, [triggerAutoSave])
+
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current)
+    }
+  }, [])
+
+  const handleOpenChange = useCallback((open: boolean) => {
+    setIsOpen(open)
+    if (!open) {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current)
+        debounceRef.current = null
+      }
+      const currentValues = getValues()
+      if (isDirty && !isPendingRef.current) {
+        setOptimisticContent(currentValues.content || '')
+        saveNote(currentValues)
+      }
+    }
+  }, [getValues, isDirty, saveNote])
+
   const onSubmit = (data: UpdateDailyNotes) => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current)
+        debounceRef.current = null
+      }
       setOptimisticContent(data.content || '')
       saveNote(data)
   }
@@ -76,7 +129,6 @@ export const NotesSection = ({ note, dateStr }: NotesProps) => {
       type="button"
       className="w-full text-left shrink-0 group cursor-pointer rounded-md border border-border bg-card hover:bg-secondary/40 transition-colors overflow-hidden"
     >
-      {/* Header row */}
       <div className="flex items-center justify-between px-4 pt-4 pb-3 border-b border-border">
         <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
           Daily Journal
@@ -86,7 +138,6 @@ export const NotesSection = ({ note, dateStr }: NotesProps) => {
         </span>
       </div>
 
-      {/* Preview content */}
       <div className="px-4 py-3">
         {hasContent ? (
           <p className="text-xs leading-relaxed line-clamp-2 font-mono text-foreground/60">
@@ -148,7 +199,6 @@ export const NotesSection = ({ note, dateStr }: NotesProps) => {
         </div>
       </div>
 
-      {/* Textarea — full height, flush, no border */}
       <div className="flex-1 min-h-0 relative">
         <Controller
           control={control}
@@ -157,6 +207,11 @@ export const NotesSection = ({ note, dateStr }: NotesProps) => {
             <textarea
               {...field}
               value={field.value || ''}
+              onChange={(e) => {
+                field.onChange(e)
+                scheduleSave()
+              }}
+              aria-label={`Daily journal entry for ${dateStr ? format(parseISO(dateStr), 'EEEE, MMMM do') : 'today'}`}
               className="absolute inset-0 w-full h-full resize-none px-5 py-4 text-sm bg-transparent text-foreground/80 placeholder:text-muted-foreground/30 outline-none font-mono"
               placeholder="Capture your thoughts, plans, or reflections for the day..."
               spellCheck={true}
@@ -169,15 +224,21 @@ export const NotesSection = ({ note, dateStr }: NotesProps) => {
 
       {/* Footer meta */}
       <div className="shrink-0 flex items-center justify-between px-5 py-3 border-t border-border bg-muted/20">
-        <span className={`font-mono text-[11px] uppercase tracking-wider ${isDirty ? 'text-destructive' : 'text-muted-foreground/50'}`}>
-          {isDirty ? 'Unsaved changes' : 'All changes saved'}
+        <span className={`font-mono text-[11px] uppercase tracking-wider transition-colors ${
+          isPending
+            ? 'text-muted-foreground'
+            : isDirty
+              ? 'text-destructive'
+              : 'text-muted-foreground/50'
+        }`}>
+          {isPending ? <span className='flex gap-4 items-center'>Saving <Spinner /></span> : isDirty ? <span>Unsaved changes</span> : <span>All changes saved</span>}
         </span>
       </div>
     </form>
   )
 
   return (
-    <Drawer open={isOpen} onOpenChange={setIsOpen} swipeDirection="right">
+    <Drawer open={isOpen} onOpenChange={handleOpenChange} swipeDirection="right">
       <DrawerTrigger render={previewUi} />
       <DrawerContent className="w-full sm:w-115 rounded-md">
         {editorUi}

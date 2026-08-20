@@ -1,3 +1,5 @@
+export const AUTOSAVE_DELAY = 5000
+
 export const TIME_FILTERS = [
   { name: 'Day', value: 'day' },
   { name: 'Week', value: 'week' },
