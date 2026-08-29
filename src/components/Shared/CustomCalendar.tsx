@@ -6,16 +6,56 @@ import { format, parseISO } from 'date-fns'
 import { Card } from '@/components/ui/card'
 import { Calendar } from '@/components/ui/calendar'
 import { cn } from '@/lib/utils'
+import { TaskWithSubtasks, Notes } from '@/types/dashboard'
+import { FullCalendar } from '../Schedule/FullCalendar'
 
 interface CustomCalendarProps {
   initialDate?: Date;
   datesWithTasks?: { date: string; count: number }[];
   startTransition?: TransitionStartFunction;
   hideNavigation?: boolean;
+  CustomC?: boolean;
+  monthTasks?: Record<string, TaskWithSubtasks[]>;
+  userId?: string;
+  selectedDate?: string;
+  initialTasks?: TaskWithSubtasks[];
+  note?: Notes | null;
+  autoOpenDrawer?: boolean;
+  isPending?: boolean;
 }
 
-export const CustomCalendar = ({ initialDate = new Date(), datesWithTasks = [], startTransition, hideNavigation = false }: CustomCalendarProps) => {
+export const CustomCalendar = ({ 
+  initialDate = new Date(), 
+  datesWithTasks = [], 
+  startTransition, 
+  hideNavigation = false,
+  CustomC = false,
+  monthTasks,
+  userId,
+  selectedDate,
+  initialTasks,
+  note,
+  autoOpenDrawer,
+  isPending
+}: CustomCalendarProps) => {
   const router = useRouter()
+
+  if (CustomC) {
+    return (
+      <FullCalendar
+        userId={userId!}
+        initialDate={initialDate}
+        monthTasks={monthTasks || {}}
+        datesWithTasks={datesWithTasks}
+        startTransition={startTransition}
+        selectedDate={selectedDate}
+        initialTasks={initialTasks}
+        note={note}
+        autoOpenDrawer={autoOpenDrawer}
+        isPending={isPending}
+      />
+    )
+  }
 
   const handleSelect = (date: Date | undefined) => {
     if (!date) return

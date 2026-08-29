@@ -3,7 +3,7 @@
 import { Notes } from '@/types/dashboard'
 import { Button } from '../ui/button'
 import { Spinner } from '../ui/spinner'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -11,8 +11,8 @@ import {z} from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 
 import { upsertDailyNote } from '@/lib/actions/daily-notes'
+import { getDailyNotes } from '@/app/(main)/schedule/action'
 import { useState, useRef, useCallback, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
 import { format, parseISO } from 'date-fns'
 import { Save, FileText } from 'lucide-react'
 import { Drawer, DrawerContent, DrawerTrigger, DrawerClose, DrawerHeader, DrawerFooter } from '@/components/ui/drawer'
@@ -20,8 +20,9 @@ import { Empty, EmptyContent, EmptyMedia, EmptyDescription } from '@/components/
 import { AUTOSAVE_DELAY } from '@/lib/constants/options'
 
 interface NotesProps {
-    note: Notes | null;
+    note?: Notes | null;
     dateStr: string;
+    userId: string;
 }
 
 const UpdateNotesSchema = z.object({
@@ -30,27 +31,37 @@ const UpdateNotesSchema = z.object({
 
 type UpdateDailyNotes = z.infer<typeof UpdateNotesSchema>
 
-export const NotesSection = ({ note, dateStr }: NotesProps) => {
+export const NotesSection = ({ note, dateStr, userId }: NotesProps) => {
   const [isOpen, setIsOpen] = useState(false)
 
-  const router = useRouter()
-  const [optimisticContent, setOptimisticContent] = useState(note?.content || '')
+  const { data: fetchedNote, isLoading } = useQuery({
+    queryKey: ['dailyNote', userId, dateStr],
+    queryFn: async () => {
+      if (!dateStr) return null;
+      const res = await getDailyNotes(userId, dateStr)
+      return res || null
+    },
+    enabled: !!dateStr,
+    initialData: note !== undefined ? note : undefined
+  })
+
+  const currentNote = fetchedNote
+
+  const [optimisticContent, setOptimisticContent] = useState(currentNote?.content || '')
 
   const { handleSubmit, control, reset, getValues, formState: { isDirty } } = useForm<UpdateDailyNotes>({
       resolver: zodResolver(UpdateNotesSchema) as any,
       defaultValues: {
-          content: note?.content || ''
+          content: currentNote?.content || ''
       }
   })
 
-  const [prevNote, setPrevNote] = useState(note)
-  if (note !== prevNote) {
-    setPrevNote(note)
+  useEffect(() => {
     if (!isDirty) {
-      reset({ content: note?.content || '' })
-      setOptimisticContent(note?.content || '')
+      reset({ content: currentNote?.content || '' })
+      setOptimisticContent(currentNote?.content || '')
     }
-  }
+  }, [currentNote, isDirty, reset])
 
   const { mutate: saveNote, isPending } = useMutation({
       mutationFn: async (data: UpdateDailyNotes) => {
@@ -66,7 +77,7 @@ export const NotesSection = ({ note, dateStr }: NotesProps) => {
       },
       onError: (error: Error) => {
           toast.error(error.message || "Failed to save note")
-          setOptimisticContent(note?.content || '')
+          setOptimisticContent(currentNote?.content || '')
       }
   })
 
@@ -137,7 +148,11 @@ export const NotesSection = ({ note, dateStr }: NotesProps) => {
       </div>
 
       <div className="px-4 py-3">
-        {hasContent ? (
+        {isLoading ? (
+          <div className="py-6 flex justify-center">
+            <Spinner className="w-5 h-5 text-primary animate-spin" />
+          </div>
+        ) : hasContent ? (
           <p className="text-xs leading-relaxed line-clamp-2 font-mono text-foreground/60">
             {optimisticContent}
           </p>

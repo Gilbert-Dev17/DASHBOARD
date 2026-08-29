@@ -13,6 +13,9 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 
 // Mocking dependencies
 vi.mock('@/lib/actions/daily-notes')
+vi.mock('@/app/(main)/schedule/action', () => ({
+  getDailyNotes: vi.fn().mockResolvedValue(null)
+}))
 vi.mock('next/navigation', () => ({
   useRouter: () => ({ refresh: vi.fn() })
 }))
@@ -49,7 +52,7 @@ describe('NotesSection autosave', () => {
   it('debounces: does not save until 1500ms after the last keystroke', async () => {
     render(
       <QueryClientProvider client={queryClient}>
-        <NotesSection note={null} dateStr="2026-08-20" />
+        <NotesSection note={null} dateStr="2026-08-20" userId="test-user" />
       </QueryClientProvider>
     )
 
@@ -74,7 +77,7 @@ describe('NotesSection autosave', () => {
 
     render(
       <QueryClientProvider client={queryClient}>
-        <NotesSection note={null} dateStr="2026-08-20" />
+        <NotesSection note={null} dateStr="2026-08-20" userId="test-user" />
       </QueryClientProvider>
     )
 

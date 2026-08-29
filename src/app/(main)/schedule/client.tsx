@@ -15,19 +15,47 @@ import { Spinner } from '@/components/ui/spinner'
 import { MobileScheduleCalendar } from '@/components/Shared/MobileScheduleCalendar'
 
 interface PageProps {
+  userId: string
   agendaTitle: string
   initialTasks: TaskWithSubtasks[]
   note: Notes | null
   dateObj: Date
   datesWithTasks: { date: string; count: number }[]
   finalDate: string
+  monthTasks: Record<string, TaskWithSubtasks[]>
+  autoOpenDrawer?: boolean
 }
 
-export function PlannerPage({ agendaTitle, initialTasks, note, dateObj, datesWithTasks, finalDate }: PageProps) {
+export function PlannerPage({ userId, agendaTitle, initialTasks, note, dateObj, datesWithTasks, finalDate, monthTasks, autoOpenDrawer }: PageProps) {
   // Notes state is now handled internally by NotesSection
   const router = useRouter()
   const [isPending, startTransition] = useTransition();
   const isToday = finalDate === getTodayInTimezone()
+
+  // CustomC toggle in code as requested
+  const CustomC = true
+
+  if (CustomC) {
+    return (
+      <PageComponent>
+        <div className="h-full min-h-[calc(100vh-7rem)] flex flex-col">
+          <CustomCalendar
+            CustomC={true}
+            userId={userId}
+            initialDate={dateObj}
+            selectedDate={finalDate}
+            datesWithTasks={datesWithTasks}
+            monthTasks={monthTasks}
+            initialTasks={initialTasks}
+            note={note}
+            autoOpenDrawer={autoOpenDrawer}
+            startTransition={startTransition}
+            isPending={isPending}
+          />
+        </div>
+      </PageComponent>
+    )
+  }
 
   return (
     <PageComponent>
@@ -58,7 +86,7 @@ export function PlannerPage({ agendaTitle, initialTasks, note, dateObj, datesWit
         </div>
 
         <div className="mt-6 mb-4">
-          <NotesSection note={note} dateStr={finalDate} />
+          <NotesSection note={note} dateStr={finalDate} userId={userId} />
         </div>
       </div>
 
@@ -78,7 +106,7 @@ export function PlannerPage({ agendaTitle, initialTasks, note, dateObj, datesWit
             startTransition={startTransition}
           />
 
-          <NotesSection note={note} dateStr={finalDate} />
+          <NotesSection note={note} dateStr={finalDate} userId={userId} />
         </div>
 
           <div className="lg:col-span-8 flex flex-col h-full overflow-hidden">

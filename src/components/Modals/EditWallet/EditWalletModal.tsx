@@ -119,7 +119,7 @@ export const EditWalletModal = ({ wallet, isOpen, setIsOpen }: EditWalletModalPr
             </div>
           </div>
 
-          <FieldGroup className="mt-4 space-y-5">
+          <FieldGroup className="mt-2 space-y-5">
             {/* Wallet Name */}
             <Field>
               <FieldLabel
