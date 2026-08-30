@@ -240,9 +240,7 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
               <TimelineItem key={task.id}>
 
                 <TimelineTime dateTime={task.time || undefined}>
-                    {task.time && task.time.split(':').length === 3 && task.time.split(':')[2] !== '00'
-                      ? 'FREE'
-                      : (task.time ? formatTime(task.time) : '--:--')}
+                    {task.time && task.time.split(':').length === 3 && task.time.split(':')[2] !== '00' && 'FREE'}
                 </TimelineTime>
 
                 <TimelineContent
