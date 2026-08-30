@@ -30,9 +30,27 @@ const categorySchema = z.object({
 
 type CategoryFormValues = z.infer<typeof categorySchema>
 
-export const AddCategoryModal = () => {
-  const [isOpen, setIsOpen] = useState(false)
+interface AddCategoryModalProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  isControlled?: boolean;
+}
+
+export const AddCategoryModal = ({ open, onOpenChange, isControlled = false }: AddCategoryModalProps = {}) => {
   const queryClient = useQueryClient()
+
+  // Internal state for when it's used as a standalone button (e.g., Categories page)
+  const [internalOpen, setInternalOpen] = useState(false)
+
+  // Determine which state to use
+  const isOpen = isControlled ? open : internalOpen
+  const handleOpenChange = (newOpen: boolean) => {
+    if (isControlled && onOpenChange) {
+      onOpenChange(newOpen)
+    } else {
+      setInternalOpen(newOpen)
+    }
+  }
 
   const { register, handleSubmit, watch, control, reset, formState: { errors } } = useForm<CategoryFormValues>({
     resolver: zodResolver(categorySchema) as any,
@@ -57,8 +75,8 @@ export const AddCategoryModal = () => {
       }
       toast.success('Category created successfully!')
       reset()
-      queryClient.invalidateQueries({ queryKey: ['categories'] })
-      setIsOpen(false)
+      queryClient.invalidateQueries({ queryKey: ['expense_categories'] })
+      handleOpenChange(false)
     },
     onError: () => {
       toast.error('An unexpected error occurred')
@@ -74,16 +92,21 @@ export const AddCategoryModal = () => {
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="ghost" size="sm">
-          <Plus size={12}/>
-          Add Category
-        </Button>
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      {!isControlled && (
+        <DialogTrigger asChild>
+          <Button variant="ghost" size="sm">
+            <Plus size={12}/>
+            Add Category
+          </Button>
+        </DialogTrigger>
+      )}
 
       <DialogContent className="sm:max-w-md">
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={(e) => {
+          e.stopPropagation();
+          handleSubmit(onSubmit)(e);
+        }}>
           <DialogHeader>
             <DialogTitle className="text-base font-semibold">
               Add Category

@@ -19,9 +19,6 @@ import { getTodayInTimezone } from '@/utils/timezone'
 import {
   Drawer,
   DrawerContent,
-  DrawerHeader,
-  DrawerTitle,
-  DrawerDescription,
   DrawerClose,
 } from '@/components/ui/drawer'
 import { AgendaSection } from '@/components/Shared/AgendaSection'
@@ -143,6 +140,94 @@ export function FullCalendar({
   const todayDate = parseISO(getTodayInTimezone())
   const isOnToday = isSameDay(currentDate, todayDate)
 
+  // Optimistic UI state for calendar view
+  const [localMonthTasks, setLocalMonthTasks] = useState<Record<string, TaskWithSubtasks[]>>(monthTasks)
+
+  useEffect(() => {
+    setLocalMonthTasks(monthTasks)
+  }, [monthTasks])
+
+  useEffect(() => {
+    const handleToggle = (e: Event) => {
+      const { taskId, isDone } = (e as CustomEvent).detail
+      setLocalMonthTasks(prev => {
+        const next = { ...prev }
+        let changed = false
+        for (const date in next) {
+          if (next[date].some(t => t.id === taskId)) {
+            next[date] = next[date].map(t => t.id === taskId ? { ...t, is_done: isDone } : t)
+            changed = true
+          }
+        }
+        return changed ? next : prev
+      })
+    }
+
+    const handleDelete = (e: Event) => {
+      const { taskId } = (e as CustomEvent).detail
+      setLocalMonthTasks(prev => {
+        const next = { ...prev }
+        let changed = false
+        for (const date in next) {
+          if (next[date].some(t => t.id === taskId)) {
+            next[date] = next[date].filter(t => t.id !== taskId)
+            changed = true
+          }
+        }
+        return changed ? next : prev
+      })
+    }
+
+    const handleUpdate = (e: Event) => {
+      const { taskId, values } = (e as CustomEvent).detail
+      setLocalMonthTasks(prev => {
+        const next = { ...prev }
+        let changed = false
+        for (const date in next) {
+          if (next[date].some(t => t.id === taskId)) {
+            next[date] = next[date].map(t => {
+              if (t.id !== taskId) return t
+              return {
+                ...t,
+                task_name: values.task_name,
+                time: values.time ? `${values.time}:00` : undefined,
+                task_category: values.category ? { id: t.task_category?.id || null, name: values.category } : null,
+              }
+            })
+            changed = true
+          }
+        }
+        return changed ? next : prev
+      })
+    }
+
+    const handleRestore = (e: Event) => {
+      const { task } = (e as CustomEvent).detail
+      const dateStr = task.created_for_date
+      if (!dateStr) return
+      setLocalMonthTasks(prev => {
+        const tasksForDate = prev[dateStr] || []
+        if (tasksForDate.some(t => t.id === task.id)) return prev
+        return {
+          ...prev,
+          [dateStr]: [...tasksForDate, task]
+        }
+      })
+    }
+
+    window.addEventListener('optimistic-task-toggle', handleToggle)
+    window.addEventListener('optimistic-task-delete', handleDelete)
+    window.addEventListener('optimistic-task-update', handleUpdate)
+    window.addEventListener('optimistic-task-restore', handleRestore)
+
+    return () => {
+      window.removeEventListener('optimistic-task-toggle', handleToggle)
+      window.removeEventListener('optimistic-task-delete', handleDelete)
+      window.removeEventListener('optimistic-task-update', handleUpdate)
+      window.removeEventListener('optimistic-task-restore', handleRestore)
+    }
+  }, [])
+
   // Drawer state
   const [drawerDate, setDrawerDate] = useState<string | null>(autoOpenDrawer ? (selectedDate ?? null) : null)
   const [drawerTasks, setDrawerTasks] = useState<TaskWithSubtasks[]>(initialTasks ?? [])
@@ -169,7 +254,7 @@ export function FullCalendar({
 
   // Categorical focus summary
   const stats = useMemo(() => {
-    const allTasks = Object.values(monthTasks).flat()
+    const allTasks = Object.values(localMonthTasks).flat()
     const total = allTasks.length
 
     const counts: Record<string, number> = {}
@@ -189,7 +274,7 @@ export function FullCalendar({
     if (topCount === 0) { topCount = total; topCategory = 'tasks' }
 
     return { total, topCount, topCategory }
-  }, [monthTasks])
+  }, [localMonthTasks])
 
   // Navigation handlers — these now trigger actual data fetches via URL
   const handlePrev = () => {
@@ -225,7 +310,7 @@ export function FullCalendar({
 
     // In-month date: open drawer locally (fast)
     setDrawerDate(dateStr)
-    setDrawerTasks(monthTasks[dateStr] || [])
+    setDrawerTasks(localMonthTasks[dateStr] || [])
   }
 
   return (
@@ -289,7 +374,7 @@ export function FullCalendar({
           </div>
 
           <Tabs value={subView} onValueChange={v => setSubView(v as 'week' | 'month')} className="w-auto">
-            <TabsList className="rounded-none bg-muted/50 p-1 border border-border">
+            <TabsList className="rounded-none bg-muted/50 p-0 border border-border">
               <TabsTrigger value="week" className="rounded-none text-xs uppercase tracking-wider data-[state=active]:bg-foreground data-[state=active]:text-background">Week</TabsTrigger>
               <TabsTrigger value="month" className="rounded-none text-xs uppercase tracking-wider data-[state=active]:bg-foreground data-[state=active]:text-background">Month</TabsTrigger>
             </TabsList>
@@ -300,8 +385,8 @@ export function FullCalendar({
       {/* Calendar Body */}
       <div className="flex-1 min-h-0">
         {subView === 'month'
-          ? <MonthView currentDate={currentDate} monthTasks={monthTasks} onDayClick={handleDayClick} />
-          : <WeekView currentDate={currentDate} monthTasks={monthTasks} onDayClick={handleDayClick} />
+          ? <MonthView currentDate={currentDate} monthTasks={localMonthTasks} onDayClick={handleDayClick} />
+          : <WeekView currentDate={currentDate} monthTasks={localMonthTasks} onDayClick={handleDayClick} />
         }
       </div>
 

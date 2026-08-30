@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
@@ -20,6 +21,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { AddCategoryModal } from "../AddCategory/AddCategoryModal"
+import { AddWalletModal } from "../AddWallet/AddWalletModal"
 
 import { expenseSchema, ExpenseFormValues } from './schemas'
 import { useWallets, useExpenseCategories } from '@/hooks/useFinanceData'
@@ -42,6 +45,8 @@ export const ExpenseForm = () => {
 
   const { data: wallets = [], isPending: isWalletsPending } = useWallets()
   const { data: categories = [], isPending: isCategoriesPending } = useExpenseCategories()
+  const [isAddCategoryOpen, setIsAddCategoryOpen] = useState(false)
+  const [isAddWalletOpen, setIsAddWalletOpen] = useState(false)
 
   const queryClient = useQueryClient()
 
@@ -49,6 +54,7 @@ export const ExpenseForm = () => {
     mutationFn: addExpenseAction,
     onSuccess: (result) => {
       if (!result.success) {
+
         toast.error(result.error || 'Failed to add expense')
         return
       }
@@ -57,6 +63,7 @@ export const ExpenseForm = () => {
       // Refresh all related data on the client
       queryClient.invalidateQueries({ queryKey: ['wallets'] })
       queryClient.invalidateQueries({ queryKey: ['transactions'] })
+      queryClient.invalidateQueries({ queryKey: ['expense_categories'] })
     },
     onError: () => {
       toast.error('An unexpected error occurred')
@@ -129,12 +136,27 @@ export const ExpenseForm = () => {
             control={control}
             name="accountId"
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select
+                value={field.value}
+                onValueChange={(val) => {
+                  if (val === 'add_wallet') {
+                    setIsAddWalletOpen(true)
+                  } else {
+                    field.onChange(val)
+                  }
+                }}
+                >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select account" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
+                    <SelectItem value="add_wallet" className="font-medium text-primary" >
+                      + Add Wallet
+                    </SelectItem>
+
+                    <div className="h-px bg-border my-1 mx-2" />
+
                     {isWalletsPending ? (
                       <SelectItem disabled value="loading">Loading...</SelectItem>
                     ) : wallets.length === 0 ? (
@@ -162,12 +184,26 @@ export const ExpenseForm = () => {
             control={control}
             name="categoryId"
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select
+                value={field.value}
+                onValueChange={(val) => {
+                  if (val === 'add_category') {
+                    setIsAddCategoryOpen(true)
+                  } else {
+                    field.onChange(val)
+                  }
+                }}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select category" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
+                    <SelectItem value="add_category" className="font-medium text-primary" >
+                      + Add Category
+                    </SelectItem>
+
+                    <div className="h-px bg-border my-1 mx-2" />
                   {isCategoriesPending ? (
                     <SelectItem disabled value="loading">
                       Loading...
@@ -192,6 +228,18 @@ export const ExpenseForm = () => {
             <FieldError>{errors.categoryId.message}</FieldError>
           )}
         </FieldGroup>
+
+        <AddCategoryModal
+          isControlled={true}
+          open={isAddCategoryOpen}
+          onOpenChange={setIsAddCategoryOpen}
+        />
+
+        <AddWalletModal
+          isControlled={true}
+          open={isAddWalletOpen}
+          onOpenChange={setIsAddWalletOpen}
+        />
       </div>
 
       <FieldSeparator />

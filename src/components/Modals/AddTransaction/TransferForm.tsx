@@ -1,7 +1,7 @@
 'use client'
 
+import { useState } from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { z } from "zod"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
 
@@ -27,7 +27,7 @@ import { transferSchema, TransferFormValues } from './schemas'
 import { useWallets } from '@/hooks/useFinanceData'
 import { addTransferAction } from '@/lib/actions/transactions'
 import { formatInputAmount, formatCurrency } from '@/utils/currency'
-
+import { AddWalletModal } from "../AddWallet/AddWalletModal"
 
 export const TransferForm = () => {
   const {
@@ -50,6 +50,7 @@ export const TransferForm = () => {
   const { data: wallets = [], isPending: isWalletsPending } = useWallets()
 
   const queryClient = useQueryClient()
+  const [isAddWalletOpen, setIsAddWalletOpen] = useState(false)
 
   const { mutate: addTransfer, isPending: isSubmitting } = useMutation({
     mutationFn: addTransferAction,
@@ -139,12 +140,28 @@ export const TransferForm = () => {
             control={control}
             name="fromAccountId"
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select
+                value={field.value}
+                onValueChange={(val) => {
+                  if (val === 'add_wallet'){
+                    setIsAddWalletOpen(true)
+                  } else {
+                    field.onChange(val)
+                  }
+                }}
+                >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Source" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
+
+                    <SelectItem value="add_wallet" className="font-medium text-primary" >
+                      + Add Wallet
+                    </SelectItem>
+
+                    <div className="h-px bg-border my-1 mx-2" />
+
                     {isWalletsPending ? (
                       <SelectItem disabled value="loading">Loading...</SelectItem>
                     ) : wallets.length === 0 ? (
@@ -176,12 +193,28 @@ export const TransferForm = () => {
             control={control}
             name="toAccountId"
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select
+                value={field.value}
+                onValueChange={(val) => {
+                  if (val === 'add_wallet'){
+                    setIsAddWalletOpen(true)
+                  } else {
+                    field.onChange(val)
+                  }
+                }}
+                >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Destination" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
+
+                    <SelectItem value="add_wallet" className="font-medium text-primary" >
+                      + Add Wallet
+                    </SelectItem>
+
+                    <div className="h-px bg-border my-1 mx-2" />
+
                     {isWalletsPending ? (
                       <SelectItem disabled value="loading">Loading...</SelectItem>
                     ) : wallets.length === 0 ? (
@@ -206,6 +239,12 @@ export const TransferForm = () => {
             <FieldError>{errors.toAccountId.message}</FieldError>
           )}
         </FieldGroup>
+
+        <AddWalletModal
+            isControlled={true}
+            open={isAddWalletOpen}
+            onOpenChange={setIsAddWalletOpen}
+          />
       </div>
 
       <FieldSeparator />

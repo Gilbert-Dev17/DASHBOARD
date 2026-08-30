@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod"
 import { Controller, useForm } from "react-hook-form"
 import { toast } from "sonner"
+import { useState } from "react"
 
 import { FieldError, FieldGroup, FieldLabel, FieldSeparator } from "@/components/ui/field"
 import {
@@ -20,11 +21,13 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { Spinner } from "@/components/ui/spinner"
 
 import { incomeSchema, IncomeFormValues } from './schemas'
 import { useWallets } from '@/hooks/useFinanceData'
 import { addIncomeAction } from '@/lib/actions/transactions'
 import { formatInputAmount } from '@/utils/currency'
+import { AddWalletModal } from "../AddWallet/AddWalletModal"
 
 export const IncomeForm = () => {
   const {
@@ -43,6 +46,7 @@ export const IncomeForm = () => {
   const { data: wallets = [], isPending: isWalletsPending } = useWallets()
 
   const queryClient = useQueryClient()
+  const [isAddWalletOpen, setIsAddWalletOpen] = useState(false)
 
   const { mutate: addIncome, isPending: isSubmitting } = useMutation({
     mutationFn: addIncomeAction,
@@ -112,12 +116,28 @@ export const IncomeForm = () => {
             control={control}
             name="accountId"
             render={({ field }) => (
-              <Select value={field.value} onValueChange={field.onChange}>
+              <Select
+                value={field.value}
+                onValueChange={(val) => {
+                  if (val === 'add_wallet'){
+                    setIsAddWalletOpen(true)
+                  } else {
+                    field.onChange(val)
+                  }
+                }}
+                >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Deposit to" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectGroup>
+
+                    <SelectItem value="add_wallet" className="font-medium text-primary" >
+                      + Add Wallet
+                    </SelectItem>
+
+                    <div className="h-px bg-border my-1 mx-2" />
+
                     {isWalletsPending ? (
                       <SelectItem disabled value="loading">Loading...</SelectItem>
                     ) : wallets.length === 0 ? (
@@ -137,6 +157,12 @@ export const IncomeForm = () => {
           {errors.accountId && (
             <FieldError>{errors.accountId.message}</FieldError>
           )}
+
+          <AddWalletModal
+              isControlled={true}
+              open={isAddWalletOpen}
+              onOpenChange={setIsAddWalletOpen}
+            />
         </FieldGroup>
 
       <FieldSeparator />
@@ -172,7 +198,7 @@ export const IncomeForm = () => {
             )}
           />
         </FieldGroup>
-        
+
         <FieldGroup>
           <FieldLabel>Note</FieldLabel>
           <Controller
@@ -189,8 +215,11 @@ export const IncomeForm = () => {
         </FieldGroup>
       </div>
 
-      <Button type="submit" size="lg" className="w-full" disabled={!watch('amount') || !watch('accountId') || isSubmitting}>
-        {isSubmitting ? 'Adding...' : 'Add Income'}
+      <Button type="submit" size="lg" className="w-full rounded-md" disabled={!watch('amount') || !watch('accountId') || isSubmitting}>
+        {isSubmitting ?
+          <span className="inline-flex items-center gap-2">
+            Adding <Spinner />
+          </span> : 'Add Income'}
       </Button>
     </form>
   )

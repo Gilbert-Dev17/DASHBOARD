@@ -162,37 +162,50 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
     }, [])
 
   const { mutate: handleToggleTask } = useMutation({
-    mutationFn: async ({ taskId, isDone, taskName }: { taskId: string, isDone: boolean, taskName: string }) => {
+    mutationFn: async ({ taskId, isDone, taskName, dateStr }: { taskId: string, isDone: boolean, taskName: string, dateStr?: string }) => {
       const result = await toggleTask(taskId, isDone)
       if (!result.success) throw new Error(result.message)
       return { isDone, taskName }
     },
-    onMutate: async ({ taskId, isDone }) => {
+    onMutate: async ({ taskId, isDone, dateStr }) => {
       setTasks(current => getOptimisticTasks(current, taskId, isDone))
+      // Dispatch for FullCalendar
+      window.dispatchEvent(new CustomEvent('optimistic-task-toggle', {
+        detail: { taskId, isDone, dateStr: dateStr || selectedDateStr }
+      }))
     },
     onSuccess: ({ isDone, taskName }) => {
       toast.success(isDone ? `"${taskName}" completed.` : `"${taskName}" reopened.`)
     },
-    onError: (error, { taskId, isDone }) => {
+    onError: (error, { taskId, isDone, dateStr }) => {
       setTasks(current => getOptimisticTasks(current, taskId, !isDone))
+      window.dispatchEvent(new CustomEvent('optimistic-task-toggle', {
+        detail: { taskId, isDone: !isDone, dateStr: dateStr || selectedDateStr }
+      }))
       toast.error(error.message || "Failed to update task.")
     }
   })
 
   const { mutate: handleToggleSubtask } = useMutation({
-    mutationFn: async ({ taskId, subtaskId, isDone, subtaskName }: { taskId: string, subtaskId: string, isDone: boolean, subtaskName: string }) => {
+    mutationFn: async ({ taskId, subtaskId, isDone, subtaskName, dateStr }: { taskId: string, subtaskId: string, isDone: boolean, subtaskName: string, dateStr?: string }) => {
       const result = await toggleSubTask(subtaskId, isDone)
       if (!result.success) throw new Error(result.message)
       return { isDone, subtaskName }
     },
-    onMutate: async ({ taskId, subtaskId, isDone }) => {
+    onMutate: async ({ taskId, subtaskId, isDone, dateStr }) => {
       setTasks(current => getOptimisticSubtasks(current, taskId, subtaskId, isDone))
+      window.dispatchEvent(new CustomEvent('optimistic-subtask-toggle', {
+        detail: { taskId, subtaskId, isDone, dateStr: dateStr || selectedDateStr }
+      }))
     },
     onSuccess: ({ isDone, subtaskName }) => {
       toast.success(isDone ? `"${subtaskName}" completed.` : `"${subtaskName}" reopened.`)
     },
-    onError: (error, { taskId, subtaskId, isDone }) => {
+    onError: (error, { taskId, subtaskId, isDone, dateStr }) => {
       setTasks(current => getOptimisticSubtasks(current, taskId, subtaskId, !isDone))
+      window.dispatchEvent(new CustomEvent('optimistic-subtask-toggle', {
+        detail: { taskId, subtaskId, isDone: !isDone, dateStr: dateStr || selectedDateStr }
+      }))
       toast.error(error.message || "Failed to update subtask.")
     }
   })

@@ -37,9 +37,25 @@ const walletSchema = z.object({
 
 type WalletFormValues = z.infer<typeof walletSchema>
 
-export const AddWalletModal = () => {
-  const [isOpen, setIsOpen] = useState(false)
+interface AddWalletModalProps {
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  isControlled?: boolean;
+}
+
+export const AddWalletModal = ({open, onOpenChange, isControlled = false} :AddWalletModalProps = {}) => {
   const queryClient = useQueryClient()
+
+    const [internalOpen, setInternalOpen] = useState(false)
+
+    const isOpen = isControlled ? open : internalOpen
+    const handleOpenChange = (newOpen: boolean) => {
+      if (isControlled && onOpenChange) {
+        onOpenChange(newOpen)
+      } else {
+        setInternalOpen(newOpen)
+      }
+    }
 
   const { register, handleSubmit, control, watch, reset, formState: { errors } } = useForm<WalletFormValues>({
     resolver: zodResolver(walletSchema) as any,
@@ -71,7 +87,7 @@ export const AddWalletModal = () => {
       toast.success('Wallet created successfully!')
       reset()
       queryClient.invalidateQueries({ queryKey: ['wallets'] })
-      setIsOpen(false)
+      handleOpenChange(false)
     },
     onError: () => {
       toast.error('An unexpected error occurred')
@@ -91,16 +107,21 @@ export const AddWalletModal = () => {
   }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
-        <Button variant="ghost" className="flex items-center gap-2">
-          <Plus size={16} />
-          Add Wallet
-        </Button>
-      </DialogTrigger>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+      {!isControlled && (
+        <DialogTrigger asChild>
+          <Button variant="ghost" className="flex items-center gap-2">
+            <Plus size={16} />
+            Add Wallet
+          </Button>
+        </DialogTrigger>
+      )}
 
       <DialogContent className="sm:max-w-md">
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={(e) => {
+            e.stopPropagation();
+            handleSubmit(onSubmit)(e);
+          }}>
           <DialogHeader >
             <DialogTitle className="text-base font-semibold">
               Add Wallet

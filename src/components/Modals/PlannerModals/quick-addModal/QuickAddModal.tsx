@@ -278,7 +278,7 @@ export const QuickAddModal = ({ enableShortcut = true }: { enableShortcut?: bool
           {showMenu && filteredCategories.length > 0 && (
             <div
               ref={menuRef}
-              className="absolute z-50 w-40 max-h-64 overflow-y-auto rounded-lg border bg-popover p-2 shadow-lg animate-in fade-in-0 zoom-in-95 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+              className="absolute z-50 w-40 max-h-64 overflow-y-auto rounded-md border bg-popover p-0 shadow-lg animate-in fade-in-0 zoom-in-95 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
               style={{ top: `${menuPosition.top}px`, left: `${menuPosition.left}px` }}
             >
               {filteredCategories.map((cat, i) => (
@@ -287,7 +287,7 @@ export const QuickAddModal = ({ enableShortcut = true }: { enableShortcut?: bool
                   type="button"
                   variant={'ghost'}
                   data-index={i}
-                  className={`w-full text-sm font-medium ${
+                  className={`w-full text-sm font-medium rounded-md ${
                     i === selectedIndex
                       ? 'bg-foreground text-background'
                       : 'hover:bg-muted'
@@ -310,14 +310,13 @@ export const QuickAddModal = ({ enableShortcut = true }: { enableShortcut?: bool
             <Kbd >Enter</Kbd>
             {' to submit'}
           </KbdGroup>
-          <Button onClick={handleSubmit} disabled={!text.trim() || isPending}>
+          <Button onClick={handleSubmit} disabled={!text.trim() || isPending} className='rounded-md'>
             {isPending ? (
               <span className="inline-flex items-center gap-2">
-                <Spinner />
-                Adding...
+                Adding <Spinner />
               </span>
             ) : (
-              'Add tasks'
+              'Add Tasks'
             )}
           </Button>
         </div>
