@@ -1,4 +1,5 @@
 export const AUTOSAVE_DELAY = 5000
+export const ITEMS_PER_PAGE = 60;
 
 export const TIME_FILTERS = [
   { name: 'Day', value: 'day' },

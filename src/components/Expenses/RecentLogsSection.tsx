@@ -19,7 +19,7 @@ export const RecentLogsSection = ({ transactions }: RecentLogsSectionProps) => {
       <header className="flex flex-row justify-between items-center pb-3 mb-4 shrink-0 border-b border-border">
         <h2 id="logs-heading" className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">Transactions</h2>
         <Button variant="link" size="sm" className="group px-0 flex flex-row text-muted-foreground hover:text-foreground items-center gap-1" asChild>
-          <Link href="/finance/viewAll">
+          <Link href="/finance/transaction-history">
             <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
           </Link>
         </Button>
