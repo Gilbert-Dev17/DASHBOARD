@@ -11,7 +11,8 @@ import {
   CommandItem,
   CommandList,
   CommandSeparator,
-  Command,
+  CommandInput,
+  Command
 } from '@/components/ui/command'
 import { useGlobalShortcut } from '@/hooks/useGlobalShortcut'
 
@@ -64,24 +65,23 @@ export function AddTransactionModal({ enableShortcut = true }: { enableShortcut?
         title="Quick Add"
         description="Choose what to add to your finances"
       >
-        <Command>
-          <CommandList>
-            <CommandEmpty>No actions found.</CommandEmpty>
-            {TRANSACTION_COMMANDS.map((group, i) => (
-              <div key={group.group}>
-                {i > 0 && <CommandSeparator />}
-                <CommandGroup heading={group.group}>
-                  {group.items.map(({ label, icon: Icon, href }) => (
-                    <CommandItem key={href} onSelect={() => handleSelect(href)}>
-                      <Icon />
-                      <span>{label}</span>
-                    </CommandItem>
-                  ))}
-                </CommandGroup>
-              </div>
-            ))}
-          </CommandList>
-        </Command>
+        <CommandInput placeholder="Type a command or search..." />
+        <CommandList>
+          <CommandEmpty>No actions found.</CommandEmpty>
+          {TRANSACTION_COMMANDS.map((group, i) => (
+            <div key={group.group}>
+              {i > 0 && <CommandSeparator />}
+              <CommandGroup heading={group.group}>
+                {group.items.map(({ label, icon: Icon, href }) => (
+                  <CommandItem key={href} onSelect={() => handleSelect(href)}>
+                    <Icon />
+                    <span>{label}</span>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            </div>
+          ))}
+        </CommandList>
       </CommandDialog>
     </>
   )

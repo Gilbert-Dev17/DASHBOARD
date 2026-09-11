@@ -83,7 +83,7 @@ export const IncomeForm = () => {
         title="Add Income"
       />
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 max-w-2xl mx-auto w-full">
         {/* Amount */}
         <FieldGroup>
           <FieldLabel>Amount</FieldLabel>
@@ -173,7 +173,7 @@ export const IncomeForm = () => {
 
         <FieldSeparator />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="flex flex-col gap-4">
           <FieldGroup>
             <FieldLabel>Date</FieldLabel>
             <Controller

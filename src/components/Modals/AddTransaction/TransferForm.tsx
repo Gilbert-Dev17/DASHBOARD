@@ -97,7 +97,7 @@ export const TransferForm = () => {
 
       <PageHeader title="Add Transfer" />
 
-      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 max-w-2xl mx-auto w-full">
 
         {/* Amount */}
         <FieldGroup>
@@ -132,7 +132,7 @@ export const TransferForm = () => {
         </FieldGroup>
 
         {/* From → To accounts */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="flex flex-col gap-4">
           <FieldGroup>
             <div className="flex justify-between items-center">
               <FieldLabel className="mb-0">From</FieldLabel>
@@ -282,7 +282,7 @@ export const TransferForm = () => {
           />
         </FieldGroup>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="flex flex-col gap-4">
           <FieldGroup>
             <FieldLabel>Date</FieldLabel>
             <Controller

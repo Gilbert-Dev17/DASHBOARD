@@ -94,6 +94,7 @@ export function AddWalletForm({ onSuccess, isOpen }: AddWalletFormProps) {
         e.stopPropagation()
         handleSubmit(onSubmit)(e)
       }}
+      className="flex flex-col gap-4 max-w-2xl mx-auto w-full"
     >
       {/* Live Preview Card */}
       <div className="flex items-center gap-4 p-4 mt-2 rounded-xl border border-border/50 bg-secondary/20 backdrop-blur-sm shadow-sm transition-all duration-300">

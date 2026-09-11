@@ -68,6 +68,7 @@ export function AddCategoryForm({ onSuccess }: AddCategoryFormProps) {
         e.stopPropagation()
         handleSubmit(onSubmit)(e)
       }}
+      className="flex flex-col gap-4 max-w-2xl mx-auto w-full"
     >
       {/* Live Preview Card */}
       <div className="mt-2 flex items-center gap-4 p-4 rounded-xl border border-border/50 bg-secondary/20 backdrop-blur-sm shadow-sm transition-all duration-300">

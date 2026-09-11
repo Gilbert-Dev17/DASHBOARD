@@ -136,7 +136,7 @@ export const ExpenseForm = ({ onModeChange }: ExpenseFormProps) => {
       {mode === 'bulk' ? (
         <BulkExpenseForm />
       ) : (
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 max-w-2xl mx-auto w-full">
           {/* Amount */}
           <FieldGroup>
             <FieldLabel>Amount</FieldLabel>
@@ -169,8 +169,8 @@ export const ExpenseForm = ({ onModeChange }: ExpenseFormProps) => {
             )}
           </FieldGroup>
 
-          {/* Account & Category side-by-side on desktop, stacked on mobile */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Account & Category stacked */}
+          <div className="flex flex-col gap-4">
             <FieldGroup>
               <div className="flex justify-between items-center">
                 <FieldLabel className="mb-0">Account</FieldLabel>
@@ -227,7 +227,7 @@ export const ExpenseForm = ({ onModeChange }: ExpenseFormProps) => {
             </FieldGroup>
 
             <FieldGroup>
-              <FieldLabel>Category</FieldLabel>
+              <FieldLabel className=''>Category</FieldLabel>
               <Controller
                 control={control}
                 name="categoryId"
@@ -293,7 +293,7 @@ export const ExpenseForm = ({ onModeChange }: ExpenseFormProps) => {
 
           <FieldSeparator />
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="flex flex-col gap-4">
             <FieldGroup>
               <FieldLabel>Date</FieldLabel>
               <Controller
@@ -341,7 +341,7 @@ export const ExpenseForm = ({ onModeChange }: ExpenseFormProps) => {
             </FieldGroup>
           </div>
 
-          <Button type="submit" size="lg" className="w-full" disabled={!watch('amount') || !watch('accountId') || !watch('categoryId') || isSubmitting}>
+          <Button type="submit" size="lg" className="w-full mt-2" disabled={!watch('amount') || !watch('accountId') || !watch('categoryId') || isSubmitting}>
               {isSubmitting ?
               <span className="inline-flex items-center gap-2">
                 Adding <Spinner />
