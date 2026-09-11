@@ -21,6 +21,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AddCategoryModal } from "../AddCategory/AddCategoryModal"
 import { AddWalletModal } from "../AddWallet/AddWalletModal"
 import { Spinner } from "@/components/ui/spinner"
@@ -104,32 +105,12 @@ export const ExpenseForm = ({ onModeChange }: ExpenseFormProps) => {
 
       <PageHeader title="Add Expense"
         children={
-          <div className="flex items-center self-end rounded-md border border-border/50 overflow-hidden">
-            <button
-              type="button"
-              onClick={() => handleModeChange('single')}
-              className={cn(
-                'px-3 py-1 font-mono text-[11px] uppercase tracking-wider transition-colors',
-                mode === 'single'
-                  ? 'bg-foreground text-background'
-                  : 'text-muted-foreground hover:text-foreground'
-              )}
-            >
-              Single
-            </button>
-            <button
-              type="button"
-              onClick={() => handleModeChange('bulk')}
-              className={cn(
-                'px-3 py-1 font-mono text-[11px] uppercase tracking-wider transition-colors',
-                mode === 'bulk'
-                  ? 'bg-foreground text-background'
-                  : 'text-muted-foreground hover:text-foreground'
-              )}
-            >
-              Bulk
-            </button>
-          </div>
+          <Tabs value={mode} onValueChange={(v) => handleModeChange(v as 'single' | 'bulk')} className="self-end">
+            <TabsList className="h-8">
+              <TabsTrigger value="single" className="font-mono text-[11px] uppercase tracking-wider">Single</TabsTrigger>
+              <TabsTrigger value="bulk" className="font-mono text-[11px] uppercase tracking-wider">Bulk</TabsTrigger>
+            </TabsList>
+          </Tabs>
         }
       />
 
