@@ -40,3 +40,21 @@ export const transferSchema = z.object({
 })
 
 export type TransferFormValues = z.infer<typeof transferSchema>
+
+
+// Bulk expense — one row per expense entry, date shared at the form level
+export const bulkExpenseRowSchema = z.object({
+  amount:     z.string(),           // raw string from input; coerced at submit time
+  accountId:  z.string(),
+  categoryId: z.string(),
+  note:       z.string().optional(),
+})
+
+export type BulkExpenseRow = z.infer<typeof bulkExpenseRowSchema>
+
+export const bulkExpenseFormSchema = z.object({
+  date: z.date().optional(),
+  rows: z.array(bulkExpenseRowSchema),
+})
+
+export type BulkExpenseFormValues = z.infer<typeof bulkExpenseFormSchema>

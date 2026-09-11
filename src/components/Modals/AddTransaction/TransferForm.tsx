@@ -22,12 +22,14 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
+import { Spinner } from "@/components/ui/spinner"
 
 import { transferSchema, TransferFormValues } from './schemas'
 import { useWallets } from '@/hooks/useFinanceData'
 import { addTransferAction } from '@/lib/actions/transactions'
 import { formatInputAmount, formatCurrency } from '@/utils/currency'
 import { AddWalletModal } from "../AddWallet/AddWalletModal"
+import { PageHeader } from "@/components/Shared/PageHeader"
 
 export const TransferForm = () => {
   const {
@@ -91,244 +93,253 @@ export const TransferForm = () => {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4">
 
-      {/* Amount */}
-      <FieldGroup>
-        <FieldLabel>Amount</FieldLabel>
-        <Controller
-          control={control}
-          name="amount"
-          render={({ field }) => (
-            <Input
-              type="text"
-              inputMode="decimal"
-              placeholder="0.00"
-              {...field}
-              value={field.value ? formatInputAmount(String(field.value)) : ''}
-              onChange={(e) => {
-                const rawValue = e.target.value.replace(/,/g, '')
-                const sanitized = rawValue.replace(/[^0-9.]/g, '')
-                const parts = sanitized.split('.')
-                let finalValue = sanitized
-                if (parts.length > 2) {
-                  finalValue = parts[0] + '.' + parts.slice(1).join('')
-                }
-                field.onChange(finalValue)
-              }}
-              className="text-3xl h-14 text-center font-semibold"
-            />
-          )}
-        />
-        {errors.amount && (
-          <FieldError>{errors.amount.message}</FieldError>
-        )}
-      </FieldGroup>
+      <PageHeader title="Add Transfer" />
 
-      {/* From → To accounts */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
+
+        {/* Amount */}
         <FieldGroup>
-          <div className="flex justify-between items-center">
-            <FieldLabel className="mb-0">From</FieldLabel>
-            {selectedFromWallet && (
-              <span className="text-xs text-muted-foreground font-medium">
-                Bal: {formatCurrency(selectedFromWallet.balance, selectedFromWallet.currency || 'PHP')}
-              </span>
-            )}
-          </div>
+          <FieldLabel>Amount</FieldLabel>
           <Controller
             control={control}
-            name="fromAccountId"
-            render={({ field }) => (
-              <Select
-                value={field.value}
-                onValueChange={(val) => {
-                  if (val === 'add_wallet'){
-                    setIsAddWalletOpen(true)
-                  } else {
-                    field.onChange(val)
-                  }
-                }}
-                >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Source" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-
-                    <SelectItem value="add_wallet" className="font-medium text-primary" >
-                      + Add Wallet
-                    </SelectItem>
-
-                    <div className="h-px bg-border my-1 mx-2" />
-
-                    {isWalletsPending ? (
-                      <SelectItem disabled value="loading">Loading...</SelectItem>
-                    ) : wallets.length === 0 ? (
-                      <SelectItem value="empty">No wallets found</SelectItem>
-                    ) : (
-                      wallets.map((wallet) => (
-                        <SelectItem
-                          key={wallet.id}
-                          value={wallet.id}
-                          disabled={wallet.id === currentToAccount}
-                        >
-                          {wallet.name} &bull; {wallet.type} - {wallet.currency}
-                        </SelectItem>
-                      ))
-                    )}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            )}
-          />
-          {errors.fromAccountId && (
-            <FieldError>{errors.fromAccountId.message}</FieldError>
-          )}
-        </FieldGroup>
-
-        <FieldGroup>
-          <FieldLabel>To</FieldLabel>
-          <Controller
-            control={control}
-            name="toAccountId"
-            render={({ field }) => (
-              <Select
-                value={field.value}
-                onValueChange={(val) => {
-                  if (val === 'add_wallet'){
-                    setIsAddWalletOpen(true)
-                  } else {
-                    field.onChange(val)
-                  }
-                }}
-                >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Destination" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-
-                    <SelectItem value="add_wallet" className="font-medium text-primary" >
-                      + Add Wallet
-                    </SelectItem>
-
-                    <div className="h-px bg-border my-1 mx-2" />
-
-                    {isWalletsPending ? (
-                      <SelectItem disabled value="loading">Loading...</SelectItem>
-                    ) : wallets.length === 0 ? (
-                      <SelectItem value="empty">No wallets found</SelectItem>
-                    ) : (
-                      wallets.map((wallet) => (
-                        <SelectItem
-                          key={wallet.id}
-                          value={wallet.id}
-                          disabled={wallet.id === currentFromAccount}
-                        >
-                          {wallet.name} &bull; {wallet.type} - {wallet.currency}
-                        </SelectItem>
-                      ))
-                    )}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            )}
-          />
-          {errors.toAccountId && (
-            <FieldError>{errors.toAccountId.message}</FieldError>
-          )}
-        </FieldGroup>
-
-        <AddWalletModal
-            isControlled={true}
-            open={isAddWalletOpen}
-            onOpenChange={setIsAddWalletOpen}
-          />
-      </div>
-
-      <FieldSeparator />
-
-      {/* Transfer Fee */}
-      <FieldGroup>
-        <FieldLabel>Transfer Fee <span className="text-muted-foreground">(optional)</span></FieldLabel>
-        <Controller
-          control={control}
-          name="transfer_fee"
-          render={({ field }) => (
-            <Input
-              type="text"
-              inputMode="decimal"
-              placeholder="0.00"
-              {...field}
-              value={field.value ? formatInputAmount(String(field.value)) : ''}
-              onChange={(e) => {
-                const rawValue = e.target.value.replace(/,/g, '')
-                const sanitized = rawValue.replace(/[^0-9.]/g, '')
-                const parts = sanitized.split('.')
-                let finalValue = sanitized
-                if (parts.length > 2) {
-                  finalValue = parts[0] + '.' + parts.slice(1).join('')
-                }
-                field.onChange(finalValue)
-              }}
-              className="font-mono"
-            />
-          )}
-        />
-      </FieldGroup>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <FieldGroup>
-          <FieldLabel>Date</FieldLabel>
-          <Controller
-            control={control}
-            name="date"
-            render={({ field }) => (
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal border-border/50",
-                      !field.value && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {field.value ? format(field.value, "PPP") : <span>Today</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0">
-                  <Calendar
-                    mode="single"
-                    selected={field.value}
-                    onSelect={field.onChange}
-                  />
-                </PopoverContent>
-              </Popover>
-            )}
-          />
-        </FieldGroup>
-
-        <FieldGroup>
-          <FieldLabel>Note</FieldLabel>
-          <Controller
-            control={control}
-            name="note"
+            name="amount"
             render={({ field }) => (
               <Input
                 type="text"
-                placeholder="What's this transfer for?"
+                inputMode="decimal"
+                placeholder="0.00"
                 {...field}
+                value={field.value ? formatInputAmount(String(field.value)) : ''}
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/,/g, '')
+                  const sanitized = rawValue.replace(/[^0-9.]/g, '')
+                  const parts = sanitized.split('.')
+                  let finalValue = sanitized
+                  if (parts.length > 2) {
+                    finalValue = parts[0] + '.' + parts.slice(1).join('')
+                  }
+                  field.onChange(finalValue)
+                }}
+                className="text-3xl h-14 text-center font-semibold"
+              />
+            )}
+          />
+          {errors.amount && (
+            <FieldError>{errors.amount.message}</FieldError>
+          )}
+        </FieldGroup>
+
+        {/* From → To accounts */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <FieldGroup>
+            <div className="flex justify-between items-center">
+              <FieldLabel className="mb-0">From</FieldLabel>
+              {selectedFromWallet && (
+                <span className="text-xs text-muted-foreground font-medium">
+                  Bal: {formatCurrency(selectedFromWallet.balance, selectedFromWallet.currency || 'PHP')}
+                </span>
+              )}
+            </div>
+            <Controller
+              control={control}
+              name="fromAccountId"
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  onValueChange={(val) => {
+                    if (val === 'add_wallet'){
+                      setIsAddWalletOpen(true)
+                    } else {
+                      field.onChange(val)
+                    }
+                  }}
+                  >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Source" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-56">
+                    <SelectGroup>
+                      {isWalletsPending ? (
+                        <SelectItem disabled value="loading">Loading...</SelectItem>
+                      ) : wallets.length === 0 ? (
+                        <SelectItem value="empty">No wallets found</SelectItem>
+                      ) : (
+                        wallets.map((wallet) => (
+                          <SelectItem
+                            key={wallet.id}
+                            value={wallet.id}
+                            disabled={wallet.id === currentToAccount}
+                          >
+                            {wallet.name} &bull; {wallet.type} - {wallet.currency}
+                          </SelectItem>
+                        ))
+                      )}
+
+                      <div className="h-px bg-border my-1 mx-2" />
+
+                      <SelectItem value="add_wallet" className="font-medium text-primary" >
+                        + Add Wallet
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.fromAccountId && (
+              <FieldError>{errors.fromAccountId.message}</FieldError>
+            )}
+          </FieldGroup>
+
+          <FieldGroup>
+            <FieldLabel>To</FieldLabel>
+            <Controller
+              control={control}
+              name="toAccountId"
+              render={({ field }) => (
+                <Select
+                  value={field.value}
+                  onValueChange={(val) => {
+                    if (val === 'add_wallet'){
+                      setIsAddWalletOpen(true)
+                    } else {
+                      field.onChange(val)
+                    }
+                  }}
+                  >
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Destination" />
+                  </SelectTrigger>
+                  <SelectContent className="max-h-56">
+                    <SelectGroup>
+                      {isWalletsPending ? (
+                        <SelectItem disabled value="loading">Loading...</SelectItem>
+                      ) : wallets.length === 0 ? (
+                        <SelectItem value="empty">No wallets found</SelectItem>
+                      ) : (
+                        wallets.map((wallet) => (
+                          <SelectItem
+                            key={wallet.id}
+                            value={wallet.id}
+                            disabled={wallet.id === currentFromAccount}
+                          >
+                            {wallet.name} &bull; {wallet.type} - {wallet.currency}
+                          </SelectItem>
+                        ))
+                      )}
+
+                      <div className="h-px bg-border my-1 mx-2" />
+
+                      <SelectItem value="add_wallet" className="font-medium text-primary" >
+                        + Add Wallet
+                      </SelectItem>
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
+              )}
+            />
+            {errors.toAccountId && (
+              <FieldError>{errors.toAccountId.message}</FieldError>
+            )}
+          </FieldGroup>
+
+          <AddWalletModal
+              isControlled={true}
+              open={isAddWalletOpen}
+              onOpenChange={setIsAddWalletOpen}
+            />
+        </div>
+
+        <FieldSeparator />
+
+        {/* Transfer Fee */}
+        <FieldGroup>
+          <FieldLabel>Transfer Fee <span className="text-muted-foreground">(optional)</span></FieldLabel>
+          <Controller
+            control={control}
+            name="transfer_fee"
+            render={({ field }) => (
+              <Input
+                type="text"
+                inputMode="decimal"
+                placeholder="0.00"
+                {...field}
+                value={field.value ? formatInputAmount(String(field.value)) : ''}
+                onChange={(e) => {
+                  const rawValue = e.target.value.replace(/,/g, '')
+                  const sanitized = rawValue.replace(/[^0-9.]/g, '')
+                  const parts = sanitized.split('.')
+                  let finalValue = sanitized
+                  if (parts.length > 2) {
+                    finalValue = parts[0] + '.' + parts.slice(1).join('')
+                  }
+                  field.onChange(finalValue)
+                }}
+                className="font-mono"
               />
             )}
           />
         </FieldGroup>
-      </div>
 
-      <Button type="submit" size="lg" className="w-full" disabled={!watch('amount') || !watch('fromAccountId') || !watch('toAccountId') || isSubmitting}>
-        {isSubmitting ? 'Transferring...' : 'Transfer'}
-      </Button>
-    </form>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <FieldGroup>
+            <FieldLabel>Date</FieldLabel>
+            <Controller
+              control={control}
+              name="date"
+              render={({ field }) => (
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal border-border/50",
+                        !field.value && "text-muted-foreground"
+                      )}
+                    >
+                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      {field.value ? format(field.value, "PPP") : <span>Today</span>}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      mode="single"
+                      selected={field.value}
+                      onSelect={field.onChange}
+                    />
+                  </PopoverContent>
+                </Popover>
+              )}
+            />
+          </FieldGroup>
+
+          <FieldGroup>
+            <FieldLabel>Note</FieldLabel>
+            <Controller
+              control={control}
+              name="note"
+              render={({ field }) => (
+                <Input
+                  type="text"
+                  placeholder="What's this transfer for?"
+                  {...field}
+                />
+              )}
+            />
+          </FieldGroup>
+        </div>
+
+        <Button type="submit" size="lg" className="w-full" disabled={!watch('amount') || !watch('fromAccountId') || !watch('toAccountId') || isSubmitting}>
+          {isSubmitting ? (
+            <span className="inline-flex items-center gap-2">
+              Transferring <Spinner />
+            </span>
+          ) : (
+            'Transfer'
+          )}
+        </Button>
+      </form>
+    </div>
   )
 }

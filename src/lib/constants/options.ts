@@ -1,6 +1,12 @@
-export const AUTOSAVE_DELAY = 5000
+// CONFIGURATION & LIMITS
+export const AUTOSAVE_DELAY = 5000;
 export const ITEMS_PER_PAGE = 60;
+export const MAX_QUICK_ADD_TASKS = 50;
 
+// DATA VALIDATION
+export const DATE_REGEX = /^\d{4}-\d{2}-\d{2}$/;
+
+// UI FILTER OPTIONS
 export const TIME_FILTERS = [
   { name: 'Day', value: 'day' },
   { name: 'Week', value: 'week' },
@@ -8,6 +14,7 @@ export const TIME_FILTERS = [
   { name: 'Year', value: 'year' },
 ];
 
+// FINANCE OPTIONS
 export const TRANSACTION_TYPE_OPTIONS = [
   { label: 'All Types', value: 'all' },
   { label: 'Expense', value: 'expense' },
@@ -42,6 +49,7 @@ export const CURRENCY_OPTIONS: CurrencyInfo[] = [
   { code: 'SGD', symbol: 'S$', name: 'Singapore Dollar' },
 ];
 
+// TASK OPTIONS
 export const TASK_CATEGORY_OPTIONS = [
   'routine',
   'health',

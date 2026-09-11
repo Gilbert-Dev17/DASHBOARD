@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
 import { Search, ChevronDown, ChevronRight, ChevronsUpDown } from 'lucide-react';
 import PageComponent from '@/components/Shared/PageComponent';
 import { PageHeader } from '@/components/Shared/PageHeader';
@@ -29,7 +29,7 @@ import { TIME_FILTERS, TRANSACTION_TYPE_OPTIONS, ITEMS_PER_PAGE } from '@/lib/co
 function getWeekKey(date: Date) {
   const start = new Date(date);
   start.setDate(date.getDate() - date.getDay());
-  return `Week of ${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+  return `Week of ${start.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`;
 }
 
 function getGroupKey(date: Date, filter: string) {
@@ -70,6 +70,9 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
     prevDeps[2] !== searchQuery ||
     prevDeps[3] !== activeCurrency
   ) {
+    if (prevDeps[0] !== selectedFilter) {
+      setCollapsedGroups(new Set());
+    }
     setPrevDeps([selectedFilter, typeFilter, searchQuery, activeCurrency]);
     setPage(1);
   }
@@ -140,6 +143,7 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
     const seenGroups = new Set<string>();
     const targetStart = (page - 1) * ITEMS_PER_PAGE;
 
+    let pageEndFound = false;
     for (let i = 0; i < finalTransactions.length; i++) {
       const tx = finalTransactions[i];
       const d = new Date(tx.created_for_date || tx.created_at);
@@ -168,8 +172,9 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
       visibleRows++;
 
       // Check if we've filled this page
-      if (pageStart !== -1 && visibleRows >= targetStart + ITEMS_PER_PAGE) {
+      if (pageStart !== -1 && !pageEndFound && visibleRows >= targetStart + ITEMS_PER_PAGE) {
         pageEnd = i + 1;
+        pageEndFound = true;
         // Keep counting remaining visible rows for total page count
       }
     }
@@ -186,6 +191,12 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
       visibleCount: totalVisible,
     };
   }, [finalTransactions, selectedFilter, collapsedGroups, page]);
+
+  useEffect(() => {
+    if (page > totalPages) {
+      setPage(totalPages);
+    }
+  }, [totalPages, page]);
 
   return (
     <PageComponent>
@@ -261,9 +272,9 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
             <TableHeader className="bg-muted/30 hover:bg-muted/30">
               <TableRow className="hover:bg-transparent">
                 <TableHead className="h-10 px-4 text-xs text-muted-foreground">Date</TableHead>
+                <TableHead className="h-10 px-4 text-xs text-muted-foreground">Wallet</TableHead>
                 <TableHead className="h-10 px-4 text-xs text-muted-foreground">Note</TableHead>
                 <TableHead className="h-10 px-4 text-xs text-muted-foreground">Category</TableHead>
-                <TableHead className="h-10 px-4 text-xs text-muted-foreground">Wallet</TableHead>
                 <TableHead className="h-10 px-4 text-xs text-right text-muted-foreground">Amount</TableHead>
                 <TableHead className="h-10 w-12 px-2 text-center text-xs text-muted-foreground">Action</TableHead>
               </TableRow>
@@ -340,6 +351,10 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
                           {dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
                         </TableCell>
 
+                        <TableCell className="px-4 py-3 text-xs font-medium text-muted-foreground">
+                          {walletName}
+                        </TableCell>
+
                         <TableCell className="px-4 py-3 text-sm text-muted-foreground max-w-[200px] sm:max-w-[300px] truncate font-medium">
                           {transaction.note || '-'}
                         </TableCell>
@@ -359,10 +374,6 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
                               color={transaction.expense_categories?.color}
                             />
                           ))}
-                        </TableCell>
-
-                        <TableCell className="px-4 py-3 text-xs font-medium text-muted-foreground">
-                          {walletName}
                         </TableCell>
 
                         <TableCell className={`px-4 py-3 text-xs tabular-nums font-mono text-right ${amountColor}`}>

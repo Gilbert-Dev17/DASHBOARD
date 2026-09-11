@@ -23,7 +23,7 @@ export async function addIncomeAction(data: {
         user_id: user.id,
         wallet_id: data.accountId,
         category_id: null, // Income might not use expense categories
-        title: data.note || data.source || 'Income',
+        note: data.note || data.source || 'Income',
         amount: data.amount, // Positive amount
         type: 'income',
         transfer_fee: 0,

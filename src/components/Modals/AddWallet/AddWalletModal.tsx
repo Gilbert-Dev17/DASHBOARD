@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { Plus, Wallet} from 'lucide-react'
+import { useState } from 'react'
+import { Plus } from 'lucide-react'
 import {
   ResponsiveDialog as Dialog,
   ResponsiveDialogContent as DialogContent,
@@ -9,101 +9,26 @@ import {
   ResponsiveDialogTitle as DialogTitle,
   ResponsiveDialogTrigger as DialogTrigger,
   ResponsiveDialogDescription as DialogDescription,
-  ResponsiveDialogFooter as DialogFooter
 } from '@/components/ui/responsive-dialog'
-import { Field, FieldGroup, FieldError, FieldLabel } from '@/components/ui/field'
-import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
-import {
-  Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue,
-} from '@/components/ui/select'
-import { z } from 'zod'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { Controller, useForm } from 'react-hook-form'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { toast } from 'sonner'
-import { addWalletAction } from '@/lib/actions/transactions'
-import { WalletType } from '@/types/database'
-import { WALLET_STYLES } from '@/lib/constants/currencies'
-import { WALLET_TYPE_OPTIONS, CURRENCY_OPTIONS } from '@/lib/constants/options'
-import { formatInputAmount } from '@/utils/currency'
-
-const walletSchema = z.object({
-  name: z.string().min(1, 'Wallet name is required').max(30, 'Name must be 30 characters or less'),
-  balance: z.coerce.number().default(0),
-  currency: z.string().min(1, 'Please select a currency'),
-  type: z.enum(['Debit', 'Assets', 'Stocks', 'Crypto', 'Credit', 'Loans']),
-})
-
-type WalletFormValues = z.infer<typeof walletSchema>
+import { AddWalletForm } from './AddWalletForm'
 
 interface AddWalletModalProps {
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  isControlled?: boolean;
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+  isControlled?: boolean
 }
 
-export const AddWalletModal = ({open, onOpenChange, isControlled = false} :AddWalletModalProps = {}) => {
-  const queryClient = useQueryClient()
+export const AddWalletModal = ({ open, onOpenChange, isControlled = false }: AddWalletModalProps = {}) => {
+  const [internalOpen, setInternalOpen] = useState(false)
 
-    const [internalOpen, setInternalOpen] = useState(false)
-
-    const isOpen = isControlled ? open : internalOpen
-    const handleOpenChange = (newOpen: boolean) => {
-      if (isControlled && onOpenChange) {
-        onOpenChange(newOpen)
-      } else {
-        setInternalOpen(newOpen)
-      }
+  const isOpen = isControlled ? open : internalOpen
+  const handleOpenChange = (newOpen: boolean) => {
+    if (isControlled && onOpenChange) {
+      onOpenChange(newOpen)
+    } else {
+      setInternalOpen(newOpen)
     }
-
-  const { register, handleSubmit, control, watch, reset, formState: { errors } } = useForm<WalletFormValues>({
-    resolver: zodResolver(walletSchema) as any,
-    defaultValues: {
-      name: '',
-      balance: 0,
-      currency: 'PHP',
-      type: 'Debit',
-    }
-  })
-
-  useEffect(() => {
-    if (!isOpen) {
-      reset()
-    }
-  }, [isOpen, reset])
-
-  const currentType = watch('type') as WalletType
-  const currentName = watch('name')
-  const styleInfo = WALLET_STYLES[currentType] || WALLET_STYLES.Debit
-
-  const { mutate: addWallet, isPending } = useMutation({
-    mutationFn: addWalletAction,
-    onSuccess: (result) => {
-      if (!result.success) {
-        toast.error(result.error || 'Failed to add wallet')
-        return
-      }
-      toast.success('Wallet created successfully!')
-      reset()
-      queryClient.invalidateQueries({ queryKey: ['wallets'] })
-      handleOpenChange(false)
-    },
-    onError: () => {
-      toast.error('An unexpected error occurred')
-    }
-  })
-
-  const onSubmit = (data: WalletFormValues) => {
-    const style = WALLET_STYLES[data.type as WalletType];
-    addWallet({
-      name: data.name,
-      balance: data.balance,
-      currency: data.currency,
-      type: data.type as WalletType,
-      icon: style.iconName,
-      color: style.color
-    })
   }
 
   return (
@@ -118,169 +43,17 @@ export const AddWalletModal = ({open, onOpenChange, isControlled = false} :AddWa
       )}
 
       <DialogContent className="sm:max-w-md">
-        <form onSubmit={(e) => {
-            e.stopPropagation();
-            handleSubmit(onSubmit)(e);
-          }}>
-          <DialogHeader >
-            <DialogTitle className="text-base font-semibold">
-              Add Wallet
-            </DialogTitle>
-            <DialogDescription >
-              Create a new wallet to track your finances.
-            </DialogDescription>
-          </DialogHeader>
+        <DialogHeader>
+          <DialogTitle className="text-base font-semibold">Add Wallet</DialogTitle>
+          <DialogDescription>
+            Create a new wallet to track your finances.
+          </DialogDescription>
+        </DialogHeader>
 
-          {/* Live Preview Card */}
-          <div className="flex items-center gap-4 p-4 mt-2 rounded-xl border border-border/50 bg-secondary/20 backdrop-blur-sm shadow-sm transition-all duration-300">
-            <div
-              className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full shadow-inner transition-colors duration-500"
-              style={{ backgroundColor: `${styleInfo.color}20`, color: styleInfo.color }}
-            >
-              <styleInfo.icon size={24} />
-            </div>
-            <div className="flex flex-col overflow-hidden">
-              <h3 className="font-semibold text-lg truncate">
-                {currentName.trim() || 'Account Name'}
-              </h3>
-              <p className="text-xs text-muted-foreground uppercase tracking-wider font-medium">Live Preview</p>
-            </div>
-          </div>
-
-          <FieldGroup className="mt-4 space-y-5">
-            {/* Wallet Name */}
-            <Field>
-              <div className="flex justify-between items-center mb-1">
-                <FieldLabel
-                  htmlFor="wallet-name"
-                  className="block text-xs text-muted-foreground mb-0"
-                >
-                  ACCOUNT NAME
-                </FieldLabel>
-                <span className="text-xs text-muted-foreground font-medium">
-                  {currentName.length}/30
-                </span>
-              </div>
-                <Controller
-                  control={control}
-                  name="name"
-                  render={({field}) => (
-                    <Input
-                      id="wallet-name"
-                      placeholder="e.g., Main Bank, Cash, Credit Card..."
-                      maxLength={30}
-                      {...field}
-                      className="h-12 bg-background/50 border-border/50 focus:bg-background transition-colors"
-                    />
-                  )}>
-                </Controller>
-              {errors.name && <FieldError>{errors.name.message}</FieldError>}
-            </Field>
-
-            <div className="grid grid-cols-2 gap-4">
-              {/* Wallet Type */}
-              <Field>
-                <FieldLabel className="block text-xs text-muted-foreground">
-                  ACCOUNT TYPE
-                </FieldLabel>
-                <Controller
-                  control={control}
-                  name="type"
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="h-12 bg-background/50 border-border/50 focus:bg-background transition-colors">
-                        <SelectValue placeholder="Select type" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {WALLET_TYPE_OPTIONS.map((wallet) => (
-                          <SelectItem key={wallet.value} value={wallet.value} >{wallet.label}</SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-                {errors.type && <FieldError>{errors.type.message}</FieldError>}
-              </Field>
-
-              {/* Currency */}
-              <Field>
-                <FieldLabel className="block text-xs text-muted-foreground">
-                  CURRENCY
-                </FieldLabel>
-                 <Controller
-                  control={control}
-                  name="currency"
-                  render={({ field }) => (
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="h-12 bg-background/50 border-border/50 focus:bg-background transition-colors">
-                        <SelectValue placeholder="Select currency" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectGroup>
-                          {CURRENCY_OPTIONS.map((curr) => (
-                            <SelectItem key={curr.code} value={curr.code}>
-                              {curr.code} ({curr.symbol}) - {curr.name}
-                            </SelectItem>
-                          ))}
-                        </SelectGroup>
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-                {errors.currency && <FieldError>{errors.currency.message}</FieldError>}
-              </Field>
-            </div>
-
-            {/* Initial Balance */}
-            <Field>
-              <FieldLabel
-                htmlFor="wallet-balance"
-                className="block text-xs text-muted-foreground"
-              >
-                {currentType === 'Credit' || currentType === 'Loans' ? 'CURRENT BALANCE (OWED)' : 'INITIAL BALANCE'}
-              </FieldLabel>
-              <Controller
-                control={control}
-                name="balance"
-                render={({ field }) => (
-                  <Input
-                    id="wallet-balance"
-                    type="text"
-                    inputMode="decimal"
-                    placeholder="0.00"
-                    {...field}
-                    value={field.value ? formatInputAmount(String(field.value)) : ''}
-                    onChange={(e) => {
-                      const rawValue = e.target.value.replace(/,/g, '')
-                      const sanitized = rawValue.replace(/[^0-9.]/g, '')
-                      const parts = sanitized.split('.')
-                      let finalValue = sanitized
-                      if (parts.length > 2) {
-                        finalValue = parts[0] + '.' + parts.slice(1).join('')
-                      }
-                      field.onChange(finalValue)
-                    }}
-                    className="text-3xl h-14 text-center font-semibold"
-                  />
-                )}
-              />
-              {errors.balance && <FieldError>{errors.balance.message}</FieldError>}
-            </Field>
-          </FieldGroup>
-
-          <DialogFooter className="mt-8 flex justify-end">
-            <Button
-              type="submit"
-              size="lg"
-              className="w-full font-semibold shadow-sm"
-              disabled={isPending || !currentName.trim()}
-            >
-              {isPending ? 'Adding...' : 'Add Wallet'}
-            </Button>
-          </DialogFooter>
-        </form>
+        <AddWalletForm
+          isOpen={isOpen}
+          onSuccess={() => handleOpenChange(false)}
+        />
       </DialogContent>
     </Dialog>
   )

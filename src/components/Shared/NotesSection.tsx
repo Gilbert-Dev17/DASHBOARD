@@ -3,7 +3,7 @@
 import { Notes } from '@/types/dashboard'
 import { Button } from '../ui/button'
 import { Spinner } from '../ui/spinner'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { Controller, useForm } from 'react-hook-form'
 import { toast } from 'sonner'
@@ -33,6 +33,7 @@ type UpdateDailyNotes = z.infer<typeof UpdateNotesSchema>
 
 export const NotesSection = ({ note, dateStr, userId }: NotesProps) => {
   const [isOpen, setIsOpen] = useState(false)
+  const queryClient = useQueryClient()
 
   const { data: fetchedNote, isLoading } = useQuery({
     queryKey: ['dailyNote', userId, dateStr],
@@ -56,12 +57,15 @@ export const NotesSection = ({ note, dateStr, userId }: NotesProps) => {
       }
   })
 
+  const loadedDateRef = useRef<string | null>(null)
+
   useEffect(() => {
-    if (!isDirty) {
+    if (loadedDateRef.current !== dateStr && currentNote !== undefined) {
+      loadedDateRef.current = dateStr
       reset({ content: currentNote?.content || '' })
       setOptimisticContent(currentNote?.content || '')
     }
-  }, [currentNote, isDirty, reset])
+  }, [dateStr, currentNote, reset])
 
   const { mutate: saveNote, isPending } = useMutation({
       mutationFn: async (data: UpdateDailyNotes) => {
@@ -71,6 +75,12 @@ export const NotesSection = ({ note, dateStr, userId }: NotesProps) => {
       },
       onSuccess: (_result, variables) => {
           toast.success("Note saved successfully")
+          queryClient.setQueryData(['dailyNote', userId, dateStr], (old: any) => ({
+            ...(old || {}),
+            content: variables.content
+          }))
+          queryClient.invalidateQueries({ queryKey: ['dailyNote', userId, dateStr] })
+
           if (getValues('content') === variables.content) {
             reset({ content: variables.content })
           }
@@ -82,6 +92,7 @@ export const NotesSection = ({ note, dateStr, userId }: NotesProps) => {
   })
 
   const isPendingRef = useRef(isPending)
+  isPendingRef.current = isPending
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 

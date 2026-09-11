@@ -1,70 +1,88 @@
 'use client'
 
 import { useCallback, useState } from 'react'
-import { Plus } from 'lucide-react'
-import {
-  ResponsiveDialog as Dialog,
-  ResponsiveDialogContent as DialogContent,
-  ResponsiveDialogHeader as DialogHeader,
-  ResponsiveDialogTitle as DialogTitle,
-  ResponsiveDialogTrigger as DialogTrigger,
-  ResponsiveDialogDescription as DialogDescription
-} from '@/components/ui/responsive-dialog'
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
+import { Plus, TrendingDown, TrendingUp, ArrowLeftRight, Tag, Wallet } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-
-import { ExpenseForm } from './ExpenseForm'
-import { IncomeForm } from './IncomeForm'
-import { TransferForm } from './TransferForm'
-
+import {
+  CommandDialog,
+  CommandEmpty,
+  CommandGroup,
+  CommandItem,
+  CommandList,
+  CommandSeparator,
+  Command,
+} from '@/components/ui/command'
 import { useGlobalShortcut } from '@/hooks/useGlobalShortcut'
 
+const TRANSACTION_COMMANDS = [
+  {
+    group: 'Transactions',
+    items: [
+      { label: 'Add Expense',  icon: TrendingDown,   href: '/finance/add/expense'  },
+      { label: 'Add Income',   icon: TrendingUp,     href: '/finance/add/income'   },
+      { label: 'Add Transfer', icon: ArrowLeftRight, href: '/finance/add/transfer' },
+    ],
+  },
+  {
+    group: 'Manage',
+    items: [
+      { label: 'Add Category', icon: Tag,    href: '/finance/add/category' },
+      { label: 'Add Wallet',   icon: Wallet, href: '/finance/add/wallet'   },
+    ],
+  },
+]
+
 export function AddTransactionModal({ enableShortcut = true }: { enableShortcut?: boolean }) {
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(false)
+  const router = useRouter()
 
   const handleTrigger = useCallback(() => setOpen((prev) => !prev), [])
-    useGlobalShortcut({ key: 'k', onTrigger: handleTrigger, enabled: enableShortcut })
+  useGlobalShortcut({ key: 'k', onTrigger: handleTrigger, enabled: enableShortcut })
+
+  const handleSelect = (href: string) => {
+    setOpen(false)
+    router.push(href)
+  }
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button
-          variant="default"
-          className="rounded-md h-12 flex justify-start items-center p-0"
-          aria-label="Add transaction"
-        >
-          <div className="w-12 h-12 flex items-center justify-center shrink-0">
-            <Plus size={20} strokeWidth={2.5} aria-hidden />
-          </div>
-        </Button>
-      </DialogTrigger>
+    <>
+      <Button
+        variant="default"
+        className="rounded-md h-12 flex justify-start items-center p-0"
+        aria-label="Add transaction"
+        onClick={() => setOpen(true)}
+      >
+        <div className="w-12 h-12 flex items-center justify-center shrink-0">
+          <Plus size={20} strokeWidth={2.5} aria-hidden />
+        </div>
+      </Button>
 
-      <DialogContent aria-describedby={undefined} className="sm:max-w-lg">
-       <DialogHeader>
-          <DialogTitle className="text-base font-semibold">Finance Form</DialogTitle>
-         <DialogDescription>
-           Add Expense, Income or Transfer Cash to your wallets.
-         </DialogDescription>
-        </DialogHeader>
-
-        <Tabs defaultValue="expense">
-          <TabsList className='w-full items-center bg-card border border-border/50'>
-            <TabsTrigger value="expense">Expense</TabsTrigger>
-            <TabsTrigger value="income">Income</TabsTrigger>
-            <TabsTrigger value="transfer">Transfer</TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="expense" className="mt-2">
-            <ExpenseForm />
-          </TabsContent>
-          <TabsContent value="income" className="mt-2">
-            <IncomeForm />
-          </TabsContent>
-          <TabsContent value="transfer" className="mt-2">
-            <TransferForm />
-          </TabsContent>
-        </Tabs>
-      </DialogContent>
-    </Dialog>
+      <CommandDialog
+        open={open}
+        onOpenChange={setOpen}
+        title="Quick Add"
+        description="Choose what to add to your finances"
+      >
+        <Command>
+          <CommandList>
+            <CommandEmpty>No actions found.</CommandEmpty>
+            {TRANSACTION_COMMANDS.map((group, i) => (
+              <div key={group.group}>
+                {i > 0 && <CommandSeparator />}
+                <CommandGroup heading={group.group}>
+                  {group.items.map(({ label, icon: Icon, href }) => (
+                    <CommandItem key={href} onSelect={() => handleSelect(href)}>
+                      <Icon />
+                      <span>{label}</span>
+                    </CommandItem>
+                  ))}
+                </CommandGroup>
+              </div>
+            ))}
+          </CommandList>
+        </Command>
+      </CommandDialog>
+    </>
   )
 }
