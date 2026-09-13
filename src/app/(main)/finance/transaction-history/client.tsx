@@ -372,6 +372,7 @@ export function ViewAllTransactions({ transactions, wallets, user }: ViewAllTran
                               name={transaction.expense_categories?.name}
                               icon={transaction.expense_categories?.icon}
                               color={transaction.expense_categories?.color}
+                              badgePill={false}
                             />
                           ))}
                         </TableCell>

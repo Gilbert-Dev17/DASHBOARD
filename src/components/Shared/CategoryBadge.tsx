@@ -8,11 +8,21 @@ interface CategoryBadgeProps {
   icon?: string;
   color?: string | null;
   className?: string;
+  badgePill?: boolean;
 }
 
-export function CategoryBadge({ name = 'Uncategorized', icon, color, className = '' }: CategoryBadgeProps) {
+export function CategoryBadge({ name = 'Uncategorized', icon, color, className = '', badgePill = true }: CategoryBadgeProps) {
   const iconObj = icon ? AVAILABLE_ICONS.find(i => i.name === icon) : null;
   const Icon = iconObj?.icon || HelpCircle;
+
+  if (!badgePill) {
+    return (
+      <span className={`inline-flex items-center gap-2 text-xs font-medium ${className}`}>
+        <Icon size={14} className="shrink-0" style={{ color: color || 'var(--muted)' }} />
+        <span className="text-foreground/90 truncate max-w-[120px]">{name}</span>
+      </span>
+    );
+  }
 
   return (
     <Badge
