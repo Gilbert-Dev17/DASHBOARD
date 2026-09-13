@@ -23,10 +23,10 @@ export async function addIncomeAction(data: {
         user_id: user.id,
         wallet_id: data.accountId,
         category_id: null, // Income might not use expense categories
-        title: data.note || data.source || 'Income',
+        note: data.note || data.source || 'Income',
         amount: data.amount, // Positive amount
         type: 'income',
-        transferFee: 0,
+        transfer_fee: 0,
         created_for_date: data.date
           ? (typeof data.date === 'string' ? data.date : new Date(data.date.getTime() - (data.date.getTimezoneOffset() * 60000)).toISOString().split('T')[0])
           : new Date().toISOString().split('T')[0]

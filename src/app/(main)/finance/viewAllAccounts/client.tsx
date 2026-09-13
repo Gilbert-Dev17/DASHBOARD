@@ -1,12 +1,11 @@
 'use client'
 
-import { ArrowLeft, Wallet as WalletIcon } from 'lucide-react'
+import { Wallet as WalletIcon } from 'lucide-react'
 import PageComponent from '@/components/Shared/PageComponent'
-import { Button } from '@/components/ui/button'
+import { PageHeader } from '@/components/Shared/PageHeader'
 import { WalletCard } from '@/components/Expenses/WalletCard'
 import { type Wallets, TransactionHistory } from '@/types/expenses'
 import Link from 'next/link'
-import { HeaderTitle } from '@/components/Shared/HeaderTitle'
 import { useRouter } from 'next/navigation'
 import { AddWalletModal } from '@/components/Modals/AddWallet/AddWalletModal'
 
@@ -20,23 +19,10 @@ export function ViewAllAccountsClient({ wallets }: ViewAllAccountsClientProps) {
 
   return (
     <PageComponent>
-      <section className='mt-5'>
         {/* HEADER */}
-        <header className="flex flex-col md:flex-row md:items-end justify-between items-start gap-6 mb-12">
-          <div className="flex flex-row items-center gap-2">
-            <Button
-              variant="link"
-              size="icon"
-              className="group h-8 px-2 text-muted-foreground hover:text-foreground mb-2 w-fit"
-              onClick={() => router.back()}
-            >
-              <ArrowLeft size={14} className="transition-transform duration-300 group-hover:-translate-x-1" />
-            </Button>
-            <HeaderTitle title="All Wallets" desc="Manage and view all your active wallets." />
-          </div>
-
+        <PageHeader title="All Wallets">
           <AddWalletModal />
-        </header>
+        </PageHeader>
 
         {/* CONTENT */}
         {wallets.length === 0 ? (
@@ -70,7 +56,6 @@ export function ViewAllAccountsClient({ wallets }: ViewAllAccountsClientProps) {
             ))}
           </div>
         )}
-      </section>
     </PageComponent>
   )
 }

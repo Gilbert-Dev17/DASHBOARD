@@ -1,6 +1,6 @@
 'use client'
 
-import { useSyncStatus } from '@/contexts/SyncStatusContext'
+import { useSyncStore } from '@/hooks/syncStore'
 import { cn } from '@/lib/utils'
 import {
   Tooltip,
@@ -10,21 +10,22 @@ import {
 } from "@/components/ui/tooltip"
 
 export function SyncIndicator({ className }: { className?: string }) {
-  const { syncStatus, lastSyncedAt } = useSyncStatus()
+  const status = useSyncStore((s) => s.status)
+  const lastSynced = useSyncStore((s) => s.lastSynced)
 
   let indicatorColor = 'bg-muted' // idle/connected but no activity
-  if (syncStatus === 'syncing') {
+  if (status === 'syncing') {
     indicatorColor = 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]'
-  } else if (syncStatus === 'error') {
+  } else if (status === 'error') {
     indicatorColor = 'bg-rose-500'
   }
 
-  const tooltipText = syncStatus === 'syncing'
+  const tooltipText = status === 'syncing'
     ? 'Syncing changes...'
-    : syncStatus === 'error'
+    : status === 'error'
     ? 'Connection lost'
-    : lastSyncedAt
-    ? `Synced at ${lastSyncedAt.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+    : lastSynced
+    ? `Synced at ${lastSynced.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
     : 'Realtime connected'
 
   return (
@@ -33,7 +34,7 @@ export function SyncIndicator({ className }: { className?: string }) {
         <TooltipTrigger asChild>
           <div className={cn("flex items-center justify-center p-2 cursor-default", className)}>
             <div className="relative flex h-2 w-2 items-center justify-center">
-              {syncStatus === 'syncing' && (
+              {status === 'syncing' && (
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
               )}
               <span className={cn("relative inline-flex rounded-full h-2 w-2 transition-all duration-300", indicatorColor)}></span>

@@ -6,16 +6,56 @@ import { format, parseISO } from 'date-fns'
 import { Card } from '@/components/ui/card'
 import { Calendar } from '@/components/ui/calendar'
 import { cn } from '@/lib/utils'
+import { TaskWithSubtasks, Notes } from '@/types/dashboard'
+import { FullCalendar } from '../Schedule/FullCalendar'
 
 interface CustomCalendarProps {
   initialDate?: Date;
   datesWithTasks?: { date: string; count: number }[];
   startTransition?: TransitionStartFunction;
   hideNavigation?: boolean;
+  CustomC?: boolean;
+  monthTasks?: Record<string, TaskWithSubtasks[]>;
+  userId?: string;
+  selectedDate?: string;
+  initialTasks?: TaskWithSubtasks[];
+  note?: Notes | null;
+  autoOpenDrawer?: boolean;
+  isPending?: boolean;
 }
 
-export const CustomCalendar = ({ initialDate = new Date(), datesWithTasks = [], startTransition, hideNavigation = false }: CustomCalendarProps) => {
+export const CustomCalendar = ({ 
+  initialDate = new Date(), 
+  datesWithTasks = [], 
+  startTransition, 
+  hideNavigation = false,
+  CustomC = false,
+  monthTasks,
+  userId,
+  selectedDate,
+  initialTasks,
+  note,
+  autoOpenDrawer,
+  isPending
+}: CustomCalendarProps) => {
   const router = useRouter()
+
+  if (CustomC) {
+    return (
+      <FullCalendar
+        userId={userId!}
+        initialDate={initialDate}
+        monthTasks={monthTasks || {}}
+        datesWithTasks={datesWithTasks}
+        startTransition={startTransition}
+        selectedDate={selectedDate}
+        initialTasks={initialTasks}
+        note={note}
+        autoOpenDrawer={autoOpenDrawer}
+        isPending={isPending}
+      />
+    )
+  }
 
   const handleSelect = (date: Date | undefined) => {
     if (!date) return
@@ -50,9 +90,9 @@ export const CustomCalendar = ({ initialDate = new Date(), datesWithTasks = [], 
           task3: task3Dates,
         }}
         modifiersClassNames={{
-          task1: "relative after:content-['.'] after:absolute after:bottom-0.5 after:left-1/2 after:-translate-x-1/2 after:text-accent after:font-bold after:text-lg after:leading-none",
-          task2: "relative after:content-['..'] after:absolute after:bottom-0.5 after:left-1/2 after:-translate-x-1/2 after:text-accent after:font-bold after:text-lg after:leading-none after:tracking-[0.1em]",
-          task3: "relative after:content-['...'] after:absolute after:bottom-0.5 after:left-1/2 after:-translate-x-1/2 after:text-accent after:font-bold after:text-lg after:leading-none after:tracking-[0.1em]",
+          task1: "relative after:content-['.'] after:absolute after:bottom-0.5 after:left-1/2 after:-translate-x-1/2 after:text-foreground after:font-bold after:text-lg after:leading-none",
+          task2: "relative after:content-['..'] after:absolute after:bottom-0.5 after:left-1/2 after:-translate-x-1/2 after:text-foreground after:font-bold after:text-lg after:leading-none after:tracking-[0.1em]",
+          task3: "relative after:content-['...'] after:absolute after:bottom-0.5 after:left-1/2 after:-translate-x-1/2 after:text-foreground after:font-bold after:text-lg after:leading-none after:tracking-[0.1em]",
         }}
 
         formatters={{

@@ -51,7 +51,7 @@ export function WeatherCard({ tasks = [] }: { tasks?: TaskWithSubtasks[] }) {
 
       {permissionStatus === 'denied' && (
         <div className="flex items-center gap-3 text-sm">
-          <MapPin size={16} aria-hidden="true" className="text-accent" />
+          <MapPin size={16} aria-hidden="true" className="text-foreground" />
           <span>Location access was denied, so we can&apos;t show local weather.</span>
           <button
               type="button"
@@ -100,33 +100,32 @@ export function WeatherCard({ tasks = [] }: { tasks?: TaskWithSubtasks[] }) {
 
       {weather && (
         <div className="relative z-10 w-full max-w-5xl">
-          <div className="absolute -right-20 -top-20 w-64 h-64 rounded-full mix-blend-overlay opacity-10 blur-[80px] transition-colors duration-500 bg-accent pointer-events-none" />
 
           <p className="text-2xl md:text-3xl lg:text-4xl leading-snug tracking-tight font-light text-muted-foreground/90 text-pretty">
-            Currently <span className="font-medium text-accent">{weather.temperature}&deg;C</span> in {weather.location} with {' '}
-            <span className="font-medium text-accent inline-flex items-center gap-2 mx-1">
-              <CloudSun size={32} className="text-accent" />
+            Currently <span className="font-medium text-foreground">{weather.temperature}&deg;C</span> in {weather.location} with {' '}
+            <span className="font-medium text-foreground inline-flex items-center gap-2 mx-1">
+              <CloudSun size={32} className="text-foreground" />
               {weather.condition.toLowerCase()}
             </span>.
-            Feels like <span className="font-medium text-accent">{weather.feelsLike}&deg;C</span> with <span className="text-accent font-medium">{weather.humidity}% humidity</span> and <span className="text-accent font-medium">{weather.windSpeed} km/h</span> winds.
-            Sunset is at <span className="text-accent font-medium">{weather.sunSet}</span>.
+            Feels like <span className="font-medium text-foreground">{weather.feelsLike}&deg;C</span> with <span className="text-foreground font-medium">{weather.humidity}% humidity</span> and <span className="text-foreground font-medium">{weather.windSpeed} km/h</span> winds.
+            Sunset is at <span className="text-foreground font-medium">{weather.sunSet}</span>.
           </p>
 
           {/* ── SCANNABLE CHIPS ── */}
           <div className="flex flex-wrap items-center gap-3 md:gap-4 mt-2">
 
             <Badge variant={'secondary'}>
-              <CheckCircle2 size={16} className="text-accent" />
+              <CheckCircle2 size={16} className="text-foreground" />
               {pendingTasks === 0 ? 'No tasks left' : `${pendingTasks} Tasks today`}
             </Badge>
 
             <Badge variant={'secondary'}>
-              <CheckCircle2 size={16} className="text-accent" />
+              <CheckCircle2 size={16} className="text-foreground" />
               {pendingTasks === 0 ? 'Free all day' : `Free after ${freeTime}`}
             </Badge>
 
             <Badge variant={'secondary'}>
-              <CloudSun size={16} className="text-accent" />
+              <CloudSun size={16} className="text-foreground" />
               {weather.temperature}&deg;C {weather.location}
             </Badge>
 

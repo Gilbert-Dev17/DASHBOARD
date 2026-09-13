@@ -162,37 +162,50 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
     }, [])
 
   const { mutate: handleToggleTask } = useMutation({
-    mutationFn: async ({ taskId, isDone, taskName }: { taskId: string, isDone: boolean, taskName: string }) => {
+    mutationFn: async ({ taskId, isDone, taskName, dateStr }: { taskId: string, isDone: boolean, taskName: string, dateStr?: string }) => {
       const result = await toggleTask(taskId, isDone)
       if (!result.success) throw new Error(result.message)
       return { isDone, taskName }
     },
-    onMutate: async ({ taskId, isDone }) => {
+    onMutate: async ({ taskId, isDone, dateStr }) => {
       setTasks(current => getOptimisticTasks(current, taskId, isDone))
+      // Dispatch for FullCalendar
+      window.dispatchEvent(new CustomEvent('optimistic-task-toggle', {
+        detail: { taskId, isDone, dateStr: dateStr || selectedDateStr }
+      }))
     },
     onSuccess: ({ isDone, taskName }) => {
       toast.success(isDone ? `"${taskName}" completed.` : `"${taskName}" reopened.`)
     },
-    onError: (error, { taskId, isDone }) => {
+    onError: (error, { taskId, isDone, dateStr }) => {
       setTasks(current => getOptimisticTasks(current, taskId, !isDone))
+      window.dispatchEvent(new CustomEvent('optimistic-task-toggle', {
+        detail: { taskId, isDone: !isDone, dateStr: dateStr || selectedDateStr }
+      }))
       toast.error(error.message || "Failed to update task.")
     }
   })
 
   const { mutate: handleToggleSubtask } = useMutation({
-    mutationFn: async ({ taskId, subtaskId, isDone, subtaskName }: { taskId: string, subtaskId: string, isDone: boolean, subtaskName: string }) => {
+    mutationFn: async ({ taskId, subtaskId, isDone, subtaskName, dateStr }: { taskId: string, subtaskId: string, isDone: boolean, subtaskName: string, dateStr?: string }) => {
       const result = await toggleSubTask(subtaskId, isDone)
       if (!result.success) throw new Error(result.message)
       return { isDone, subtaskName }
     },
-    onMutate: async ({ taskId, subtaskId, isDone }) => {
+    onMutate: async ({ taskId, subtaskId, isDone, dateStr }) => {
       setTasks(current => getOptimisticSubtasks(current, taskId, subtaskId, isDone))
+      window.dispatchEvent(new CustomEvent('optimistic-subtask-toggle', {
+        detail: { taskId, subtaskId, isDone, dateStr: dateStr || selectedDateStr }
+      }))
     },
     onSuccess: ({ isDone, subtaskName }) => {
       toast.success(isDone ? `"${subtaskName}" completed.` : `"${subtaskName}" reopened.`)
     },
-    onError: (error, { taskId, subtaskId, isDone }) => {
+    onError: (error, { taskId, subtaskId, isDone, dateStr }) => {
       setTasks(current => getOptimisticSubtasks(current, taskId, subtaskId, !isDone))
+      window.dispatchEvent(new CustomEvent('optimistic-subtask-toggle', {
+        detail: { taskId, subtaskId, isDone: !isDone, dateStr: dateStr || selectedDateStr }
+      }))
       toast.error(error.message || "Failed to update subtask.")
     }
   })
@@ -202,7 +215,7 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
     <section className="lg:col-span-7 flex flex-col h-full overflow-hidden" aria-labelledby="agenda-heading">
       {showTitle && (
         <div className="flex justify-between items-end mb-6 lg:mb-8 shrink-0">
-          <h2 id="agenda-heading" className="text-xs font-semibold uppercase tracking-widest transition-colors text-muted-foreground duration-500">
+          <h2 id="agenda-heading" className="font-mono text-[11px] uppercase tracking-wider transition-colors text-muted-foreground duration-500">
             Today&apos;s Agenda
           </h2>
         </div>
@@ -228,8 +241,8 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
 
                 <TimelineTime dateTime={task.time || undefined}>
                     {task.time && task.time.split(':').length === 3 && task.time.split(':')[2] !== '00'
-                      ? 'FREE'
-                      : (task.time ? formatTime(task.time) : '--:--')}
+                    ? 'FREE'
+                    : (task.time ? formatTime(task.time) : 'FREE')}
                 </TimelineTime>
 
                 <TimelineContent
@@ -243,7 +256,7 @@ export const AgendaSection = ({ initialTasks, selectedDateStr, showTitle = true 
                         <span className={`font-medium text-sm tracking-wide ${task.is_done ? 'line-through text-muted-foreground' : 'text-foreground/90 group-hover:text-foreground'}`}>
                           {task.task_name}
                         </span>
-                        <span className="text-xs font-semibold uppercase tracking-wider text-accent">
+                        <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
                           {task.task_category?.name}
                         </span>
                       </div>

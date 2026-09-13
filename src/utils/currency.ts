@@ -18,8 +18,9 @@ export const getSignedAmount = (
     case 'expense':
       return -magnitude;
     case 'transfer':
-      // Transfers are already signed correctly in the DB:
-      // Transfer Out is negative, Transfer In is positive.
+    case 'adjustment':
+      // Transfers and Adjustments are already signed correctly in the DB:
+      // Negative means out/loss, Positive means in/gain.
       return Number(txn.amount);
     default:
       return magnitude;
@@ -48,6 +49,16 @@ export const formatSignedCurrency = (amount: number, currencyCode: string = 'PHP
   if (amount > 0 && forceSign) return `+${formatted}`;
   return formatted;
 }
+
+export const formatCompactCurrency = (amount: number, currencyCode: string = 'PHP'): string => {
+  const locale = LOCALE_MAP[currencyCode] || undefined;
+  return new Intl.NumberFormat(locale, {
+    style: 'currency',
+    currency: currencyCode,
+    notation: 'compact',
+    maximumFractionDigits: 1,
+  }).format(amount);
+};
 
 export const formatInputAmount = (value: string): string => {
   if (!value) return ''

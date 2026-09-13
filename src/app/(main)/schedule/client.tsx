@@ -9,34 +9,56 @@ import { CustomCalendar } from '@/components/Shared/CustomCalendar'
 import { TaskWithSubtasks, Notes } from '@/types/dashboard'
 import { getTodayInTimezone } from '@/utils/timezone'
 import { useRouter } from 'next/navigation'
-import { HeaderTitle } from '@/components/Shared/HeaderTitle'
 import {NotesSection} from '@/components/Shared/NotesSection'
 
 import { Spinner } from '@/components/ui/spinner'
 import { MobileScheduleCalendar } from '@/components/Shared/MobileScheduleCalendar'
 
 interface PageProps {
+  userId: string
   agendaTitle: string
   initialTasks: TaskWithSubtasks[]
   note: Notes | null
   dateObj: Date
   datesWithTasks: { date: string; count: number }[]
   finalDate: string
+  monthTasks: Record<string, TaskWithSubtasks[]>
+  autoOpenDrawer?: boolean
 }
 
-export function PlannerPage({ agendaTitle, initialTasks, note, dateObj, datesWithTasks, finalDate }: PageProps) {
-  const [showNotes, setShowNotes] = useState(false)
+export function PlannerPage({ userId, agendaTitle, initialTasks, note, dateObj, datesWithTasks, finalDate, monthTasks, autoOpenDrawer }: PageProps) {
+  // Notes state is now handled internally by NotesSection
   const router = useRouter()
   const [isPending, startTransition] = useTransition();
   const isToday = finalDate === getTodayInTimezone()
 
+  // CustomC toggle in code as requested
+  const CustomC = true
+
+  if (CustomC) {
+    return (
+      <PageComponent>
+        <div className="h-full min-h-[calc(100vh-7rem)] flex flex-col">
+          <CustomCalendar
+            CustomC={true}
+            userId={userId}
+            initialDate={dateObj}
+            selectedDate={finalDate}
+            datesWithTasks={datesWithTasks}
+            monthTasks={monthTasks}
+            initialTasks={initialTasks}
+            note={note}
+            autoOpenDrawer={autoOpenDrawer}
+            startTransition={startTransition}
+            isPending={isPending}
+          />
+        </div>
+      </PageComponent>
+    )
+  }
+
   return (
     <PageComponent>
-      <div className='mb-4'>
-        <HeaderTitle
-          title='Schedule'
-          desc='Organize your tasks and capture daily reflections.'/>
-      </div>
 
       {/* MOBILE LAYOUT (< 1024px) */}
       <div className="lg:hidden flex flex-col relative">
@@ -46,15 +68,15 @@ export function PlannerPage({ agendaTitle, initialTasks, note, dateObj, datesWit
           startTransition={startTransition}
         />
 
-        <div className="flex flex-col mt-6 min-h-125">
+        <div className="flex flex-col mt-4 min-h-[125px]">
           <div className="flex justify-between items-center mb-4">
-            <Label className="text-xl font-medium tracking-tight text-accent" >
+            <Label className="text-xl font-medium tracking-tight text-foreground" >
                 {agendaTitle}
             </Label>
             <div className="flex items-center gap-2">
               {isPending && <Spinner className="w-4 h-4 text-primary animate-spin" /> }
               {!isToday && (
-                <Button variant="link" size="sm" onClick={() => startTransition(() => router.push('/schedule'))} className="text-xs uppercase tracking-wider font-semibold text-accent">
+                <Button variant="link" size="sm" onClick={() => startTransition(() => router.push('/schedule'))} className="text-xs uppercase tracking-wider font-semibold text-foreground">
                   Today
                 </Button>
               )}
@@ -63,40 +85,33 @@ export function PlannerPage({ agendaTitle, initialTasks, note, dateObj, datesWit
           <AgendaSection initialTasks={initialTasks} selectedDateStr={finalDate} showTitle={false} />
         </div>
 
-        <div className="mt-8 mb-4">
-          <NotesSection note={note} dateStr={finalDate} isExpanded={showNotes} onExpand={() => setShowNotes(true)} onCollapse={() => setShowNotes(false)} />
+        <div className="mt-6 mb-4">
+          <NotesSection note={note} dateStr={finalDate} userId={userId} />
         </div>
       </div>
 
       {/* DESKTOP LAYOUT (>= 1024px) */}
-       <div className="hidden lg:grid grid-cols-12 gap-10 lg:h-[calc(100vh-7rem)]">
+       <div className="hidden lg:grid grid-cols-12 gap-6 lg:h-[calc(100vh-7rem)]">
 
         <div className='lg:col-span-4 flex flex-col h-full space-y-4 min-h-0'>
           <div className="flex justify-between items-center shrink-0">
-            <h2 className="text-xs font-semibold text-muted-foreground uppercase tracking-widest">
-              {showNotes ? 'Daily Notes' : 'Calendar'}
+            <h2 className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+              Calendar
             </h2>
-
-            <Button variant="ghost" size="sm" onClick={() => setShowNotes(!showNotes)} className="text-xs">
-              {showNotes ? 'Show Calendar' : ''}
-            </Button>
           </div>
 
-          {!showNotes && (
-            <CustomCalendar
-              initialDate={dateObj}
-              datesWithTasks={datesWithTasks}
-              startTransition={startTransition}
-            />
-          )}
+          <CustomCalendar
+            initialDate={dateObj}
+            datesWithTasks={datesWithTasks}
+            startTransition={startTransition}
+          />
 
-          <NotesSection note={note} dateStr={finalDate} isExpanded={showNotes} onExpand={() => setShowNotes(true)} />
+          <NotesSection note={note} dateStr={finalDate} userId={userId} />
         </div>
-
 
           <div className="lg:col-span-8 flex flex-col h-full overflow-hidden">
             <div className="flex justify-between items-center">
-              <Label className="text-2xl font-medium tracking-tight text-accent" >
+              <Label className="text-2xl font-medium tracking-tight text-foreground" >
                  {agendaTitle}
               </Label>
 
@@ -108,13 +123,12 @@ export function PlannerPage({ agendaTitle, initialTasks, note, dateObj, datesWit
                     variant="link"
                     size="sm"
                     onClick={() => startTransition(() => router.push('/schedule'))}
-                    className="text-xs uppercase tracking-wider font-semibold text-accent"
+                    className="text-xs uppercase tracking-wider font-semibold text-foreground"
                   >
                     Today
                   </Button>
                 )}
               </div>
-
             </div>
 
             <AgendaSection initialTasks={initialTasks} selectedDateStr={finalDate} showTitle={false} />

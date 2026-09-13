@@ -32,7 +32,7 @@ const parseBoldText = (text: string) => {
   const parts = text.split(/(\*\*.*?\*\*)/g);
   return parts.map((part, i) => {
     if (part.startsWith('**') && part.endsWith('**')) {
-      return <span key={i} className="font-semibold text-accent">{part.slice(2, -2)}</span>;
+      return <span key={i} className="font-semibold text-foreground">{part.slice(2, -2)}</span>;
     }
     return <Fragment key={i}>{part}</Fragment>;
   });
@@ -97,7 +97,6 @@ export const GreetingHeader = ({firstName, name, tasks = []}: userGreeting) => {
   const greeting = useMemo(() => getGreeting(currentTime), [currentTime])
   const brief = useMemo(() => generateDailyBrief(tasks, weather), [tasks, weather]);
 
-  // ── Chip data ──
   const pendingTasks = tasks.filter(t => !t.is_done).length;
   const completedTasks = tasks.filter(t => t.is_done).length;
 
@@ -107,9 +106,8 @@ export const GreetingHeader = ({firstName, name, tasks = []}: userGreeting) => {
   return (
     <>
         <div className="flex justify-between items-center mb-8 lg:mb-12">
-          <h1 className="text-6xl md:text-8xl lg:text-[9rem] font-bold tracking-tighter leading-none flex items-end">
+          <h1 className="text-6xl md:text-8xl lg:text-[9rem] font-pixel-circle leading-none flex items-end text-foreground" >
             {dayOfWeek}
-            <span className="w-3 h-3 md:w-4 md:h-4 lg:w-6 lg:h-6 rounded-full ml-3 md:ml-5 mb-2 md:mb-4 lg:mb-6 transition-colors duration-500 bg-accent" aria-hidden="true" />
           </h1>
         </div>
 
@@ -123,48 +121,46 @@ export const GreetingHeader = ({firstName, name, tasks = []}: userGreeting) => {
             <div className="flex flex-wrap items-center gap-3 md:gap-4 mt-6">
 
               {pendingTasks > 0 ? (
-                <Badge variant="secondary" >
-                  <ListTodo size={16} className="text-accent" />
-                  {pendingTasks} {pendingTasks === 1 ? 'task' : 'tasks'} remaining
+                <Badge variant="secondary" className="micro-label text-muted-foreground gap-1.5 px-2.5 py-1">
+                  <ListTodo size={14} className="text-foreground shrink-0" />
+                  <span>{pendingTasks} {pendingTasks === 1 ? 'task' : 'tasks'} remaining</span>
                 </Badge>
               ) : tasks.length > 0 ? (
-                <Badge variant="secondary" >
-                  <CheckCircle2 size={16} className="text-accent" />
-                  All done for today!
+                <Badge variant="secondary" className="micro-label text-muted-foreground gap-1.5 px-2.5 py-1">
+                  <CheckCircle2 size={14} className="text-foreground shrink-0" />
+                  <span>All done for today!</span>
                 </Badge>
               ) : null}
 
               {completedTasks > 0 && pendingTasks > 0 && (
-                <Badge variant="secondary" >
-                  <CheckCircle2 size={16} className="text-accent" />
-                  {completedTasks} completed
+                <Badge variant="secondary" className="micro-label text-muted-foreground gap-1.5 px-2.5 py-1">
+                  <CheckCircle2 size={14} className="text-foreground shrink-0" />
+                  <span>{completedTasks} completed</span>
                 </Badge>
               )}
 
               {freeTime && (
-                <Badge variant="secondary" >
-                  <Clock size={16} className="text-accent" />
-                  Free after {freeTime}
+                <Badge variant="secondary" className="micro-label text-muted-foreground gap-1.5 px-2.5 py-1">
+                  <Clock size={14} className="text-foreground shrink-0" />
+                  <span>Free after {freeTime}</span>
                 </Badge>
               )}
 
               {weather && (
-                <>
-                 <Badge variant="secondary" >
-                  <CloudSun size={16} className="text-accent" />
-                  {weather.temperature}&deg;C in {weather.location}
+                <Badge variant="secondary" className="micro-label text-muted-foreground gap-1.5 px-2.5 py-1">
+                  <CloudSun size={14} className="text-foreground shrink-0" />
+                  <span>{weather.temperature}&deg;C in {weather.location}</span>
                 </Badge>
-                </>
               )}
 
               {permissionStatus === 'unsupported' && (
-                <p className="text-sm">Your browser doesn&apos;t support location detection.</p>
+                <p className="micro-label text-muted-foreground">Your browser doesn&apos;t support location detection.</p>
               )}
 
               {/* Weather status feedback chips */}
                {permissionStatus === 'denied' && (
-                  <div className="flex items-center gap-3 text-sm">
-                    <MapPin size={16} aria-hidden="true" className="text-accent" />
+                  <div className="flex items-center gap-2 micro-label text-muted-foreground">
+                    <MapPin size={14} aria-hidden="true" className="text-foreground shrink-0" />
                     <span>Location access was denied, so we can&apos;t show local weather.</span>
                     <button
                         type="button"
@@ -172,21 +168,21 @@ export const GreetingHeader = ({firstName, name, tasks = []}: userGreeting) => {
                           toast.loading('Refreshing weather...', { id: 'weather-refresh' });
                           requestLocation();
                         }}
-                        className="inline-flex items-center gap-1 underline underline-offset-2 font-medium"
+                        className="inline-flex items-center gap-1 underline underline-offset-2 font-medium text-foreground hover:text-foreground/80"
                       >
-                        <RefreshCw size={14} aria-hidden="true" />
+                        <RefreshCw size={12} aria-hidden="true" />
                         Try again
                       </button>
                   </div>
                 )}
 
               {permissionStatus === 'error' && (
-                <div className="flex items-center gap-3 text-sm">
+                <div className="flex items-center gap-2 micro-label text-muted-foreground">
                   <span role="alert">{errorMessage ?? 'Could not detect your location.'}</span>
                   <button type="button" onClick={() => {
                       toast.loading('Fetching weather...', { id: 'weather-fetch' });
                       refetch();
-                    }} className="underline underline-offset-2 font-medium">
+                    }} className="underline underline-offset-2 font-medium text-foreground hover:text-foreground/80">
                     Retry
                   </button>
                 </div>

@@ -5,7 +5,8 @@ import { useSearchParams } from 'next/navigation'
 import { useGlobalShortcut } from '@/hooks/useGlobalShortcut'
 import { useMutation } from '@tanstack/react-query'
 import { Plus } from 'lucide-react'
-import { TASK_CATEGORIES, CATEGORY_LABELS, type TaskCategory } from '../../../../lib/constants/tasks'
+import { CATEGORY_LABELS, type TaskCategory } from '../../../../lib/constants/tasks'
+import { TASK_CATEGORY_OPTIONS } from '../../../../lib/constants/options'
 import { parseTaskLines, sortParsedTasks, type ParsedTask } from '@/utils/parseTaskLines'
 import { submitQuickAddTasks } from '@/lib/actions/quick-add'
 import {
@@ -55,7 +56,7 @@ export const QuickAddModal = ({ enableShortcut = true }: { enableShortcut?: bool
   const handleTrigger = useCallback(() => setOpen((prev) => !prev), [])
   useGlobalShortcut({ key: 'k', onTrigger: handleTrigger, enabled: enableShortcut })
 
-  const filteredCategories = TASK_CATEGORIES.filter(cat =>
+  const filteredCategories = TASK_CATEGORY_OPTIONS.filter(cat =>
     cat.toLowerCase().startsWith(menuFilter.toLowerCase())
   )
 
@@ -239,20 +240,15 @@ export const QuickAddModal = ({ enableShortcut = true }: { enableShortcut?: bool
       <DialogTrigger asChild>
         <Button
           variant="default"
-          className="rounded-md h-12 flex justify-start items-center p-0 transition-all duration-300 overflow-hidden w-12 group-hover:w-36"
+          className="rounded-md h-12 flex justify-start items-center p-0"
           aria-label="Quick add tasks"
         >
           <div className="w-12 h-12 flex items-center justify-center shrink-0">
             <Plus size={20} strokeWidth={2.5} aria-hidden />
           </div>
-          <div className="flex items-center overflow-hidden transition-all duration-300 w-0 opacity-0 group-hover:w-full group-hover:opacity-100">
-            <span className="text-sm font-medium whitespace-nowrap">
-              Plan
-            </span>
-          </div>
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-2xl">
+      <DialogContent className="sm:max-w-2xl rounded-md">
         <DialogHeader>
           <DialogTitle className="text-base font-semibold">Quick Add</DialogTitle>
           <DialogDescription>
@@ -273,7 +269,7 @@ export const QuickAddModal = ({ enableShortcut = true }: { enableShortcut?: bool
             onClick={handleClick}
             onKeyDown={handleKeyDown}
             placeholder={`Buy groceries @errands 10:00\n  Get milk\n  Get bread\nFinish report @work 3:00pm\nWalk the dog @pets`}
-            className="w-full min-h-50 max-h-80 p-4 rounded-lg border bg-transparent text-sm leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground/40"
+            className="w-full min-h-50 max-h-80 p-4 rounded-md border bg-transparent text-sm leading-relaxed resize-none focus:outline-none focus:ring-2 focus:ring-ring placeholder:text-muted-foreground/40"
             spellCheck={false}
             autoFocus
           />
@@ -282,7 +278,7 @@ export const QuickAddModal = ({ enableShortcut = true }: { enableShortcut?: bool
           {showMenu && filteredCategories.length > 0 && (
             <div
               ref={menuRef}
-              className="absolute z-50 w-40 max-h-64 overflow-y-auto rounded-lg border bg-popover p-2 shadow-lg animate-in fade-in-0 zoom-in-95 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
+              className="absolute z-50 w-40 max-h-64 overflow-y-auto rounded-md border bg-popover p-0 shadow-lg animate-in fade-in-0 zoom-in-95 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]"
               style={{ top: `${menuPosition.top}px`, left: `${menuPosition.left}px` }}
             >
               {filteredCategories.map((cat, i) => (
@@ -291,10 +287,10 @@ export const QuickAddModal = ({ enableShortcut = true }: { enableShortcut?: bool
                   type="button"
                   variant={'ghost'}
                   data-index={i}
-                  className={`w-full text-sm font-medium ${
+                  className={`w-full text-sm font-medium rounded-md ${
                     i === selectedIndex
-                      ? 'bg-accent text-accent-foreground'
-                      : 'hover:bg-accent/50'
+                      ? 'bg-foreground text-background'
+                      : 'hover:bg-muted'
                   }`}
                   onMouseDown={(e) => { e.preventDefault(); insertCategory(cat) }}
                   onMouseEnter={() => setSelectedIndex(i)}
@@ -314,14 +310,13 @@ export const QuickAddModal = ({ enableShortcut = true }: { enableShortcut?: bool
             <Kbd >Enter</Kbd>
             {' to submit'}
           </KbdGroup>
-          <Button onClick={handleSubmit} disabled={!text.trim() || isPending}>
+          <Button onClick={handleSubmit} disabled={!text.trim() || isPending} className='rounded-md'>
             {isPending ? (
               <span className="inline-flex items-center gap-2">
-                <Spinner />
-                Adding...
+                Adding <Spinner />
               </span>
             ) : (
-              'Add tasks'
+              'Add Tasks'
             )}
           </Button>
         </div>

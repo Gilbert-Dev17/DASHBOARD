@@ -31,12 +31,30 @@ export const transferSchema = z.object({
   amount: amountField,
   fromAccountId: z.string().min(1, 'Please select the source'),
   toAccountId: z.string().min(1, 'Please select the destination'),
-  transferFee: z.coerce.number().min(0).optional(),
+  transfer_fee: z.coerce.number().min(0).optional(),
   note: noteField,
   date: z.date().optional(),
 }).refine((data) => data.fromAccountId !== data.toAccountId, {
-  message: 'Source and destination must be different accounts',
+  error: 'Source and destination must be different accounts',
   path: ['toAccountId'],
 })
 
 export type TransferFormValues = z.infer<typeof transferSchema>
+
+
+// Bulk expense — one row per expense entry, date shared at the form level
+export const bulkExpenseRowSchema = z.object({
+  amount:     z.string(),           // raw string from input; coerced at submit time
+  accountId:  z.string(),
+  categoryId: z.string(),
+  note:       z.string().optional(),
+})
+
+export type BulkExpenseRow = z.infer<typeof bulkExpenseRowSchema>
+
+export const bulkExpenseFormSchema = z.object({
+  date: z.date().optional(),
+  rows: z.array(bulkExpenseRowSchema),
+})
+
+export type BulkExpenseFormValues = z.infer<typeof bulkExpenseFormSchema>

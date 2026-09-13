@@ -1,3 +1,5 @@
+'use client'
+
 import { ChartPieDonutText } from '@/components/Shared/CategoryCharts'
 import { AddCategoryModal } from '../Modals/AddCategory/AddCategoryModal'
 import { TransactionHistory, CategorySummary } from '@/types/expenses'
@@ -5,14 +7,13 @@ import { ExpenseCategory } from '@/types/database'
 import { formatCurrency } from '@/utils/currency'
 import { CategoryBadge } from '@/components/Shared/CategoryBadge'
 import { ArrowRight } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card'
-import { AVAILABLE_ICONS } from '@/lib/constants/categories'
-import { HelpCircle } from 'lucide-react'
 import { Button } from '../ui/button'
 import Link from 'next/link'
 import { Badge } from '../ui/badge'
 import { Tags } from 'lucide-react'
 import { Empty, EmptyContent, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'
+import { Separator } from '@/components/ui/separator'
+import { useState } from 'react'
 
 interface CategorySectionProps {
   transactions: TransactionHistory[];
@@ -21,6 +22,7 @@ interface CategorySectionProps {
 }
 
 export const CategorySection = ({ transactions, allCategories = [], currency = 'PHP' }: CategorySectionProps) => {
+  const [showAddModal, setShowAddModal] = useState(false)
 
   const categoryMap = new Map<string, CategorySummary>();
 
@@ -45,123 +47,126 @@ export const CategorySection = ({ transactions, allCategories = [], currency = '
   const categories = Array.from(categoryMap.values()).sort((a, b) => (b.total || 0) - (a.total || 0));
   const chartCategories = categories.filter(c => (c.total || 0) > 0);
   const totalExpenses = chartCategories.reduce((acc, cat) => acc + (cat.total || 0), 0);
+  const stats = [
+    { label: 'Total', value: chartCategories.length > 0 ? formatCurrency(totalExpenses, currency) : '—' },
+    { label: 'Top', value: chartCategories.length > 0 ? chartCategories[0].name : '—' },
+  ];
 
   return (
-      <Card className="bg-card/3 gap-0"  aria-labelledby="categories-heading">
-        <CardHeader className="flex justify-between items-center shrink-0">
-          <CardTitle id="categories-heading" className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">Categories</CardTitle>
-          {allCategories.length > 0 && <AddCategoryModal />}
-        </CardHeader>
-        <CardContent className={`${allCategories.length > 0 ? 'grid grid-cols-1 xl:grid-cols-2 items-center min-h-75 py-0' : 'flex flex-col items-center justify-center text-center'}`}>
+      <section className="border border-border rounded-md shadow-vercel" aria-labelledby="categories-heading">
+        {allCategories.length === 0 ? (
+          <Empty className="py-8">
+            <EmptyContent>
+              <EmptyMedia variant="icon">
+                <Tags className="h-6 w-6" aria-hidden="true" />
+              </EmptyMedia>
+              <EmptyTitle>No categories yet</EmptyTitle>
+              <EmptyDescription className="mb-4">
+                Create a category to start tracking where your money goes.
+              </EmptyDescription>
+              <AddCategoryModal />
+            </EmptyContent>
+          </Empty>
+        ) : (
+          <div className="flex items-stretch">
+            <div className="flex items-center justify-center p-6 w-2/5 shrink-0">
+              {chartCategories.length > 0 ? (
+                <div aria-hidden="true" className="w-full max-w-60">
+                  <ChartPieDonutText categories={chartCategories} currency={currency} />
 
-          <div className={allCategories.length > 0 ? 'flex justify-center items-center w-full' : 'flex flex-col items-center justify-center text-center w-full'}>
-            {chartCategories.length > 0 ? (
-              <div aria-hidden="true" className="w-full max-w-sm">
-                <ChartPieDonutText categories={chartCategories} currency={currency} />
-
-                <table className="sr-only">
-                  <caption>Category Breakdown</caption>
-                  <thead>
-                    <tr>
-                      <th scope="col">Category</th>
-                      <th scope="col">Amount</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {chartCategories.map((cat) => (
-                      <tr key={cat.name}>
-                        <td>{cat.name}</td>
-                        <td>{formatCurrency(cat.total || 0, currency)}</td>
+                  <table className="sr-only hidden">
+                    <caption>Category Breakdown</caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Category</th>
+                        <th scope="col">Amount</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ) : (
-              <Empty className="py-8">
-                <EmptyContent>
-                  <EmptyMedia variant="icon">
-                    <Tags className="h-6 w-6" aria-hidden="true" />
-                  </EmptyMedia>
-                  <EmptyTitle>
-                    {allCategories.length > 0 ? "No expenses yet" : "No categories yet"}
-                  </EmptyTitle>
-                  <EmptyDescription className="mb-4">
-                    {allCategories.length > 0
-                      ? "Start logging expenses to see your breakdown."
-                      : "Create a category to start tracking where your money goes."}
-                  </EmptyDescription>
-                  {allCategories.length === 0 && <AddCategoryModal />}
-                </EmptyContent>
-              </Empty>
-            )}
-          </div>
-
-
-          {allCategories.length > 0 && (
-            <div className="flex flex-col gap-10">
-
-              {chartCategories.length > 0 && (
-                <div className="flex flex-col gap-2">
-                  <span className="text-xs text-muted-foreground">
-                    Total
-                  </span>
-                  <div className="text-3xl lg:text-4xl font-mono text-foreground tracking-tighter flex items-baseline gap-1">
-                    {formatCurrency(totalExpenses, currency).split('.')[0]}
-                    <span className="text-lg lg:text-xl text-muted-foreground font-medium">.{formatCurrency(totalExpenses, currency).split('.')[1]}</span>
-                  </div>
+                    </thead>
+                    <tbody>
+                      {chartCategories.map((cat) => (
+                        <tr key={cat.name}>
+                          <td>{cat.name}</td>
+                          <td>{formatCurrency(cat.total || 0, currency)}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center justify-center text-center py-8">
+                  <Tags className="h-6 w-6 text-muted-foreground mb-2" />
+                  <p className="text-sm text-muted-foreground">No Expenses yet</p>
                 </div>
               )}
-
-
-              <div className="flex flex-col gap-4">
-                <h3 className="text-xs text-muted-foreground">
-                  Available Categories
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {(() => {
-                    const sortedCategories = [...allCategories].sort((a, b) => {
-                      const totalA = categoryMap.get(a.id)?.total || 0;
-                      const totalB = categoryMap.get(b.id)?.total || 0;
-                      return totalB - totalA;
-                    });
-
-                    const visibleCategories = sortedCategories.slice(0, 5);
-                    const hiddenCount = sortedCategories.length - 5;
-
-                    return (
-                      <>
-                        {visibleCategories.map(cat => (
-                          <CategoryBadge
-                            key={cat.id}
-                            name={cat.name}
-                            icon={cat.icon}
-                            color={cat.color}
-                          />
-                        ))}
-
-                        {hiddenCount > 0 && (
-                          <Badge className="inline-flex items-center rounded-full bg-muted/30 px-3 py-1.5 text-xs font-medium shadow-sm border border-dashed border-border text-muted-foreground">
-                            +{hiddenCount} more
-                          </Badge>
-                        )}
-                      </>
-                    )
-                  })()}
-                </div>
-              </div>
             </div>
-          )}
-        </CardContent>
-        {allCategories.length > 0 &&
-          <div className='flex flex-row justify-end px-6'>
-            <Button asChild variant={'link'} className="group px-0 text-muted-foreground hover:text-foreground flex items-center gap-1">
-              <Link href='/finance/viewAllCategories'>
-                View All<ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
-              </Link>
-            </Button>
+
+            <div className="flex items-center py-4">
+              <Separator orientation="vertical" className="h-full" />
+            </div>
+
+            <div className="flex-1 flex flex-col min-w-0">
+              <div className="px-5 py-4 flex items-center justify-between">
+                <div>
+                  <h2 id="categories-heading" className="text-base font-medium text-foreground">Categories</h2>
+                </div>
+                <Button asChild variant={'link'} className="group px-0 flex flex-row text-muted-foreground hover:text-foreground items-center gap-1">
+                  <Link href='/finance/viewAllCategories'>
+                    <ArrowRight size={16} className="transition-transform duration-300 group-hover:translate-x-1" />
+                  </Link>
+                </Button>
+              </div>
+
+              <Separator orientation="horizontal" className="w-full" />
+
+              {/* Stats rows (mapped) */}
+              <section className="flex flex-col gap-2 py-3">
+                {stats.map((s) => (
+                  <div key={s.label} className="flex items-center justify-between px-5">
+                    <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">{s.label}:</span>
+                    <span className="text-sm font-semibold text-foreground">{s.value}</span>
+                  </div>
+                ))}
+              </section>
+
+              <Separator orientation="horizontal" />
+
+              {/* Categories badges row */}
+              <div className="px-5 py-3 ">
+                {(() => {
+                  const sortedCategories = [...allCategories].sort((a, b) => {
+                    const totalA = categoryMap.get(a.id)?.total || 0;
+                    const totalB = categoryMap.get(b.id)?.total || 0;
+                    return totalB - totalA;
+                  });
+
+                  const visibleCategories = sortedCategories.slice(0, 10);
+                  const hiddenCount = sortedCategories.length - 10;
+
+                  return (
+                    <div className="flex flex-wrap gap-1.5">
+                      {visibleCategories.map(cat => (
+                        <CategoryBadge
+                          key={cat.id}
+                          name={cat.name}
+                          icon={cat.icon}
+                          color={cat.color}
+                        />
+                      ))}
+
+                      {hiddenCount > 0 && (
+                        <Badge className="inline-flex items-center rounded-full bg-muted/30 px-3 py-1.5 text-xs font-medium border border-dashed border-border text-muted-foreground">
+                          +{hiddenCount} more
+                        </Badge>
+                      )}
+                    </div>
+                  )
+                })()}
+              </div>
+
+            </div>
           </div>
-        }
-      </Card>
+        )}
+      </section>
+
   )
 }

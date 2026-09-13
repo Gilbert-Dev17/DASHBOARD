@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { TASK_CATEGORIES} from '@/lib/constants/tasks'
+import { TASK_CATEGORY_OPTIONS } from '@/lib/constants/options'
 
 export const editTaskSchema = z.object({
   task_name: z
@@ -11,7 +11,7 @@ export const editTaskSchema = z.object({
     .optional()
     .transform(v => v || undefined),
   category: z
-    .enum(TASK_CATEGORIES, { message: 'Please select a category.' }),
+    .enum(TASK_CATEGORY_OPTIONS, { message: 'Please select a category.' }),
   subtasks: z
     .array(
       z.object({

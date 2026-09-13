@@ -4,6 +4,7 @@ import { AddTransactionModal } from '@/components/Modals/AddTransaction/AddTrans
 
 export interface QuickAddRegistry {
     id: string
+    label: string
     match: (pathname: string) => boolean
     Component: ComponentType<{ enableShortcut?: boolean }>
 }
@@ -11,11 +12,13 @@ export interface QuickAddRegistry {
 export const quickAddRegistry: QuickAddRegistry[] = [
   {
     id: 'plan',
+    label: 'Quick Add',
     match: (pathname) => pathname.startsWith('/home') || pathname.startsWith('/schedule') ,
     Component: QuickAddModal,
   },
   {
     id: 'expenses',
+    label: 'Add Transaction',
     match: (pathname) => pathname.startsWith('/finance'),
     Component: AddTransactionModal,
   },

@@ -97,7 +97,7 @@ export function buildNetWorthTrend(
 
     return {
       key,
-      label: monthLabel(key, spansMultipleYears),
+      label: monthLabel(key, true),
       value: lastKnownValue,
     };
   });

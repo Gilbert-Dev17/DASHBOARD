@@ -42,31 +42,30 @@ export default function ProfileClientPage({ user, dbSize, tableCounts }: Profile
       {/* HEADER */}
       <header>
         <div className="flex items-center gap-6 mb-8 lg:mb-12">
-          <Avatar className="w-20 h-20 lg:w-24 lg:h-24 border-2 border-border shrink-0">
+          <Avatar className="w-20 h-20 lg:w-24 lg:h-24 shrink-0">
             <AvatarImage src={user.avatar_url || undefined} alt="Profile" className="object-cover" />
             <AvatarFallback className="text-2xl lg:text-3xl font-light text-muted-foreground">{initials}</AvatarFallback>
           </Avatar>
           <div>
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold tracking-tighter leading-none flex items-end">
               {user.first_name || user.name?.split(' ')[0] || 'User'}
-              <span className="w-2 h-2 md:w-3 md:h-3 rounded-full ml-2 mb-2 md:mb-3 bg-accent" aria-hidden="true" />
             </h1>
           </div>
         </div>
       </header>
 
       {/* MAIN GRID */}
-      <div className="space-y-8">
+      <div className="space-y-6">
 
         {/* Preferences */}
-        <div className="space-y-8">
+        <div className="space-y-6">
           <ProfileSettings user={user} />
         </div>
 
         {/* System */}
         {dbSize && tableCounts && (
           <section aria-labelledby="system-heading">
-            <h2 id="system-heading" className="text-xs font-semibold uppercase tracking-widest mb-6 lg:mb-8">
+            <h2 id="system-heading" className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground mb-2">
               System
             </h2>
             <DatabaseMetricsCard

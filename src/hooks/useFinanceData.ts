@@ -1,37 +1,22 @@
+'use client'
+
 import { useQuery } from '@tanstack/react-query'
-import { createClient } from '@/lib/supabase/client'
-import { type ExpenseCategory, Wallet as WalletSummary } from '@/types/database'
+import { getWalletsAction, getExpenseCategoriesAction } from '@/lib/actions/financeData'
 
 export function useWallets() {
-  const supabase = createClient()
-
   return useQuery({
     queryKey: ['wallets'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('wallets')
-        .select('*')
-        .order('created_at', { ascending: true })
-
-      if (error) throw error
-      return data as WalletSummary[]
+      return await getWalletsAction()
     }
   })
 }
 
 export function useExpenseCategories() {
-  const supabase = createClient()
-
   return useQuery({
     queryKey: ['expense_categories'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('expense_categories')
-        .select('*')
-        .order('created_at', { ascending: true })
-
-      if (error) throw error
-      return data as ExpenseCategory[]
+      return await getExpenseCategoriesAction()
     }
   })
 }

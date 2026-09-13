@@ -37,7 +37,7 @@ export default function DashboardPage({ initialTasks, user}: DashboardPageProps)
 
   return (
     <PageComponent>
-      <div className="flex flex-col justify-center flex-1 w-full max-w-5xl mx-auto">
+      <div className="flex flex-col justify-center flex-1 w-full mx-auto">
         <GreetingHeader firstName={displayName} tasks={initialTasks || []} />
       </div>
 

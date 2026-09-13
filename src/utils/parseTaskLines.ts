@@ -1,4 +1,5 @@
-import { TASK_CATEGORIES, type TaskCategory } from '@/lib/constants/tasks'
+import { TASK_CATEGORY_OPTIONS } from '@/lib/constants/options'
+import { type TaskCategory } from '@/lib/constants/tasks'
 
 export interface ParsedTask {
   name: string
@@ -78,7 +79,7 @@ export function parseTaskLines(input: string): ParsedTask[] {
     const catMatch = remaining.match(/@(\w+)/)
     if (catMatch) {
       const candidate = catMatch[1].toLowerCase()
-      if ((TASK_CATEGORIES as readonly string[]).includes(candidate)) {
+      if ((TASK_CATEGORY_OPTIONS as readonly string[]).includes(candidate)) {
         category = candidate as TaskCategory
       }
       remaining = remaining.replace(catMatch[0], '')

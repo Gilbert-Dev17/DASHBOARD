@@ -88,6 +88,60 @@ export async function getMonthTasksSummary(userId: string, startStr: string, end
   return fetchCachedMonthTasksSummary(userId, startStr, endStr)
 }
 
+async function fetchCachedMonthTasksGrouped(userId: string, startStr: string, endStr: string) {
+  'use cache'
+  cacheTag(`tasks-${userId}`)
+
+  const { data: tasks, error } = await supabaseAdmin
+    .from('tasks')
+    .select(`
+      id,
+      user_id,
+      task_name,
+      time,
+      is_done,
+      created_for_date,
+      subtasks (
+        id,
+        is_done,
+        subtask_name
+      ),
+      task_category:task_categories!tasks_task_category_id_fkey (
+        id,
+        name
+      )`)
+    .eq('user_id', userId)
+    .gte('created_for_date', startStr)
+    .lte('created_for_date', endStr)
+    .order('time', { ascending: true, nullsFirst: false });
+
+  if (error) {
+    console.error("Error fetching month grouped tasks:", error.message);
+    return {};
+  }
+
+  const grouped = (tasks ?? []).reduce((acc: Record<string, TaskWithSubtasks[]>, task) => {
+    const date = task.created_for_date
+    if (!acc[date]) {
+      acc[date] = []
+    }
+    acc[date].push(task as unknown as TaskWithSubtasks)
+    return acc
+  }, {})
+
+  return grouped;
+}
+
+export async function getMonthTasksGrouped(userId: string, startStr: string, endStr: string) {
+  const user = await getUser();
+
+  if (!user || user.id !== userId) {
+    throw new Error('Unauthorized or invalid user ID');
+  }
+
+  return fetchCachedMonthTasksGrouped(userId, startStr, endStr)
+}
+
 
 async function fetchCachedDailyNotes(userId: string, dateStr: string) {
   'use cache'
@@ -105,6 +159,7 @@ async function fetchCachedDailyNotes(userId: string, dateStr: string) {
       throw error;
     }
 
+    console.log(data)
 
     return data as Notes | null;
 }

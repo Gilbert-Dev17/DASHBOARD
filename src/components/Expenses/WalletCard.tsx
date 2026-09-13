@@ -34,19 +34,19 @@ export function WalletCard({ wallet }: WalletCardProps) {
       aria-label={`${wallet.name}, ${wallet.type} account in ${wallet.currency}, balance ${formatCurrency(wallet.balance, wallet.currency)}`}
     >
       <Card
-        className="relative h-full flex flex-col justify-between py-5 overflow-hidden ring-0 bg-card/60 backdrop-blur-sm"
+        className="relative h-full flex flex-col justify-between py-4 overflow-hidden ring-0 bg-card/60 backdrop-blur-sm rounded-md"
       >
         {/* accent rail */}
-        <span
+        {/* <span
           className="absolute inset-y-0 left-0 w-0.75"
           style={{ backgroundColor: color }}
           aria-hidden="true"
-        />
+        /> */}
 
         <CardHeader className="flex flex-row flex-wrap justify-between items-center gap-x-4 min-w-0">
-          <div className='flex flex-row items-center gap-4'>
+          <div className='flex flex-row items-center gap-2'>
             <div
-              className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full
+              className="flex h-12 w-18 shrink-0 items-center justify-center rounded-md
                          shadow-sm transition-transform duration-200"
               style={{ backgroundColor: withAlpha(color, 0.15), color }}
             >

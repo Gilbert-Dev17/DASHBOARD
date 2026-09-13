@@ -14,7 +14,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { UserSummary } from '@/types/dashboard'
-import { AVAILABLE_CURRENCIES } from '@/lib/constants/currencies'
+import { CURRENCY_OPTIONS } from '@/lib/constants/options'
 
 interface ProfileSettingsProps {
   user: UserSummary
@@ -43,7 +43,7 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
     <React.Fragment>
       {/* Account */}
       <section aria-labelledby="account-heading">
-        <h2 id="account-heading" className="text-xs font-semibold uppercase tracking-widest mb-6 lg:mb-8 transition-colors duration-500">
+        <h2 id="account-heading" className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground mb-2 transition-colors duration-500">
           Account
         </h2>
 
@@ -62,14 +62,14 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
                   <p className="text-xs text-muted-foreground font-mono">{user.email}</p>
                 </div>
               </div>
-              <span className="text-xs font-semibold uppercase tracking-wider text-accent sm:block hidden">Active</span>
+              <span className="font-mono text-[11px] uppercase tracking-wider text-foreground sm:block hidden">Active</span>
             </CardContent>
           </Card>
       </section>
 
       {/* Preferences */}
       <section aria-labelledby="preferences-heading">
-        <h2 id="preferences-heading" className="text-xs font-semibold uppercase tracking-widest mb-6 lg:mb-8 transition-colors duration-500">
+        <h2 id="preferences-heading" className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground mb-2 transition-colors duration-500">
           Preferences
         </h2>
 
@@ -89,7 +89,7 @@ export function ProfileSettings({ user }: ProfileSettingsProps) {
                   <SelectValue placeholder="Currency" />
                 </SelectTrigger>
                 <SelectContent>
-                  {AVAILABLE_CURRENCIES.map((c) => (
+                  {CURRENCY_OPTIONS.map((c) => (
                     <SelectItem key={c.code} value={c.code} className="text-xs">
                       {c.code} ({c.symbol})
                     </SelectItem>

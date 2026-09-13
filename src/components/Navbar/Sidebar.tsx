@@ -10,6 +10,7 @@ import { getActiveQuickAdds } from './quick-add-registry'
 import { Separator } from '../ui/separator'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { SyncIndicator } from '../Shared/SyncIndicator'
+import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip"
 
 import type { UserSummary } from '@/types/dashboard'
 
@@ -42,87 +43,110 @@ const Sidebar = ({ user }: SidebarProps) => {
 
   return (
     <aside className="fixed left-5 md:left-10 top-1/2 -translate-y-1/2 z-40">
-      <nav className="flex flex-col items-start gap-2 p-2 rounded-md bg-background/50 backdrop-blur-xl shadow-lg border border-border transition-all duration-300 group">
+      <nav className="flex flex-col items-start gap-2 p-2 rounded-md bg-background/50 backdrop-blur-xl shadow-lg border border-border ">
         {navItems.map((item) => {
           const active = pathname === item.point;
           const Icon = item.icon;
 
           return (
-            <Button
-              key={item.point}
-              variant={active ? "outline" : "link"}
-              className={`rounded-md h-12 flex justify-start items-center p-0 transition-all duration-300 overflow-hidden w-12 group-hover:w-36`}
-              asChild
-            >
-              <Link href={item.point} className={`flex items-center `}>
-                <div className="w-12 h-12 flex items-center justify-center shrink-0">
-                  <Icon size={20} className={`transition-transform duration-300 ${active ? 'scale-110 text-foreground' : 'scale-95 text-muted-foreground group-hover:text-foreground'}`} />
-                </div>
-                <div className="flex items-center overflow-hidden transition-all duration-300 w-0 opacity-0 group-hover:w-36 group-hover:opacity-100">
-                  <span className="text-sm font-medium tracking-wide whitespace-nowrap">
-                    {item.label}
-                  </span>
-                </div>
-              </Link>
-            </Button>
+            <Tooltip key={item.point}>
+              <TooltipTrigger asChild>
+                <Button
+                  variant={active ? "outline" : "link"}
+                  className={`rounded-md h-12 flex justify-start items-center p-0`}
+                  asChild
+                >
+                  <Link href={item.point} className={`flex items-center `}>
+                    <div className="w-12 h-12 flex items-center justify-center shrink-0">
+                      <Icon size={20} className={`transition-transform duration-300 ${active ? 'scale-110 text-foreground' : 'scale-95 text-muted-foreground group-hover:text-foreground'}`} />
+                    </div>
+                  </Link>
+                </Button>
+              </TooltipTrigger>
+
+            <TooltipContent side='right'>
+                <p>{item.label}</p>
+            </TooltipContent>
+            </Tooltip>
           );
         })}
 
         <Separator orientation="horizontal" className="bg-muted-foreground/30" />
 
         <Suspense fallback={<div className="w-12 h-12" />}>
-          {activeQuickAdds.map(({ id, Component }) => (
-              <Component key={id} enableShortcut={true} />
+          {activeQuickAdds.map(({ id, label, Component }) => (
+            <Tooltip key={id}>
+              <TooltipTrigger asChild>
+                <div>
+                  <Component enableShortcut={true} />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent side="right">
+                <p>{label}</p>
+              </TooltipContent>
+            </Tooltip>
           ))}
         </Suspense>
 
         {/* Theme Toggle */}
-        <Button
-          variant={'ghost'}
-          className="rounded-md h-12 flex justify-start items-center p-0 transition-all duration-300 overflow-hidden w-12 group-hover:w-36"
-          onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
-          aria-label={mounted ? `Switch to ${resolvedTheme === 'dark' ? 'light' : 'dark'} mode` : 'Toggle theme'}
-        >
-          <div className="w-12 h-12 flex items-center justify-center shrink-0">
-            {mounted ? (
-              resolvedTheme === 'dark' ? (
-                <Sun size={20} className="transition-transform duration-300" />
-              ) : (
-                <Moon size={20} className="transition-transform duration-300" />
-              )
-            ) : (
-              <Sun size={20} className="opacity-0" />
-            )}
-          </div>
-          <div className="flex items-center overflow-hidden transition-all duration-500 w-0 opacity-0 group-hover:w-full group-hover:opacity-100">
-            <span className="text-sm font-medium tracking-wide whitespace-nowrap">
-              {mounted ? (resolvedTheme === 'dark' ? 'Light Mode' : 'Dark Mode') : 'Theme'}
-            </span>
-          </div>
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant={'ghost'}
+              className="rounded-md flex h-12 w-12 justify-start items-center p-0"
+              onClick={() => setTheme(resolvedTheme === 'dark' ? 'light' : 'dark')}
+              aria-label={mounted ? `Switch to ${resolvedTheme === 'dark' ? 'light' : 'dark'} mode` : 'Toggle theme'}
+            >
+              <div className="w-12 h-12 flex items-center justify-center shrink-0">
+                {mounted ? (
+                  resolvedTheme === 'dark' ? (
+                    <Sun size={20} className="transition-transform duration-300" />
+                  ) : (
+                    <Moon size={20} className="transition-transform duration-300" />
+                  )
+                ) : (
+                  <Sun size={20} className="opacity-0" />
+                )}
+              </div>
+              <div className="flex items-center overflow-hidden transition-all duration-500 w-0 opacity-0 group-hover:w-full group-hover:opacity-100">
+                <span className="text-sm font-medium tracking-wide whitespace-nowrap">
+                  {mounted ? (resolvedTheme === 'dark' ? 'Light Mode' : 'Dark Mode') : 'Theme'}
+                </span>
+              </div>
+            </Button>
+          </TooltipTrigger>
+          <TooltipContent side='right'>
+            <p>{mounted ? (resolvedTheme === 'dark' ? 'Light Mode' : 'Dark Mode') : 'Theme'}</p>
+          </TooltipContent>
+        </Tooltip>
 
         <Separator orientation="horizontal" className="bg-muted-foreground/30" />
 
         {/* Profile Avatar */}
-        <Button
-          variant={pathname === '/profile' ? "outline" : "ghost"}
-          className="rounded-md h-12 flex justify-start items-center p-0 transition-all duration-300 overflow-hidden w-12 group-hover:w-36"
-          asChild
-        >
-          <Link href="/profile" className="flex items-center">
-            <div className="w-12 h-12 flex items-center justify-center shrink-0">
-              <Avatar className="h-12 w-12">
-                <AvatarImage src={user?.avatar_url || undefined} alt="Profile" className="object-cover" />
-                <AvatarFallback className="text-sm font-light text-muted-foreground">{initials}</AvatarFallback>
-              </Avatar>
-            </div>
-            <div className="flex items-center overflow-hidden transition-all duration-300 w-0 opacity-0 group-hover:w-full group-hover:opacity-100">
-              <span className="text-sm font-medium tracking-wide whitespace-nowrap">
-                {displayName}
-              </span>
-            </div>
-          </Link>
-        </Button>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Button
+              variant={pathname === '/profile' ? "outline" : "ghost"}
+              className="rounded-md h-12 flex justify-start items-center p-0 "
+              asChild
+            >
+              <Link href="/profile" className="flex items-center">
+                <div className="w-12 h-12 flex items-center justify-center shrink-0">
+                  <Avatar className="h-12 w-12">
+                    <AvatarImage src={user?.avatar_url || undefined} alt="Profile" className="object-cover" />
+                    <AvatarFallback className="text-sm font-light text-muted-foreground">{initials}</AvatarFallback>
+                  </Avatar>
+                </div>
+
+              </Link>
+            </Button>
+
+          </TooltipTrigger>
+          <TooltipContent side='right'>
+            <p>{displayName || 'Profile'}</p>
+          </TooltipContent>
+        </Tooltip>
+
 
         {/* Realtime Sync Indicator */}
         <div className="absolute -bottom-1 -right-1 z-50">

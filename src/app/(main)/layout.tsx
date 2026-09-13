@@ -1,6 +1,6 @@
+export const instant = false;
 import { ReactNode, Suspense } from 'react'
 import { RealtimeSync } from '@/components/Shared/RealTimeSync'
-import { SyncStatusProvider } from '@/contexts/SyncStatusContext'
 
 import Sidebar from '@/components/Navbar/Sidebar'
 import { Mobilebar } from '@/components/Navbar/Mobilebar'
@@ -25,16 +25,14 @@ async function SidebarWrapper() {
 
 export default function MainLayout({children}: Readonly<{children: ReactNode}>){
     return (
-        <SyncStatusProvider>
-            <section className="min-h-full flex flex-col" suppressHydrationWarning>
-                <RealtimeSync />
-                <Suspense fallback={null}>
-                    <SidebarWrapper />
-                </Suspense>
-                <main className="flex-1 pb-24 lg:pb-0">
-                    {children}
-                </main>
-            </section>
-        </SyncStatusProvider>
+      <section className="min-h-full flex flex-col" suppressHydrationWarning>
+          <RealtimeSync />
+          <Suspense fallback={null}>
+              <SidebarWrapper />
+          </Suspense>
+          <main className="flex-1 pb-24 lg:pb-0">
+              {children}
+          </main>
+      </section>
     )
 }

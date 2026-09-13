@@ -5,7 +5,8 @@ import { useForm, useFieldArray, Controller } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { X, Plus } from 'lucide-react'
-import { TASK_CATEGORIES, CATEGORY_LABELS } from '@/lib/constants/tasks'
+import { CATEGORY_LABELS } from '@/lib/constants/tasks'
+import { TASK_CATEGORY_OPTIONS } from '@/lib/constants/options'
 import { submitTaskEdit } from '@/lib/actions/edit-task'
 import { TaskWithSubtasks } from '@/types/dashboard'
 import { editTaskSchema, type EditTaskFormValues } from './schemas'
@@ -222,7 +223,7 @@ export const UpdateTaskModal = ({ task, open, onOpenChange }: UpdateTaskModalPro
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
-                        {TASK_CATEGORIES.map(cat => (
+                        {TASK_CATEGORY_OPTIONS.map(cat => (
                           <SelectItem key={cat} value={cat}>
                             {CATEGORY_LABELS[cat]}
                           </SelectItem>

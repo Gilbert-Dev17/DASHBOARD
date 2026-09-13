@@ -1,13 +1,13 @@
 import { getTodayInTimezone } from '@/utils/timezone'
-import { startOfMonth, endOfMonth, parseISO, format } from 'date-fns'
+import { startOfMonth, endOfMonth, parseISO, format, startOfWeek, endOfWeek } from 'date-fns'
 
 import { PlannerPage } from "./client"
-import { getTasksByDate, getMonthTasksSummary, getDailyNotes } from "./action"
+import { getTasksByDate, getMonthTasksSummary, getDailyNotes, getMonthTasksGrouped } from "./action"
 import { getUser } from "@/lib/auth/get-user";
 import { redirect } from "next/navigation";
 
 interface pageProps{
-  searchParams: Promise<{date? : string}>
+  searchParams: Promise<{date? : string, drawer?: string}>
 }
 
 export default async function page(props: pageProps) {
@@ -20,18 +20,22 @@ export default async function page(props: pageProps) {
   }
 
   const selectedDateStr = await searchParams.date || getTodayInTimezone()
+  const autoOpenDrawer = (await searchParams).drawer === 'true'
 
   const isValidDate = /^\d{4}-\d{2}-\d{2}$/.test(selectedDateStr)
   const finalDateStr = isValidDate ? selectedDateStr : getTodayInTimezone()
   const dateObj = parseISO(finalDateStr)
 
-  const startStr = format(startOfMonth(dateObj), 'yyyy-MM-dd')
-  const endStr = format(endOfMonth(dateObj), 'yyyy-MM-dd')
+  const monthStart = startOfMonth(dateObj)
+  const monthEnd = endOfMonth(dateObj)
+  const startStr = format(startOfWeek(monthStart, { weekStartsOn: 0 }), 'yyyy-MM-dd')
+  const endStr = format(endOfWeek(monthEnd, { weekStartsOn: 0 }), 'yyyy-MM-dd')
 
-  const [selectedTasks, datesWithTasks, NotesToday] = await Promise.all([
+  const [selectedTasks, datesWithTasks, NotesToday, monthTasks] = await Promise.all([
     getTasksByDate(user.id, finalDateStr),
     getMonthTasksSummary(user.id, startStr, endStr),
-    getDailyNotes(user.id, finalDateStr)
+    getDailyNotes(user.id, finalDateStr),
+    getMonthTasksGrouped(user.id, startStr, endStr)
   ])
 
   const isToday = finalDateStr === getTodayInTimezone()
@@ -39,12 +43,15 @@ export default async function page(props: pageProps) {
 
   return (
     <PlannerPage
+      userId={user.id}
       initialTasks={selectedTasks}
       agendaTitle={agendaTitle}
       dateObj={dateObj}
       note={NotesToday}
       datesWithTasks={datesWithTasks}
       finalDate={finalDateStr}
+      monthTasks={monthTasks}
+      autoOpenDrawer={autoOpenDrawer}
     />
   )
 }

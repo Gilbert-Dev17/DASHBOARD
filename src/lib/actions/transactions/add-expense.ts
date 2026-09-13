@@ -24,11 +24,11 @@ export async function addExpenseAction(data: {
         user_id: user.id,
         wallet_id: data.accountId,
         category_id: data.categoryId,
-        title: data.note || 'Expense',
+        note: data.note || 'Expense',
         amount: data.amount,
         type: 'expense',
-        transferFee: 0,
-        created_for_date: data.date 
+        transfer_fee: 0,
+        created_for_date: data.date
           ? (typeof data.date === 'string' ? data.date : new Date(data.date.getTime() - (data.date.getTimezoneOffset() * 60000)).toISOString().split('T')[0])
           : new Date().toISOString().split('T')[0]
       })
