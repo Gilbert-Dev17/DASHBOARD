@@ -42,7 +42,7 @@ export async function toggleTask(taskId: string, isDone: boolean) {
     }
 
     updateTag(`tasks-${user.id}`);
-    updateTag(`planner-tasks=${user.id}`)
+    updateTag(`planner-tasks-${user.id}`)
 
     return { success: true, message: "Task is Finished" };
 }
