@@ -2,19 +2,14 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { updateTag } from 'next/cache'
-import { getUser } from '@/lib/auth/get-user'
+import { withAuth } from '@/lib/auth/with-auth'
 
-export async function addCategoryAction(data: {
+export const addCategoryAction = withAuth(async (user, data: {
   name: string
   icon: string
   color: string
-}) {
+}) => {
   const supabase = await createClient()
-
-  const user = await getUser();
-  if (!user) return { success: false, error: 'Not authenticated.' }
-
-  try {
     const { error } = await supabase
       .from('expense_categories')
       .insert({
@@ -32,8 +27,4 @@ export async function addCategoryAction(data: {
     updateTag(`categories-${user.id}`)
 
     return { success: true }
-  } catch (error: unknown) {
-    console.error('Unexpected error in addCategoryAction:', error)
-    return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' }
-  }
-}
+  })

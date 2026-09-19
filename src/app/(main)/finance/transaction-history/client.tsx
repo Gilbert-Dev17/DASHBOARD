@@ -22,8 +22,8 @@ import {
 import { CurrencySwitcher } from '@/components/Shared/CurrencySwitcher';
 import { WalletSummary, UserSummary } from '@/types/dashboard';
 import { useCurrencyFilter } from '@/hooks/useCurrencyFilter';
-import { CategoryBadge } from '@/components/Shared/CategoryBadge';
-import { TransactionActionsMenu } from '@/components/Shared/TransactionActionsMenu';
+import { CategoryBadge } from '@/components/Expenses/CategoryBadge';
+import { TransactionActionsMenu } from '@/components/Expenses/TransactionActionsMenu';
 import { TIME_FILTERS, TRANSACTION_TYPE_OPTIONS, ITEMS_PER_PAGE } from '@/lib/constants/options';
 
 function getWeekKey(date: Date) {

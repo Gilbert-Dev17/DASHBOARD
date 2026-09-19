@@ -21,8 +21,8 @@ import {
   DrawerContent,
   DrawerClose,
 } from '@/components/ui/drawer'
-import { AgendaSection } from '@/components/Shared/AgendaSection'
-import { NotesSection } from '@/components/Shared/NotesSection'
+import { AgendaSection } from '@/components/Schedule/AgendaSection'
+import { NotesSection } from '@/components/Schedule/NotesSection'
 import { Spinner } from '@/components/ui/spinner'
 
 /* ─── Constants ──────────────────────────────────────────────── */

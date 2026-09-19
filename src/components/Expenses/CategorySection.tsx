@@ -1,11 +1,11 @@
 'use client'
 
-import { ChartPieDonutText } from '@/components/Shared/CategoryCharts'
+import { ChartPieDonutText } from '@/components/Expenses/CategoryCharts'
 import { AddCategoryModal } from '../Modals/AddCategory/AddCategoryModal'
 import { TransactionHistory, CategorySummary } from '@/types/expenses'
 import { ExpenseCategory } from '@/types/database'
 import { formatCurrency } from '@/utils/currency'
-import { CategoryBadge } from '@/components/Shared/CategoryBadge'
+import { CategoryBadge } from '@/components/Expenses/CategoryBadge'
 import { ArrowRight } from 'lucide-react'
 import { Button } from '../ui/button'
 import Link from 'next/link'

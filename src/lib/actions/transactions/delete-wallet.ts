@@ -2,15 +2,10 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { updateTag } from 'next/cache'
-import { getUser } from '@/lib/auth/get-user'
+import { withAuth } from '@/lib/auth/with-auth'
 
-export async function deleteWalletAction(id: string) {
+export const deleteWalletAction = withAuth(async (user, id: string) => {
   const supabase = await createClient()
-
-  const user = await getUser();
-  if (!user) return { success: false, error: 'Not authenticated.' }
-
-  try {
     // Due to foreign key constraints in Supabase, deleting a wallet 
     // might cascade delete its transactions if `on delete cascade` is set,
     // otherwise it will fail if transactions exist. 
@@ -29,8 +24,4 @@ export async function deleteWalletAction(id: string) {
     updateTag(`wallets-${user.id}`)
 
     return { success: true }
-  } catch (error: unknown) {
-    console.error('Unexpected error in deleteWalletAction:', error)
-    return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' }
-  }
-}
+  })

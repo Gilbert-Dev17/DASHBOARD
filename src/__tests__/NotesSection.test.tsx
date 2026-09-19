@@ -3,7 +3,7 @@
 import React from 'react'
 import { render, screen, fireEvent, cleanup, waitFor } from '@testing-library/react'
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest'
-import { NotesSection } from '../components/Shared/NotesSection'
+import { NotesSection } from '../components/Schedule/NotesSection'
 
 afterEach(() => {
   cleanup()

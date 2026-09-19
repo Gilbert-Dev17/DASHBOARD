@@ -2,17 +2,10 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { updateTag } from 'next/cache'
-import { getUser } from '@/lib/auth/get-user'
+import { withAuth } from '@/lib/auth/with-auth'
 
-export async function DeleteTransaction(transactionId: string) {
+export const DeleteTransaction = withAuth(async (user, transactionId: string) => {
   const supabase = await createClient()
-
-  const user = await getUser()
-  if (!user) {
-    return { success: false, message: 'Not authenticated.' }
-  }
-
-  try {
     const { error } = await supabase
       .from('transactions')
       .delete()
@@ -30,8 +23,4 @@ export async function DeleteTransaction(transactionId: string) {
     updateTag(`snapshots-${user.id}`)
 
     return { success: true }
-  } catch (err: any) {
-    console.error('Unexpected error in DeleteTransaction:', err)
-    return { success: false, message: err.message || 'An unexpected error occurred' }
-  }
-}
+})

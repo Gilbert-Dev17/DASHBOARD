@@ -3,16 +3,16 @@
 import { useState, useTransition } from 'react'
 import { Label } from '@/components/ui/label'
 import { Button } from '@/components/ui/button'
-import { AgendaSection } from '@/components/Shared/AgendaSection'
+import { AgendaSection } from '@/components/Schedule/AgendaSection'
 import PageComponent from '@/components/Shared/PageComponent'
-import { CustomCalendar } from '@/components/Shared/CustomCalendar'
+import { CustomCalendar } from '@/components/Schedule/CustomCalendar'
 import { TaskWithSubtasks, Notes } from '@/types/dashboard'
 import { getTodayInTimezone } from '@/utils/timezone'
 import { useRouter } from 'next/navigation'
-import {NotesSection} from '@/components/Shared/NotesSection'
+import {NotesSection} from '@/components/Schedule/NotesSection'
 
 import { Spinner } from '@/components/ui/spinner'
-import { MobileScheduleCalendar } from '@/components/Shared/MobileScheduleCalendar'
+import { MobileScheduleCalendar } from '@/components/Schedule/MobileScheduleCalendar'
 
 interface PageProps {
   userId: string

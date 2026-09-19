@@ -1,13 +1,10 @@
 'use server'
 
 import { createClient } from "../supabase/server"
-import { getUser } from "../auth/get-user"
 import { updateTag } from "next/cache"
+import { withAuth } from "@/lib/auth/with-auth"
 
-export async function RemoveTask(taskId: string) {
-
-    const user = await getUser();
-    if (!user) return { success: false, message: 'Not authenticated.' }
+export const RemoveTask = withAuth(async (user, taskId: string) => {
 
     const supabase = await createClient();
 
@@ -26,4 +23,4 @@ export async function RemoveTask(taskId: string) {
     }
 
     return { success: true, message: 'Task deleted successfully!' }
-}
+})
