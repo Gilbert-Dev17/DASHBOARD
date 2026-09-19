@@ -1,7 +1,7 @@
 'use server'
 
 import { cacheTag, cacheLife } from "next/cache";
-import type { TaskWithSubtasks, WalletSummary } from '@/types/dashboard'
+import type { TaskWithSubtasks, WalletSummary } from '@/types'
 import { getTodayInTimezone } from "@/utils/timezone";
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getUser } from "@/lib/auth/get-user";

@@ -1,5 +1,5 @@
 import { getUser } from './get-user'
-import type { UserSummary } from "@/types/dashboard";
+import type { UserSummary } from "@/types";
 
 export type ActionResponse<T = any> = {
   success: boolean;

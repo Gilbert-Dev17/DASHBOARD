@@ -1,4 +1,4 @@
-import { TaskWithSubtasks } from '@/types/dashboard'
+import { TaskWithSubtasks } from '@/types'
 import { CATEGORY_LABELS, TaskCategory } from '@/lib/constants/tasks'
 
 const ENDINGS = [

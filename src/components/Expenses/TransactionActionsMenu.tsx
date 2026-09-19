@@ -6,7 +6,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { DeleteTransactionItem } from '@/components/Modals/Transactions/DeleteTransactionItem';
-import { TransactionHistory } from '@/types/expenses';
+import { TransactionHistory } from '@/types';
 
 interface TransactionActionsMenuProps {
   transaction: TransactionHistory;

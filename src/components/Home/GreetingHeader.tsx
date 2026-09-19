@@ -3,7 +3,7 @@
 import { useMemo, useState, useEffect, Fragment } from 'react'
 import { format } from 'date-fns'
 import { CheckCircle2, Clock, ListTodo, CloudSun, MapPin, RefreshCw } from 'lucide-react'
-import { TaskWithSubtasks } from '@/types/dashboard'
+import { TaskWithSubtasks } from '@/types'
 import { generateDailyBrief } from '@/utils/daily-brief'
 import { Badge } from '@/components/ui/badge'
 

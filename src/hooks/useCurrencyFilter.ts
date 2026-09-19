@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, useTransition } from 'react';
-import type { WalletSummary, UserSummary } from '@/types/dashboard';
-import type { TransactionHistory } from '@/types/expenses';
+import type { WalletSummary, UserSummary } from '@/types';
+import type { TransactionHistory } from '@/types';
 
 interface UseCurrencyFilterOptions {
   wallets: WalletSummary[];

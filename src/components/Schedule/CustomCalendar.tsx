@@ -6,7 +6,7 @@ import { format, parseISO } from 'date-fns'
 import { Card } from '@/components/ui/card'
 import { Calendar } from '@/components/ui/calendar'
 import { cn } from '@/lib/utils'
-import { TaskWithSubtasks, Notes } from '@/types/dashboard'
+import { TaskWithSubtasks, Notes } from '@/types'
 import { FullCalendar } from '../Schedule/FullCalendar'
 
 interface CustomCalendarProps {

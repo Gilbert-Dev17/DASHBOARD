@@ -4,7 +4,7 @@ import {
  Timeline, TimelineItem, TimelineTime, TimelineContent
 } from '@/components/ui/timeline'
 import { formatSignedCurrency, getSignedAmount } from '@/utils/currency'
-import { TransactionHistory } from '@/types/expenses'
+import { TransactionHistory } from '@/types'
 import { ArrowRight, Receipt } from 'lucide-react'
 import { Separator } from '../ui/separator'
 import { Empty, EmptyContent, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty'

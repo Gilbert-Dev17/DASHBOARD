@@ -2,7 +2,7 @@
 
 import { ChartPieDonutText } from '@/components/Expenses/CategoryCharts'
 import { AddCategoryModal } from '../Modals/AddCategory/AddCategoryModal'
-import { TransactionHistory, CategorySummary } from '@/types/expenses'
+import { TransactionHistory, CategorySummary } from '@/types'
 import { ExpenseCategory } from '@/types/database'
 import { formatCurrency } from '@/utils/currency'
 import { CategoryBadge } from '@/components/Expenses/CategoryBadge'

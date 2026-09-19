@@ -5,7 +5,7 @@ import { Search, ChevronDown, ChevronRight, ChevronsUpDown } from 'lucide-react'
 import PageComponent from '@/components/Shared/PageComponent';
 import { PageHeader } from '@/components/Shared/PageHeader';
 import { getSignedAmount, formatSignedCurrency } from '@/utils/currency';
-import { TransactionHistory } from '@/types/expenses';
+import { TransactionHistory } from '@/types';
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/pagination"
 
 import { CurrencySwitcher } from '@/components/Shared/CurrencySwitcher';
-import { WalletSummary, UserSummary } from '@/types/dashboard';
+import { WalletSummary, UserSummary } from '@/types';
 import { useCurrencyFilter } from '@/hooks/useCurrencyFilter';
 import { CategoryBadge } from '@/components/Expenses/CategoryBadge';
 import { TransactionActionsMenu } from '@/components/Expenses/TransactionActionsMenu';

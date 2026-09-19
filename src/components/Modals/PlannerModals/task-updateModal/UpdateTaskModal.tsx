@@ -8,7 +8,7 @@ import { X, Plus } from 'lucide-react'
 import { CATEGORY_LABELS } from '@/lib/constants/tasks'
 import { TASK_CATEGORY_OPTIONS } from '@/lib/constants/options'
 import { submitTaskEdit } from '@/lib/actions/edit-task'
-import { TaskWithSubtasks } from '@/types/dashboard'
+import { TaskWithSubtasks } from '@/types'
 import { editTaskSchema, type EditTaskFormValues } from './schemas'
 import { Kbd } from '@/components/ui/kbd'
 import {

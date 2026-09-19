@@ -5,7 +5,7 @@ import { Card, CardHeader, CardContent, CardTitle} from '@/components/ui/card';
 import { formatCurrency } from '@/utils/currency';
 import { withAlpha } from '@/utils/color';
 import { AVAILABLE_ICONS } from '@/lib/constants/categories';
-import type { WalletSummary } from '@/types/dashboard';
+import type { WalletSummary } from '@/types';
 
 interface WalletCardProps {
   wallet: WalletSummary;

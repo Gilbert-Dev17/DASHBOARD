@@ -5,7 +5,7 @@ import PageComponent from '@/components/Shared/PageComponent'
 import { PageHeader } from '@/components/Shared/PageHeader'
 import { Card, CardContent } from '@/components/ui/card'
 import { AVAILABLE_ICONS } from '@/lib/constants/categories'
-import type { CategoryWithTotal } from '@/types/expenses'
+import type { CategoryWithTotal } from '@/types'
 import { formatCurrency } from '@/utils/currency'
 import { useRouter } from 'next/navigation'
 

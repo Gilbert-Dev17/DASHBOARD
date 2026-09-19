@@ -3,7 +3,7 @@
 import { supabaseAdmin } from "@/lib/supabase/admin"
 import { getUser } from "@/lib/auth/get-user"
 import { cacheTag } from "next/cache"
-import { CategoryWithTotal } from "@/types/expenses"
+import { CategoryWithTotal } from "@/types"
 
 async function fetchCategoriesWithTotal(userId: string) {
     'use cache'

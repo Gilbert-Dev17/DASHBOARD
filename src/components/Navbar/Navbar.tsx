@@ -12,7 +12,7 @@ import { Separator } from '../ui/separator'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { getActiveQuickAdds } from './quick-add-registry'
 
-import type { UserSummary } from '@/types/dashboard'
+import type { UserSummary } from '@/types'
 
 interface NavbarProps {
   user?: UserSummary | null;

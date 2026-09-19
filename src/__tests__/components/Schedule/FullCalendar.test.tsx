@@ -3,7 +3,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { FullCalendar } from '@/components/Schedule/FullCalendar'
 import { parseISO } from 'date-fns'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import type { TaskWithSubtasks } from '@/types/dashboard'
+import type { TaskWithSubtasks } from '@/types'
 
 const pushMock = vi.fn()
 

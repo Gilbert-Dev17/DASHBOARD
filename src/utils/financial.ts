@@ -1,4 +1,4 @@
-import { WalletSummary, WalletHistory, TransactionHistory } from "@/types/expenses";
+import { WalletSummary, WalletHistory, TransactionHistory } from "@/types";
 
 export type FinancialTotals = {
   netWorth: number;

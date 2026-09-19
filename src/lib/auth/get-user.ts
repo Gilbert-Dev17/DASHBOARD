@@ -1,5 +1,5 @@
 import { createClient } from "../supabase/server";
-import type { UserSummary } from "@/types/dashboard";
+import type { UserSummary } from "@/types";
 import { cache } from "react";
 
 export const getUser = cache(async (): Promise<UserSummary | null> => {

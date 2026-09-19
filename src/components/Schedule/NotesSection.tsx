@@ -1,6 +1,6 @@
 'use client'
 
-import { Notes } from '@/types/dashboard'
+import { Notes } from '@/types'
 import { Button } from '../ui/button'
 import { Spinner } from '../ui/spinner'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'

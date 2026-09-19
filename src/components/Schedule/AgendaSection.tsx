@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { Checkbox } from '@/components/ui/checkbox'
 import { Timeline, TimelineItem, TimelineTime, TimelineContent } from '@/components/ui/timeline'
-import { TaskWithSubtasks } from '@/types/dashboard'
+import { TaskWithSubtasks } from '@/types'
 import { formatTime } from '@/lib/formatTime'
 import { toast } from "sonner"
 import { Card, CardContent, } from '@/components/ui/card'

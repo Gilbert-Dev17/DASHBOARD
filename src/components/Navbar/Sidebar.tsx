@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { SyncIndicator } from '../Shared/SyncIndicator'
 import {Tooltip, TooltipContent, TooltipTrigger} from "@/components/ui/tooltip"
 
-import type { UserSummary } from '@/types/dashboard'
+import type { UserSummary } from '@/types'
 
 interface SidebarProps {
   user?: UserSummary | null;

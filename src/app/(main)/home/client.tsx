@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic'
 
 import PageComponent from '@/components/Shared/PageComponent'
-import { TaskWithSubtasks, UserSummary } from '@/types/dashboard'
+import { TaskWithSubtasks, UserSummary } from '@/types'
 import { GreetingHeader } from '@/components/Home/GreetingHeader'
 
 import { Skeleton } from "@/components/ui/skeleton"

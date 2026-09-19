@@ -1,7 +1,7 @@
 'use server'
 
 import { cacheTag } from "next/cache";
-import type { Notes, TaskWithSubtasks } from '@/types/dashboard'
+import type { Notes, TaskWithSubtasks } from '@/types'
 import { supabaseAdmin } from "@/lib/supabase/admin";
 import { getUser } from "@/lib/auth/get-user";
 
