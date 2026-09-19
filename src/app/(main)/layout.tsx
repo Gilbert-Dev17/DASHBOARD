@@ -1,4 +1,3 @@
-export const instant = false;
 import { ReactNode, Suspense } from 'react'
 import { RealtimeSync } from '@/components/Shared/RealTimeSync'
 
