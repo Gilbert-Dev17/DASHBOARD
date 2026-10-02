@@ -16,7 +16,7 @@ import { AddWalletModal } from '../AddWallet/AddWalletModal'
 
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Spinner } from '@/components/ui/spinner'
+import { LoadingButton } from '@/components/Shared/LoadingButton'
 import {
   Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
@@ -338,20 +338,18 @@ export function BulkExpenseForm() {
       </Button>
 
       {/* Submit */}
-      <Button
+      <LoadingButton
         type="submit"
         size="lg"
         className="w-full"
-        disabled={validCount === 0 || isSubmitting}
+        loading={isSubmitting}
+        loadingText="Adding"
+        disabled={validCount === 0}
       >
-        {isSubmitting ? (
-          <span className="inline-flex items-center gap-2">Adding <Spinner /></span>
-        ) : (
-          validCount > 0
-            ? `Add ${validCount} Expense${validCount > 1 ? 's' : ''}`
-            : 'Add Expenses'
-        )}
-      </Button>
+        {validCount > 0
+          ? `Add ${validCount} Expense${validCount > 1 ? 's' : ''}`
+          : 'Add Expenses'}
+      </LoadingButton>
 
       <AddCategoryModal isControlled open={isAddCategoryOpen} onOpenChange={setIsAddCategoryOpen} />
       <AddWalletModal   isControlled open={isAddWalletOpen}   onOpenChange={setIsAddWalletOpen} />

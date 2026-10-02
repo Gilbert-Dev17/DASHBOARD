@@ -22,7 +22,7 @@ import {
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from '@/components/ui/select'
-import { Spinner } from '@/components/ui/spinner'
+import { LoadingButton } from '@/components/Shared/LoadingButton'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Field, FieldLabel, FieldGroup, FieldError } from '@/components/ui/field'
@@ -311,20 +311,13 @@ export const UpdateTaskModal = ({ task, open, onOpenChange }: UpdateTaskModalPro
               <Button type="button" variant="secondary" onClick={() => onOpenChange(false)} disabled={isPending}>
                 Cancel
               </Button>
-              <Button type="submit" disabled={isPending || newSubtaskText.trim().length > 0 || !isDirty}>
-                {isPending ? (
-                  <span className="inline-flex items-center gap-2">
-                    <Spinner />
-                    Saving...
-                  </span>
-                ) : newSubtaskText.trim().length > 0 ? (
+              <LoadingButton type="submit" loading={isPending} loadingText="Saving..." disabled={newSubtaskText.trim().length > 0 || !isDirty}>
+                {newSubtaskText.trim().length > 0 ? (
                   <span> Hit <Kbd className='bg-foreground'>Enter</Kbd> to add subtask </span>
                 ) : (
-                  <span className="flex items-center gap-2">
-                    Save Changes
-                  </span>
+                  'Save Changes'
                 )}
-              </Button>
+              </LoadingButton>
             </div>
           </DialogFooter>
         </form>

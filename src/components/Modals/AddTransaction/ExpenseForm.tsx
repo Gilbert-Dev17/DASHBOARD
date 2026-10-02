@@ -24,7 +24,7 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AddCategoryModal } from "../AddCategory/AddCategoryModal"
 import { AddWalletModal } from "../AddWallet/AddWalletModal"
-import { Spinner } from "@/components/ui/spinner"
+import { LoadingButton } from "@/components/Shared/LoadingButton"
 import { BulkExpenseForm } from "./BulkExpenseForm"
 
 import { expenseSchema, ExpenseFormValues } from './schemas'
@@ -322,12 +322,9 @@ export const ExpenseForm = ({ onModeChange }: ExpenseFormProps) => {
             </FieldGroup>
           </div>
 
-          <Button type="submit" size="lg" className="w-full mt-2" disabled={!watch('amount') || !watch('accountId') || !watch('categoryId') || isSubmitting}>
-              {isSubmitting ?
-              <span className="inline-flex items-center gap-2">
-                Adding <Spinner />
-              </span> : 'Add Expense'}
-          </Button>
+          <LoadingButton type="submit" size="lg" className="w-full mt-2" loading={isSubmitting} loadingText="Adding" disabled={!watch('amount') || !watch('accountId') || !watch('categoryId')}>
+            Add Expense
+          </LoadingButton>
         </form>
       )}
     </div>

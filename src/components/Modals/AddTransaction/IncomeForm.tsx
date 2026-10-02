@@ -21,7 +21,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { Spinner } from "@/components/ui/spinner"
+import { LoadingButton } from "@/components/Shared/LoadingButton"
 import { PageHeader } from "@/components/Shared/PageHeader"
 
 import { incomeSchema, IncomeFormValues } from './schemas'
@@ -221,12 +221,9 @@ export const IncomeForm = () => {
           </FieldGroup>
         </div>
 
-        <Button type="submit" size="lg" className="w-full rounded-md" disabled={!watch('amount') || !watch('accountId') || isSubmitting}>
-          {isSubmitting ?
-            <span className="inline-flex items-center gap-2">
-              Adding <Spinner />
-            </span> : 'Add Income'}
-        </Button>
+        <LoadingButton type="submit" size="lg" className="w-full rounded-md" loading={isSubmitting} loadingText="Adding" disabled={!watch('amount') || !watch('accountId')}>
+          Add Income
+        </LoadingButton>
       </form>
     </div>
   )

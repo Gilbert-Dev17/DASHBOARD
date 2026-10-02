@@ -40,6 +40,40 @@
 5. **Use CSS variables** for theming — colors are defined in `src/app/globals.css`. Do not hard-code color values.
 6. **Icons come from Lucide** — import from `lucide-react`. Do not mix icon libraries.
 
+### Buttons With a Pending State — Use `LoadingButton`
+
+Any button that triggers async work (form submit, server action, mutation) **must** use `LoadingButton` from `@/components/Shared/LoadingButton`. Do not hand-roll `{isPending ? <>Adding <Spinner /></> : 'Add'}` inside a `Button`.
+
+```tsx
+<LoadingButton type="submit" loading={isPending} loadingText="Adding">
+  Add Expense
+</LoadingButton>
+```
+
+- `loading` shows the `Spinner` before the label and disables the button.
+- `loadingText` (optional) replaces the label while loading; omit it to keep the label.
+- `icon` (optional) is the leading icon. The spinner **replaces** the icon while loading.
+- It wraps `Button`, so all `variant` / `size` / `className` props still work.
+- Not for `asChild` or icon-only buttons; use `Button` there (`AlertDialogAction` is `asChild`, so it stays as is).
+
+**Swap pattern.** If you see a button that renders one branch with a `Spinner` and another with an icon, change it to `LoadingButton` with `icon`:
+
+```tsx
+// ❌ Before — hand-rolled swap
+<Button type="submit" disabled={isPending || !isDirty}>
+  {isPending
+    ? <span className="flex items-center gap-4"><Spinner /> Save</span>
+    : <span className="flex items-center gap-4"><Save className="w-3 h-3" /> Save</span>}
+</Button>
+
+// ✅ After — spinner replaces the icon
+<LoadingButton type="submit" loading={isPending} disabled={!isDirty} icon={<Save className="w-3 h-3" />}>
+  Save
+</LoadingButton>
+```
+
+Keep `disabled` for non-loading conditions only; `loading` already disables the button. Standalone spinners that are not inside a button (page or section loaders) keep using `Spinner` or a skeleton.
+
 ### Currently Installed shadcn Components
 
 Accordion · Alert Dialog · Avatar · Badge · Button · Calendar · Card · Carousel · Chart · Checkbox · Collapsible · Command · Dialog · Drawer · Dropdown Menu · Empty · Field · Input · Input Group · Input OTP · Kbd · Label · Native Select · Pagination · Popover · Progress · Responsive Dialog · Scroll Area · Select · Separator · Skeleton · Sonner · Spinner · Switch · Table · Tabs · Textarea · Timeline · Tooltip
@@ -67,7 +101,7 @@ src/
 │   ├── Profile/            # Profile feature components
 │   ├── Navbar/             # Navigation components
 │   ├── Modals/             # Modal compositions
-│   └── Shared/             # Cross-feature reusable components
+│   └── Shared/             # Cross-feature reusable components (e.g. LoadingButton)
 │
 ├── hooks/                  # Custom React hooks
 ├── contexts/               # React Context providers
