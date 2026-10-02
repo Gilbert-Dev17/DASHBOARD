@@ -9,7 +9,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { getActiveQuickAdds } from './quick-add-registry'
 import { SyncIndicator } from '../Shared/SyncIndicator'
 
-import type { UserSummary } from '@/types/dashboard'
+import type { UserSummary } from '@/types'
 
 interface MobilebarProps {
   user?: UserSummary | null

@@ -1,7 +1,7 @@
 'use client'
 
 import { TrendingUp, TrendingDown } from 'lucide-react'
-import { WalletSummary, WalletHistory } from '@/types/dashboard'
+import { WalletSummary, WalletHistory } from '@/types'
 import { formatSignedCurrency } from '@/utils/currency'
 import { calculateFinancialTotals } from '@/utils/financial'
 import { Badge } from '../ui/badge'

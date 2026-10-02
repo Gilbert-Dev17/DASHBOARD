@@ -2,27 +2,22 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { updateTag } from 'next/cache'
-import { getUser } from '@/lib/auth/get-user'
+import { withAuth } from '@/lib/auth/with-auth'
 
-export async function addTransferAction(data: {
+export const addTransferAction = withAuth(async (user, data: {
   amount: number
   fromAccountId: string
   toAccountId: string
   transfer_fee?: number
   note?: string
   date?: Date | string
-}) {
+}) => {
   const supabase = await createClient()
-   const user = await getUser();
-    if (!user) return { success: false, message: 'Not authenticated.' }
-
-  const fee = data.transfer_fee || 0
+     const fee = data.transfer_fee || 0
 
   // Since the Transaction table only has one `wallet_id`,
   // a standard way to represent a transfer is to create two records:
   // one for the money leaving the source, and one for the money entering the destination.
-
-  try {
     const formattedDate = data.date
       ? (typeof data.date === 'string' ? data.date : new Date(data.date.getTime() - (data.date.getTimezoneOffset() * 60000)).toISOString().split('T')[0])
       : new Date().toISOString().split('T')[0]
@@ -52,8 +47,4 @@ export async function addTransferAction(data: {
     updateTag(`snapshots-${user.id}`)
 
     return { success: true }
-  } catch (error: unknown) {
-    console.error('Unexpected error in addTransferAction:', error)
-    return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' }
-  }
-}
+  })

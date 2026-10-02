@@ -22,7 +22,7 @@ import { EditWalletModal } from '@/components/Modals/EditWallet/EditWalletModal'
 import { DeleteWalletModal } from '@/components/Modals/DeleteWallet/DeleteWalletModal';
 import { AdjustBalanceModal } from '@/components/Modals/AdjustBalance/AdjustBalanceModal';
 import PageComponent from '@/components/Shared/PageComponent';
-import { Wallets, TransactionHistory } from '@/types/expenses';
+import { Wallets, TransactionHistory } from '@/types';
 import { getSignedAmount } from '@/utils/currency';
 import { useRouter } from 'next/navigation';
 

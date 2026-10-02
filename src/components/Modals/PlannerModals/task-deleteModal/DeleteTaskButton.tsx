@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
 import { RemoveTask } from '@/lib/actions/remove-task'
 import { UndoCountdown } from './UndoDeleteToast'
-import type { TaskWithSubtasks } from '@/types/dashboard'
+import type { TaskWithSubtasks } from '@/types'
 
 const UNDO_DURATION = 5000
 

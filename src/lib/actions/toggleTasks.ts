@@ -2,12 +2,10 @@
 
 import { createClient } from "../supabase/server"
 import { updateTag } from "next/cache";
+import { withAuth } from "@/lib/auth/with-auth"
 
-export async function toggleTask(taskId: string, isDone: boolean) {
+export const toggleTask = withAuth(async (user, taskId: string, isDone: boolean) => {
     const supabase = await createClient();
-
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return { success: false, message: 'Not authenticated.' }
 
     const { data, error, status, statusText } = await supabase
         .from("tasks")
@@ -45,13 +43,10 @@ export async function toggleTask(taskId: string, isDone: boolean) {
     updateTag(`planner-tasks-${user.id}`)
 
     return { success: true, message: "Task is Finished" };
-}
+})
 
-export async function toggleSubTask(subtaskId: string, isDone: boolean) {
+export const toggleSubTask = withAuth(async (user, subtaskId: string, isDone: boolean) => {
     const supabase = await createClient()
-
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return { success: false, message: 'Not authenticated.' }
 
     const { error } = await supabase
         .from('subtasks')
@@ -67,4 +62,4 @@ export async function toggleSubTask(subtaskId: string, isDone: boolean) {
     updateTag(`planner-tasks-${user.id}`)
 
     return { success: true, message: "Task is Finished" };
-}
+})

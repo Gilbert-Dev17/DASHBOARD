@@ -2,7 +2,7 @@
 
 import { supabaseAdmin } from "@/lib/supabase/admin"
 import { cacheTag, cacheLife } from 'next/cache'
-import type { TransactionHistory } from '@/types/expenses'
+import type { TransactionHistory } from '@/types'
 import { getUser } from "@/lib/auth/get-user"
 import type { ExpenseCategory } from "@/types/database"
 

@@ -5,8 +5,9 @@ import { updateTag } from 'next/cache'
 import { ParsedTask } from '@/utils/parseTaskLines'
 import { getTodayInTimezone } from '@/utils/timezone'
 import { MAX_QUICK_ADD_TASKS, DATE_REGEX } from '@/lib/constants/options'
+import { withAuth } from "@/lib/auth/with-auth"
 
-export async function submitQuickAddTasks(tasks: ParsedTask[], targetDate?: string) {
+export const submitQuickAddTasks = withAuth(async (user, tasks: ParsedTask[], targetDate?: string) => {
 
   const today = (targetDate && DATE_REGEX.test(targetDate)) ? targetDate : getTodayInTimezone();
 
@@ -27,12 +28,6 @@ export async function submitQuickAddTasks(tasks: ParsedTask[], targetDate?: stri
 
   const supabase = await createClient()
 
-  const { data: { user }, error: authError } = await supabase.auth.getUser()
-  if (authError || !user) {
-    return { success: false, message: 'You must be logged in to add tasks.' }
-  }
-
-  try {
     const categoryNames = Array.from(new Set(sanitizedTasks.map(t => t.category).filter(Boolean))) as string[]
     const categoryMap = new Map<string, string>() // name -> id
 
@@ -109,8 +104,4 @@ export async function submitQuickAddTasks(tasks: ParsedTask[], targetDate?: stri
     updateTag(`planner-tasks-${user.id}`)
 
     return { success: true, message: 'Tasks successfully added!' }
-  } catch (error: unknown) {
-    console.error('Quick Add Error:', error)
-    return { success: false, message: error instanceof Error ? error.message : 'An unexpected error occurred.' }
-  }
-}
+})

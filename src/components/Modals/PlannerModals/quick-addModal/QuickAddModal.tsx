@@ -17,7 +17,7 @@ import {
   ResponsiveDialogTitle as DialogTitle,
   ResponsiveDialogTrigger as DialogTrigger
 } from '@/components/ui/responsive-dialog'
-import { Spinner } from '@/components/ui/spinner'
+import { LoadingButton } from '@/components/Shared/LoadingButton'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '../../../ui/textarea'
 import { Kbd, KbdGroup } from '../../../ui/kbd'
@@ -310,15 +310,9 @@ export const QuickAddModal = ({ enableShortcut = true }: { enableShortcut?: bool
             <Kbd >Enter</Kbd>
             {' to submit'}
           </KbdGroup>
-          <Button onClick={handleSubmit} disabled={!text.trim() || isPending} className='rounded-md'>
-            {isPending ? (
-              <span className="inline-flex items-center gap-2">
-                Adding <Spinner />
-              </span>
-            ) : (
-              'Add Tasks'
-            )}
-          </Button>
+          <LoadingButton onClick={handleSubmit} disabled={!text.trim()} loading={isPending} loadingText="Adding" className='rounded-md'>
+            Add Tasks
+          </LoadingButton>
         </div>
       </DialogContent>
     </Dialog>

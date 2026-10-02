@@ -1,4 +1,4 @@
-import type { WalletHistory, WalletSummary } from '@/types/expenses';
+import type { WalletHistory, WalletSummary } from '@/types';
 
 export interface NetWorthTrendPoint {
   key: string;   // "2026-01" or "now"

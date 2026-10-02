@@ -2,19 +2,16 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { updateTag } from 'next/cache'
-import { getUser } from '@/lib/auth/get-user'
+import { withAuth } from '@/lib/auth/with-auth'
 
-export async function adjustBalanceAction(data: {
+export const adjustBalanceAction = withAuth(async (user, data: {
   walletId: string
   newBalance: number
   note?: string
-}) {
+}) => {
   const supabase = await createClient()
 
-  const user = await getUser()
-  if (!user) return { success: false, error: 'Not authenticated.' }
-
-  const { error } = await supabase.rpc('adjust_wallet_balance', {
+    const { error } = await supabase.rpc('adjust_wallet_balance', {
     p_wallet_id: data.walletId,
     p_new_balance: data.newBalance,
     p_note: data.note ?? null,
@@ -30,4 +27,4 @@ export async function adjustBalanceAction(data: {
   updateTag(`snapshots-${user.id}`)
 
   return { success: true }
-}
+})

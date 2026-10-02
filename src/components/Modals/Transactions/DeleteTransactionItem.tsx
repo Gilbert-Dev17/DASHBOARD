@@ -6,7 +6,7 @@ import { DropdownMenuItem } from '@/components/ui/dropdown-menu'
 import { toast } from 'sonner'
 import { DeleteTransaction } from '@/lib/actions/transactions'
 import { UndoCountdown } from '@/components/Modals/PlannerModals/task-deleteModal/UndoDeleteToast'
-import { TransactionHistory } from '@/types/expenses'
+import { TransactionHistory } from '@/types'
 
 const UNDO_DURATION = 5000
 

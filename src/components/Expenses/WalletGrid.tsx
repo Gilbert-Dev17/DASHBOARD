@@ -1,12 +1,12 @@
 import { Wallet as WalletIcon, ArrowRight } from 'lucide-react';
 import { AddWalletModal } from '../Modals/AddWallet/AddWalletModal';
 import { WalletCard } from './WalletCard';
-import type { WalletSummary } from '@/types/dashboard';
+import type { WalletSummary } from '@/types';
 import { Button } from '../ui/button';
 import Link from 'next/link';
 import { Empty, EmptyContent, EmptyMedia, EmptyTitle, EmptyDescription } from '@/components/ui/empty';
 
-import { TransactionHistory } from '@/types/expenses';
+import { TransactionHistory } from '@/types';
 
 interface WalletGridProps {
   wallets: WalletSummary[];

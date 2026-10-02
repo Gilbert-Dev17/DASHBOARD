@@ -1,8 +1,9 @@
 'use client'
 
-import { Notes } from '@/types/dashboard'
+import { Notes } from '@/types'
 import { Button } from '../ui/button'
 import { Spinner } from '../ui/spinner'
+import { LoadingButton } from '../Shared/LoadingButton'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { Controller, useForm } from 'react-hook-form'
@@ -208,18 +209,17 @@ export const NotesSection = ({ note, dateStr, userId }: NotesProps) => {
             </Button>
           } />
 
-          <Button
+          <LoadingButton
             type="submit"
-            disabled={isPending || !isDirty}
+            loading={isPending}
+            disabled={!isDirty}
+            icon={<Save className="w-3 h-3" />}
             variant="ghost"
             size="sm"
             className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground hover:text-foreground gap-2 disabled:opacity-30"
           >
-            <Save className="w-3 h-3" />
-            {isPending
-                ? <span className='flex items-center gap-4'>Save <Spinner /></span>
-                : 'Save'}
-          </Button>
+            Save
+          </LoadingButton>
         </div>
       </div>
 

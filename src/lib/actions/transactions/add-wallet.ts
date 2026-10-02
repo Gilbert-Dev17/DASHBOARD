@@ -2,23 +2,18 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { updateTag } from 'next/cache'
-import { getUser } from '@/lib/auth/get-user'
+import { withAuth } from '@/lib/auth/with-auth'
 import { WalletType } from '@/types/database'
 
-export async function addWalletAction(data: {
+export const addWalletAction = withAuth(async (user, data: {
   name: string
   balance: number
   currency: string
   type: WalletType
   icon: string
   color: string
-}) {
+}) => {
   const supabase = await createClient()
-
-  const user = await getUser();
-  if (!user) return { success: false, error: 'Not authenticated.' }
-
-  try {
     const { error } = await supabase
       .from('wallets')
       .insert({
@@ -40,8 +35,4 @@ export async function addWalletAction(data: {
     updateTag(`wallets-${user.id}`)
 
     return { success: true }
-  } catch (error: unknown) {
-    console.error('Unexpected error in addWalletAction:', error)
-    return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' }
-  }
-}
+  })

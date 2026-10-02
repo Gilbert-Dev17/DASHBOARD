@@ -10,7 +10,7 @@ import {
 } from "@/components/ui/chart"
 
 import { HelpCircle } from "lucide-react"
-import type { CategorySummary } from "@/types/expenses"
+import type { CategorySummary } from "@/types"
 import { formatCurrency } from "@/utils/currency"
 
 import { AVAILABLE_ICONS, AVAILABLE_COLORS } from '@/lib/constants/categories'

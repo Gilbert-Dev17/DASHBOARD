@@ -4,7 +4,7 @@ import { CloudSun, Droplets, Wind, Sun, Moon, MapPin, RefreshCw, CheckCircle2, C
 import { useQuery } from '@tanstack/react-query'
 import { useGeolocation } from '@/hooks/geoLocation'
 import type { WeatherData, Coordinates } from '@/types/weather'
-import type { TaskWithSubtasks } from '@/types/dashboard'
+import type { TaskWithSubtasks } from '@/types'
 import { Badge } from '../ui/badge'
 import { WeatherCardSkeleton } from './WeatherCardSkeleton'
 import { toast } from 'sonner'

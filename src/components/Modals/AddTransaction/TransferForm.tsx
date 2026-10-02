@@ -22,7 +22,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { Spinner } from "@/components/ui/spinner"
+import { LoadingButton } from "@/components/Shared/LoadingButton"
 
 import { transferSchema, TransferFormValues } from './schemas'
 import { useWallets } from '@/hooks/useFinanceData'
@@ -330,15 +330,9 @@ export const TransferForm = () => {
           </FieldGroup>
         </div>
 
-        <Button type="submit" size="lg" className="w-full" disabled={!watch('amount') || !watch('fromAccountId') || !watch('toAccountId') || isSubmitting}>
-          {isSubmitting ? (
-            <span className="inline-flex items-center gap-2">
-              Transferring <Spinner />
-            </span>
-          ) : (
-            'Transfer'
-          )}
-        </Button>
+        <LoadingButton type="submit" size="lg" className="w-full" loading={isSubmitting} loadingText="Transferring" disabled={!watch('amount') || !watch('fromAccountId') || !watch('toAccountId')}>
+          Transfer
+        </LoadingButton>
       </form>
     </div>
   )

@@ -13,7 +13,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { UserSummary } from '@/types/dashboard'
+import { UserSummary } from '@/types'
 import { CURRENCY_OPTIONS } from '@/lib/constants/options'
 
 interface ProfileSettingsProps {

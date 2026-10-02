@@ -2,22 +2,16 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { updateTag } from 'next/cache'
-import { getUser } from '@/lib/auth/get-user'
+import { withAuth } from '@/lib/auth/with-auth'
 
-export async function addExpenseAction(data: {
+export const addExpenseAction = withAuth(async (user, data: {
   amount: number
   accountId: string
   categoryId: string
   note?: string
   date?: Date | string
-}) {
+}) => {
   const supabase = await createClient()
-
-  const user = await getUser();
-  if (!user) return { success: false, message: 'Not authenticated.' }
-
-
-  try {
     const { error } = await supabase
       .from('transactions')
       .insert({
@@ -44,8 +38,4 @@ export async function addExpenseAction(data: {
     updateTag(`snapshots-${user.id}`)
 
     return { success: true }
-  } catch (error: unknown) {
-    console.error('Unexpected error in addExpenseAction:', error)
-    return { success: false, error: error instanceof Error ? error.message : 'An unexpected error occurred' }
-  }
-}
+  })

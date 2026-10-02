@@ -9,7 +9,7 @@ import PageComponent from '@/components/Shared/PageComponent'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
 import { ProfileSettings } from '@/components/Profile/ProfileSettings'
 import { DatabaseMetricsCard } from '@/components/Profile/DatabaseMetricsCard'
-import { UserSummary } from '@/types/dashboard'
+import { UserSummary } from '@/types'
 import { DatabaseMetrics, TableCounts } from '@/types/database'
 
 interface ProfileClientPageProps {

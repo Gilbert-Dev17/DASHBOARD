@@ -2,7 +2,7 @@
 
 import { createClient } from '@/lib/supabase/server'
 import { updateTag } from 'next/cache'
-import { getUser } from "../auth/get-user"
+import { withAuth } from "@/lib/auth/with-auth"
 
 interface SubtaskUpdate {
   id: string
@@ -21,11 +21,8 @@ interface EditTaskPayload {
   }
 }
 
-export async function submitTaskEdit(payload: EditTaskPayload) {
-  try {
+export const submitTaskEdit = withAuth(async (user, payload: EditTaskPayload) => {
     const supabase = await createClient()
-    const user = await getUser();
-    if (!user) return { success: false, message: 'Not authenticated.' }
 
     // 1. Resolve category ID if a category name was provided
     let categoryId: string | null = null
@@ -104,8 +101,4 @@ export async function submitTaskEdit(payload: EditTaskPayload) {
     updateTag(`planner-tasks-${user.id}`)
 
     return { success: true, message: 'Task updated successfully!' }
-  } catch (error: unknown) {
-    console.error('Edit Task Error:', error)
-    return { success: false, message: error instanceof Error ? error.message : 'An unexpected error occurred.' }
-  }
-}
+})

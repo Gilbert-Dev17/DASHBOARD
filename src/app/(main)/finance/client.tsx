@@ -1,8 +1,8 @@
 'use client'
 
 import PageComponent from '@/components/Shared/PageComponent'
-import { TransactionHistory } from '@/types/expenses'
-import type { WalletSummary, UserSummary } from '@/types/dashboard'
+import { TransactionHistory } from '@/types'
+import type { WalletSummary, UserSummary } from '@/types'
 import { WalletGrid } from '@/components/Expenses/WalletGrid'
 import { SummaryExpense, IncomeExpenseCard } from '@/components/Expenses/SummaryExpense'
 import { CategorySection } from '@/components/Expenses/CategorySection'

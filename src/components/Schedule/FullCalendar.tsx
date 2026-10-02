@@ -11,7 +11,7 @@ import {
 import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Button } from '@/components/ui/button'
-import { TaskWithSubtasks, Notes } from '@/types/dashboard'
+import { TaskWithSubtasks, Notes } from '@/types'
 import { formatTime } from '@/lib/formatTime'
 import { cn } from '@/lib/utils'
 import { getTodayInTimezone } from '@/utils/timezone'
@@ -21,8 +21,8 @@ import {
   DrawerContent,
   DrawerClose,
 } from '@/components/ui/drawer'
-import { AgendaSection } from '@/components/Shared/AgendaSection'
-import { NotesSection } from '@/components/Shared/NotesSection'
+import { AgendaSection } from '@/components/Schedule/AgendaSection'
+import { NotesSection } from '@/components/Schedule/NotesSection'
 import { Spinner } from '@/components/ui/spinner'
 
 /* ─── Constants ──────────────────────────────────────────────── */

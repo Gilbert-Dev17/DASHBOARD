@@ -2,7 +2,7 @@
 
 import React, { useMemo } from 'react';
 import { TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight } from 'lucide-react';
-import { WalletHistory, WalletSummary, TransactionHistory } from '@/types/expenses';
+import { WalletHistory, WalletSummary, TransactionHistory } from '@/types';
 import { formatCurrency, formatSignedCurrency, formatCompactCurrency } from '@/utils/currency';
 import { calculateFinancialTotals } from '@/utils/financial';
 import { Card, CardContent} from '../ui/card';
